@@ -5,9 +5,9 @@ import * as Google from "expo-auth-session/providers/google";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useAuth } from "../context/AuthContext";
 
-// ✅ 1. Import Real Services
-import { emailSignIn, googleSignIn, guestSignIn } from "../services/authService";
-import { syncLocalToCloud } from "../services/SyncService";
+// Services
+import { emailSignIn, googleSignIn } from "../services/authService"; // Removed guestSignIn import
+import { syncLocalToCloud, runFullSync } from "../services/SyncService";
 
 export default function Login() {
   const navigation = useNavigation<any>();
@@ -22,39 +22,35 @@ export default function Login() {
   // --- Email/Password Login ---
   const handleEmailLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password.");
-      return;
+        Alert.alert("Error", "Please enter both email and password.");
+        return;
     }
 
     setLoading(true);
     try {
-      // ✅ Real Firebase Login
-      const user = await emailSignIn(email, password);
-      
-      // Update Context
-      setUser(user);
-      
-      // Optional: Try to sync data immediately after login
-      syncLocalToCloud().catch(err => console.log("Background sync failed", err));
+        const user = await emailSignIn(email, password);
+        setUser(user); // Set real Firebase user
 
-      // ✅ Navigate to App
-      navigation.replace("MainTabs");
+        // ❌ DELETE: syncLocalToCloud().catch(...);  <- This is redundant
+
+        // ✅ AWAIT: Run the full sync (Push local data, then Pull cloud history).
+        await runFullSync(); 
+
+        // ✅ Navigate: Only navigate once the data restore is complete.
+        navigation.replace("MainTabs");
 
     } catch (error: any) {
-      console.error("Login error:", error);
-      let msg = "Please check your credentials and try again.";
-      if (error.code === 'auth/invalid-email') msg = "That email address is invalid.";
-      if (error.code === 'auth/user-not-found') msg = "No account found with this email.";
-      if (error.code === 'auth/wrong-password') msg = "Incorrect password.";
-      Alert.alert("Login Failed", msg);
+        console.error("Login error:", error);
+        // Note: You can add more specific error alerts here using error.code
+        Alert.alert("Login Failed", "Please check your credentials.");
     } finally {
-      setLoading(false);
+        // Stop loading spinner after all network activity is done.
+        setLoading(false);
     }
-  };
+};
 
   // --- Google Sign-In ---
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    // Ensure these match your Firebase Console -> Authentication -> Sign-in method -> Google
     androidClientId: "240587310989-lmji3qktn8pdr4os4soeshk4i96e7064.apps.googleusercontent.com",
     clientId: "240587310989-fie4a1hjgml2pqeuec9akjjl45uc5eha.apps.googleusercontent.com",
   });
@@ -70,32 +66,31 @@ export default function Login() {
     setLoading(true);
     try {
       const user = await googleSignIn(token);
-      setUser(user);
-      syncLocalToCloud().catch(console.error);
+      setUser(user); // Set real Firebase user
+      syncLocalToCloud().catch(console.error); // Sync offline data
       navigation.replace("MainTabs");
     } catch (error) {
-      console.error("Google Login Error:", error);
       Alert.alert("Error", "Failed to sign in with Google.");
     } finally {
       setLoading(false);
     }
   };
 
-  // --- Guest / No Sign-In ---
-  const handleNoSignIn = async () => {
-    setLoading(true);
-    try {
-      // ✅ Real Anonymous Login (Allows database rules to work)
-      const user = await guestSignIn();
-      setUser(user);
-      navigation.replace("MainTabs");
-    } catch (error) {
-      console.error("Guest login error:", error);
-      // Fallback: Just let them in locally if Firebase fails
-      navigation.replace("MainTabs");
-    } finally {
-      setLoading(false);
-    }
+  // --- TRUE OFFLINE GUEST MODE ---
+  const handleNoSignIn = () => {
+    // 1. DO NOT call firebase.auth().
+    // 2. Just update the local UI state so the user can pass the 'gate'.
+    const offlineUser = { 
+        uid: 'offline_guest', 
+        isAnonymous: true, 
+        email: null, 
+        displayName: 'Guest' 
+    };
+    
+    setUser(offlineUser);
+    
+    // 3. Go to Onboarding (Landing Pages)
+    navigation.navigate("LandingPage1"); 
   };
 
   return (

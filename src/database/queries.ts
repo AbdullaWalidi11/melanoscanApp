@@ -164,3 +164,83 @@ export async function getUnsyncedLesions(): Promise<Scan[]>  {
     return [];
   }
 }
+
+// ... (Your existing code)
+
+// NEW: Scenario 1 & 3 (Pull from Cloud)
+// Inserts a record from Firebase into SQLite, or updates it if it exists
+export async function insertOrUpdateFromCloud(data: any) {
+  const db = getDB();
+  try {
+    // 1. Check if this firebaseId already exists locally
+    const existing = await db.getFirstAsync<{ id: number }>(
+      `SELECT id FROM lesions WHERE firebaseId = ?`,
+      [data.id] // data.id is the Firestore Document ID
+    );
+
+    if (existing) {
+      // Optional: Update local if cloud is newer (Conflict Resolution)
+      console.log(`Skipping duplicate cloud item: ${data.id}`);
+      return;
+    }
+
+    // 2. Insert new record
+    await db.runAsync(
+      `INSERT INTO lesions 
+       (region, description, imageUri, resultLabel, confidence, date, createdAt, firebaseId, isSynced, isDeleted)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 0)`,
+      [
+        data.region,
+        data.description,
+        data.imageUri,
+        data.resultLabel,
+        data.confidence,
+        data.date,
+        data.createdAt,
+        data.id, // Save the Firebase ID so we don't duplicate later
+      ]
+    );
+    console.log(`📥 Downloaded scan from cloud: ${data.id}`);
+  } catch (error) {
+    console.error("Error inserting from cloud:", error);
+  }
+}
+
+// NEW: Scenario 4 (Sync Deletions)
+// Get items that were deleted offline (isDeleted=1) but Firebase doesn't know yet (isSynced=0)
+// Note: When we "Soft Delete", we set isSynced=0 so the sync service picks it up.
+export async function getDeletedPendingSync(): Promise<{ id: number; firebaseId: string }[]> {
+  const db = getDB();
+  try {
+    const results = await db.getAllAsync(
+      `SELECT id, firebaseId FROM lesions WHERE isDeleted = 1 AND isSynced = 0 AND firebaseId IS NOT NULL`
+    );
+    return results as { id: number; firebaseId: string }[];
+  } catch (error) {
+    console.error("Error getting pending deletions:", error);
+    return [];
+  }
+}
+
+// NEW: Scenario 4 (Cleanup)
+// Hard delete a row after we confirmed Firebase deleted it too
+export async function hardDeleteLesion(id: number) {
+  const db = getDB();
+  try {
+    await db.runAsync(`DELETE FROM lesions WHERE id = ?`, [id]);
+  } catch (error) {
+    console.error("Error hard deleting lesion:", error);
+  }
+}
+
+// NEW: Scenario 5 (Logout Wipe)
+export async function clearDatabase() {
+  const db = getDB();
+  try {
+    console.log("⚠️ Wiping local database (Logout)...");
+    await db.runAsync(`DELETE FROM lesions`); 
+    // Or drop table if you prefer: await db.runAsync(`DROP TABLE IF EXISTS lesions`);
+  } catch (error) {
+    console.error("Error clearing DB:", error);
+  }
+}

@@ -7,9 +7,12 @@ import { AuthProvider } from "./src/context/AuthContext";
 import { SurveyProvider } from "./src/context/SurveyContext";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { createLesionsTable } from "./src/database/lesions-table";
+import { useNetworkSync } from "./src/hooks/useNetworkSync";
 
 export default function App() {
   
+  useNetworkSync();
+
   useEffect(() => {
     createLesionsTable();
   }, []);

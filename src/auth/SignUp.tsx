@@ -56,7 +56,7 @@ export default function SignUpScreen() {
       if (user) {
         setUser(user);
         // Navigate to the main app immediately
-        navigation.replace("MainTabs");
+        navigation.replace("Login");
       } else {
         // Fallback to login screen if something weird happens
         navigation.navigate("Login");
