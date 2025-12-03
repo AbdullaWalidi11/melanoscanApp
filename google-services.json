@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "1071482011625",
+    "project_id": "melanoscan-fire4560",
+    "storage_bucket": "melanoscan-fire4560.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1071482011625:android:6f3c00d11d9eedee8a5578",
+        "android_client_info": {
+          "package_name": "com.abdullaha10.melanoScan2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1071482011625-i8o1umqufv8a7n9sag853gmk26kuju8s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKXh-HyZsXsyyeSaABsKK6sWRI2T5fA4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1071482011625-i8o1umqufv8a7n9sag853gmk26kuju8s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1071482011625:android:e2bbbb521fb3b2438a5578",
+        "android_client_info": {
+          "package_name": "com.melanoscan.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1071482011625-k5q1a0ljhk7s3r6k45n844hclim9530q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.melanoscan.app",
+            "certificate_hash": "139820e15968b7d6c3b1acd2f1bb8e8e1b422fb5"
+          }
+        },
+        {
+          "client_id": "1071482011625-i8o1umqufv8a7n9sag853gmk26kuju8s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKXh-HyZsXsyyeSaABsKK6sWRI2T5fA4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1071482011625-i8o1umqufv8a7n9sag853gmk26kuju8s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
