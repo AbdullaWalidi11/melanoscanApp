@@ -9,17 +9,22 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { MessageCircle } from "lucide-react-native";
 import Constants from "expo-constants";
 import * as ImageManipulator from "expo-image-manipulator";
 import { loadTensorflowModel } from "react-native-fast-tflite";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
+
 // === CUSTOM IMPORTS ===
 // Make sure this component exists! I will provide code for it below if you don't have it.
 import SaveToHistoryPopup from "../../components/SaveToHistoryPopUp";
-import { saveLesion } from "../../database/queries";
+import { saveLesion, updateLesion } from "../../database/queries";
+// Add this with your other useState hooks
+
 
 const isExpoGo = Constants.appOwnership === "expo";
 
@@ -29,20 +34,22 @@ const modelAsset = require("../../../assets/melanoscan_model.tflite");
 const labels = ["akiec", "bcc", "bkl", "df", "mel", "nv", "vasc, scc"];
 
 const diagnosisMap: Record<string, string> = {
-  akiec: "Actinic Keratosis / Bowen’s Disease",
-  bcc: "Basal Cell Carcinoma",
-  bkl: "Benign Keratosis",
-  df: "Dermatofibroma",
-  mel: "Melanoma",
-  nv: "Melanocytic Nevus",
-  vasc: "Vascular Lesion",
+    akiec: "Actinic Keratosis / Bowen’s Disease",
+    bcc: "Basal Cell Carcinoma",
+    bkl: "Benign Keratosis",
+    df: "Dermatofibroma",
+    mel: "Melanoma",
+    nv: "Melanocytic Nevus",
+    vasc: "Vascular Lesion",
+    scc: "Squamous Cell Carcinoma",
 };
 
 export default function MelanoScanPredict() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-  const { mode } = route.params || {}; // "camera" or "gallery"
-
+    const navigation = useNavigation<any>();
+    const route = useRoute<any>();
+    const { mode } = route.params || {}; // "camera" or "gallery"
+    
+  const [savedId, setSavedId] = useState<number | null>(null);
   const [model, setModel] = useState<any>(null);
   const [loading, setLoading] = useState(true); // model loading
   const [busy, setBusy] = useState(false); // inference is running
@@ -55,6 +62,37 @@ export default function MelanoScanPredict() {
   } | null>(null);
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
   const [showSavePopup, setShowSavePopup] = useState(false);
+
+
+const handleChat = async () => {
+  try {
+    setBusy(true);
+
+    // 1. Check if we already saved it (e.g. user clicked Save first, then Chat)
+    if (savedId) {
+         navigation.navigate("ChatScreen", { lesionId: savedId });
+         return;
+    }
+
+    // 2. If not saved, create a "Draft" record
+    const saved = await saveLesion({
+      region: "Unspecified", 
+      description: "Started chat immediately",
+      imageUri,
+      resultLabel: result?.label,
+      confidence: result?.confidence,
+    });
+
+    if (saved.success) {
+      setSavedId(saved.id); // <--- REMEMBER THIS ID
+      navigation.navigate("ChatScreen", { lesionId: saved.id });
+    }
+  } catch (e) {
+    console.error("Failed to start chat:", e);
+  } finally {
+    setBusy(false);
+  }
+};
 
   // -------------------------------
   // Load model on mount
@@ -155,7 +193,7 @@ export default function MelanoScanPredict() {
       // Resize image to 240x240 (Standard for MobileNet/EfficientNet)
       const manip = await ImageManipulator.manipulateAsync(
         uri,
-        [{ resize: { width: 240, height: 240 } }],
+        [{ resize: { width: 224, height: 224 } }],
         { format: ImageManipulator.SaveFormat.JPEG, base64: true }
       );
 
@@ -167,7 +205,7 @@ export default function MelanoScanPredict() {
       // Normalize [-1, 1]
       const floatData = new Float32Array(pixels.length);
       for (let i = 0; i < pixels.length; i++) {
-        floatData[i] = pixels[i] / 127.5 - 1.0;
+        floatData[i] = pixels[i];
       }
 
       const input = [floatData];
@@ -290,6 +328,14 @@ export default function MelanoScanPredict() {
               hesitate to consult a healthcare professional.
             </Text>
 
+            <TouchableOpacity 
+                onPress={handleChat}
+                className="flex-row items-center justify-center bg-black py-4 rounded-full shadow-lg mb-6 mt-4"
+            >
+                <MessageCircle color="white" size={24} fill="white" />
+                <Text className="text-white font-bold text-lg ml-3">Ask AI Assistant</Text>
+            </TouchableOpacity>
+
             {/* Buttons */}
             <View className="items-center mb-6">
               <Pressable
@@ -317,10 +363,16 @@ export default function MelanoScanPredict() {
 
       {/* Save Popup Component */}
       <SaveToHistoryPopup
-        visible={showSavePopup}
-        onClose={() => setShowSavePopup(false)}
-        onSave={async (data: any) => {
-          try {
+    visible={showSavePopup}
+    onClose={() => setShowSavePopup(false)}
+    onSave={async (data: any) => {
+      try {
+        if (savedId) {
+            // ✅ UPDATE EXISTING ROW (User chatted first)
+            await updateLesion(savedId, data.region, data.description);
+            console.log("Updated existing lesion record");
+        } else {
+            // ✅ CREATE NEW ROW (User saved first)
             await saveLesion({
               region: data.region,
               description: data.description,
@@ -328,16 +380,16 @@ export default function MelanoScanPredict() {
               resultLabel: result?.label,
               confidence: result?.confidence,
             });
+            console.log("Created new lesion record");
+        }
 
-            console.log("Lesion saved successfully!");
-            setShowSavePopup(false);
-            // Navigate to History tab to see the result
-            navigation.navigate("MainTabs", { screen: "History" });
-          } catch (err) {
-            console.error("Error saving lesion:", err);
-          }
-        }}
-      />
+        setShowSavePopup(false);
+        navigation.navigate("MainTabs", { screen: "History" });
+      } catch (err) {
+        console.error("Error saving/updating lesion:", err);
+      }
+    }}
+/>
     </View>
   );
 }

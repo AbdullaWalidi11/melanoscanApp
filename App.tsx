@@ -10,6 +10,7 @@ import { createLesionsTable } from "./src/database/lesions-table";
 import { useNetworkSync } from "./src/hooks/useNetworkSync";
 
 export default function App() {
+
   
   useNetworkSync();
 

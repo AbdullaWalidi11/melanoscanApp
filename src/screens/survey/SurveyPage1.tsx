@@ -1,135 +1,141 @@
 import React from "react";
-import { View, Text, TextInput, ScrollView, Pressable, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // CHANGED
-import Dropdown from "../../components/Dropdown"; // CHANGED: Path
-import { useSurvey } from "../../context/SurveyContext"; // CHANGED: Path
-import { useAuth } from "../../context/AuthContext";
+import { View, Text, ScrollView, Pressable, Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import Dropdown from "../../components/Dropdown";
+import { useSurvey } from "../../context/SurveyContext";
 
 export default function SurveyPage1() {
   const navigation = useNavigation<any>();
   const { surveyData, setSurveyData } = useSurvey();
-  const { user, setUser } = useAuth(); // <--- GET THIS
 
   const handleChange = (key: keyof typeof surveyData, value: string) => {
     setSurveyData({ ...surveyData, [key]: value });
   };
 
   const handleNext = () => {
-    if (!surveyData.age || isNaN(Number(surveyData.age))) {
-      Alert.alert('Error', 'Please enter a valid age.');
+    // Basic validation to ensure at least some data is entered
+    if (!surveyData.age || !surveyData.gender || !surveyData.skinTone) {
+      Alert.alert('Missing Info', 'Please answer the basic questions to proceed.');
       return;
     }
-    if (!surveyData.gender) {
-      Alert.alert('Error', 'Please select your gender.');
-      return;
-    }
-    if (!surveyData.skinType) {
-      Alert.alert('Error', 'Please select your skin type.');
-      return;
-    }
-    // CHANGED: Use navigate with screen name
-    // We haven't created SurveyPage2 yet, so this might crash if clicked.
-    navigation.navigate("SurveyPage2"); 
+    navigation.navigate("SurveyPage2");
   };
 
   const handleSkip = () => {
-   navigation.navigate("MainTabs");
+    navigation.replace("MainTabs");
   };
 
   return (
-    <View className="flex-1 bg-[#e2728f] pt-20"> 
-       {/* Note: I used a hex code for 'bg-primary' just to be safe if tailwind config isn't loaded */}
-
-      <View className="absolute top-20 left-30 right-0 bottom-0 items-center justify-center bg-black w-10 h-10 ">
-      </View>
-      <View className="px-5">
-      </View>
-
-        <Text className="text-center text-base text-white font-bold mb-6 px-8">
+    <View className="flex-1 bg-[#e2728f] pt-16">
+      
+      {/* Header Text */}
+      <View className="px-8 mb-8">
+        <Text className="text-center text-base text-white font-bold">
           Answering this survey will allow us to personalize your experience with our AI assistant.
         </Text>
-        
-      <View className="flex-1 bg-white border-t-0 rounded-t-3xl pt-5">
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} className="px-5 pt-10">
-        
-        {/* Age Input */}
-        <View className="mb-4">
-          <Text className="text-gray-700 font-semibold mb-2">Age</Text>
-          <TextInput
-            keyboardType="numeric"
-            placeholder="Enter your age"
-            value={surveyData.age}
-            onChangeText={(text) => handleChange("age", text)}
-            className="border border-gray-700 rounded-xl px-4 py-5"
+      </View>
+
+      {/* White Card Container */}
+      <View className="flex-1 bg-white rounded-t-3xl pt-8 overflow-hidden px-5">
+        <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+          
+          {/* Q1: Age */}
+          <Dropdown
+            label="What is your age group?"
+            selectedValue={surveyData.age}
+            onValueChange={(v) => handleChange("age", v)}
+            options={["Under 18", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"]}
           />
-        </View>
 
-        {/* Gender Dropdown */}
-        <Dropdown
-          label="What is your gender?"
-          selectedValue={surveyData.gender}
-          onValueChange={(v) => handleChange("gender", v)}
-          options={["Male", "Female", "Other"]}
-        />
+          {/* Q2: Gender */}
+          <Dropdown
+            label="What is your gender?"
+            selectedValue={surveyData.gender}
+            onValueChange={(v) => handleChange("gender", v)}
+            options={["Male", "Female", "Other"]}
+          />
 
-        {/* Skin Type */}
-        <Dropdown
-          label="What is your skin type?"
-          selectedValue={surveyData.skinType}
-          onValueChange={(v) => handleChange("skinType", v)}
-          options={[
-            "Type I (Very fair)",
-            "Type II (Fair)",
-            "Type III (Medium)",
-            "Type IV (Olive)",
-            "Type V (Brown)",
-            "Type VI (Dark Brown/Black)",
-          ]}
-        />
+          {/* Q3: Hair Color */}
+          <Dropdown
+            label="Natural Hair Color (at age 20)"
+            selectedValue={surveyData.hairColor}
+            onValueChange={(v) => handleChange("hairColor", v)}
+            options={["Red / Auburn", "Blonde", "Light Brown", "Dark Brown", "Black"]}
+          />
 
-        {/* Family History */}
-        <Dropdown
-          label="Do you have a family history of skin cancer?"
-          selectedValue={surveyData.familyHistory}
-          onValueChange={(v) => handleChange("familyHistory", v)}
-          options={["Yes", "No", "Not sure"]}
-        />
+          {/* Q4: Eye Color */}
+          <Dropdown
+            label="Natural Eye Color"
+            selectedValue={surveyData.eyeColor}
+            onValueChange={(v) => handleChange("eyeColor", v)}
+            options={["Blue / Grey", "Green / Hazel", "Light Brown", "Dark Brown"]}
+          />
 
-        {/* Sun Exposure */}
-        <Dropdown
-          label="How often are you exposed to the sun?"
-          selectedValue={surveyData.sunExposure}
-          onValueChange={(v) => handleChange("sunExposure", v)}
-          options={["Rarely", "Sometimes", "Often", "Daily"]}
-        />
+          {/* Q5: Skin Tone */}
+          <Dropdown
+            label="What is your skin type?"
+            selectedValue={surveyData.skinTone}
+            onValueChange={(v) => handleChange("skinTone", v)}
+            options={[
+              "Type I (Very fair, always burns)",
+              "Type II (Fair, burns easily)",
+              "Type III (Medium, sometimes burns)",
+              "Type IV (Olive, rarely burns)",
+              "Type V (Brown, never burns)",
+              "Type VI (Black)",
+            ]}
+          />
 
-        {/* Sunscreen */}
-        <Dropdown
-          label="Do you regularly use sunscreen?"
-          selectedValue={surveyData.sunscreenUsage}
-          onValueChange={(v) => handleChange("sunscreenUsage", v)}
-          options={["Always", "Sometimes", "Rarely", "Never"]}
-        />
+          {/* Q6: Sun Reaction */}
+          <Dropdown
+            label="Reaction to 1 hour of sun (no protection)?"
+            selectedValue={surveyData.sunReaction}
+            onValueChange={(v) => handleChange("sunReaction", v)}
+            options={[
+              "Painful blister / Burn",
+              "Mild burn, then peel",
+              "Burn then tan",
+              "Tan immediately",
+              "Nothing / Darken slightly"
+            ]}
+          />
 
-        {/* Mole Changes */}
-        <Dropdown
-          label="Have you noticed any recent changes in your moles?"
-          selectedValue={surveyData.moleChanges}
-          onValueChange={(v) => handleChange("moleChanges", v)}
-          options={["Yes", "No"]}
-        />
+          {/* Q7: Freckles */}
+          <Dropdown
+            label="Do you have freckles?"
+            selectedValue={surveyData.freckling}
+            onValueChange={(v) => handleChange("freckling", v)}
+            options={["None", "A few on face/shoulders", "Many / All over"]}
+          />
 
-        {/* Tanning Bed */}
-        <Dropdown
-          label="Do you use tanning beds?"
-          selectedValue={surveyData.tanningBedUsage}
-          onValueChange={(v) => handleChange("tanningBedUsage", v)}
-          options={["Never", "Occasionally", "Regularly"]}
-        />
+          {/* Q8: Work Environment */}
+          <Dropdown
+            label="Where do you spend most of your day?"
+            selectedValue={surveyData.workEnvironment}
+            onValueChange={(v) => handleChange("workEnvironment", v)}
+            options={["Mostly Indoors", "Mixed / Commuting", "Mostly Outdoors"]}
+          />
 
-            </ScrollView>
+          {/* Q9: Climate */}
+          <Dropdown
+            label="How sunny is the place you live?"
+            selectedValue={surveyData.climate}
+            onValueChange={(v) => handleChange("climate", v)}
+            options={["Cloudy / Rainy", "Moderate", "Very Sunny / Tropical"]}
+          />
+
+          {/* Q10: Ancestry */}
+          <Dropdown
+            label="Do you have Northern European ancestry?"
+            selectedValue={surveyData.ancestry}
+            onValueChange={(v) => handleChange("ancestry", v)}
+            options={["Yes", "No", "Unsure"]}
+          />
+
+        </ScrollView>
+
         {/* Navigation Buttons */}
-        <View className="flex-row justify-end mt-6 mb-12">
+        <View className="flex-row justify-end mt-4 mb-8">
           <Pressable
             onPress={handleSkip}
             className="py-4 px-14 mr-2 border border-[#e2728f] rounded-xl items-center"
@@ -144,9 +150,8 @@ export default function SurveyPage1() {
             <Text className="text-white font-semibold">Next</Text>
           </Pressable>
         </View>
-      
-    </View>
-    
+
+      </View>
     </View>
   );
 }

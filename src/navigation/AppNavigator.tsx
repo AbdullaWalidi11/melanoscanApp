@@ -10,8 +10,11 @@ import LandingPage1 from "../landingPages/Page1";
 import LandingPage2 from "../landingPages/Page2";
 import LandingPage3 from "../landingPages/Page3";
 import SurveyPage1 from "../screens/survey/SurveyPage1";
+import SurveyPage2 from "../screens/survey/SurveyPage2";
 import LesionsByRegion from "../screens/LesionsByRegion"; // Import the component
 import ModelScan from "../screens/model/ModelScan";
+import LesionDetails from "../screens/LesionDetails";
+import ChatScreen from "../screens/chatScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,13 +36,15 @@ export default function AppNavigator() {
       <Stack.Screen name="LandingPage3" component={LandingPage3} />
 
       <Stack.Screen name="LesionsByRegion" component={LesionsByRegion} />
+      <Stack.Screen name="LesionDetails" component={LesionDetails} />
 
       <Stack.Screen name="ModelScan" component={ModelScan} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
 
 
       {/* === SURVEY === */}
       <Stack.Screen name="SurveyPage1" component={SurveyPage1} />
-      {/* <Stack.Screen name="SurveyPage2" component={SurveyPage2} /> */}
+      <Stack.Screen name="SurveyPage2" component={SurveyPage2} />
 
       {/* === MAIN APP (Offline Accessible) === */}
       {/* This is now ALWAYS available. No login required. */}

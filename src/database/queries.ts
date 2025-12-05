@@ -1,5 +1,5 @@
 import { getDB } from "./db";
-
+import { SurveyData } from "../context/SurveyContext";
 // ✅ Added 'export' here so we can import it in HomeScreen
 export interface Scan {
   id: string;
@@ -10,6 +10,7 @@ export interface Scan {
   confidence: number;
   createdAt: string;
   region: string;
+  chatHistory?: string | null;
 }
 
 export async function saveLesion({
@@ -187,8 +188,8 @@ export async function insertOrUpdateFromCloud(data: any) {
     // 2. Insert new record
     await db.runAsync(
       `INSERT INTO lesions 
-       (region, description, imageUri, resultLabel, confidence, date, createdAt, firebaseId, isSynced, isDeleted)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 0)`,
+       (region, description, imageUri, resultLabel, confidence, date, createdAt, firebaseId, isSynced, isDeleted, chatHistory)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?)`,
       [
         data.region,
         data.description,
@@ -198,6 +199,7 @@ export async function insertOrUpdateFromCloud(data: any) {
         data.date,
         data.createdAt,
         data.id, // Save the Firebase ID so we don't duplicate later
+        data.chatHistory || null,
       ]
     );
     console.log(`📥 Downloaded scan from cloud: ${data.id}`);
@@ -242,5 +244,85 @@ export async function clearDatabase() {
     // Or drop table if you prefer: await db.runAsync(`DROP TABLE IF EXISTS lesions`);
   } catch (error) {
     console.error("Error clearing DB:", error);
+  }
+}
+
+//  Save User Profile 
+export async function saveUserProfile(data: SurveyData) {
+  const db = getDB();
+  const now = new Date().toISOString();
+
+  try {
+    // We force ID=1 so it overwrites any previous survey data
+    await db.runAsync(
+      `INSERT OR REPLACE INTO user_profile (
+        id, age, gender, hairColor, eyeColor, skinTone,
+        sunReaction, freckling, workEnvironment, climate, ancestry,
+        personalHistory, familyHistory, childhoodSunburns, tanningBeds,
+        moleCount, uglyDuckling, recentChanges, sunscreen, protection, checkups,
+        updatedAt
+      ) VALUES (
+        1, ?, ?, ?, ?, ?, 
+        ?, ?, ?, ?, ?, 
+        ?, ?, ?, ?, 
+        ?, ?, ?, ?, ?, ?,
+        ?
+      )`,
+      [
+        data.age, data.gender, data.hairColor, data.eyeColor, data.skinTone,
+        data.sunReaction, data.freckling, data.workEnvironment, data.climate, data.ancestry,
+        data.personalHistory, data.familyHistory, data.childhoodSunburns, data.tanningBeds,
+        data.moleCount, data.uglyDuckling, data.recentChanges, data.sunscreen, data.protection, data.checkups,
+        now
+      ]
+    );
+    console.log("✅ User Risk Profile saved to SQLite.");
+  } catch (error) {
+    console.error("Error saving profile:", error);
+    throw error;
+  }
+}
+
+// Get User Profile (For AI Context) 
+export async function getUserProfile(): Promise<SurveyData | null> {
+  const db = getDB();
+  try {
+    const result = await db.getFirstAsync(`SELECT * FROM user_profile WHERE id = 1`);
+    return result as SurveyData;
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    return null;
+  }
+}
+
+// Add to src/database/queries.ts
+
+export async function updateLesion(id: number, region: string, description: string) {
+  const db = getDB();
+  try {
+    await db.runAsync(
+      `UPDATE lesions SET region = ?, description = ? WHERE id = ?`,
+      [region, description, id]
+    );
+    console.log(`Updated lesion ${id} with region: ${region}`);
+  } catch (error) {
+    console.error("Error updating lesion:", error);
+    throw error;
+  }
+}
+
+// ✅ NEW: Save Chat History
+export async function saveChatHistory(lesionId: number, messages: any[]) {
+  const db = getDB();
+  try {
+    const jsonString = JSON.stringify(messages);
+    
+    // We update chatHistory AND set isSynced=0 so it uploads to cloud later!
+    await db.runAsync(
+      `UPDATE lesions SET chatHistory = ?, isSynced = 0 WHERE id = ?`,
+      [jsonString, lesionId]
+    );
+  } catch (error) {
+    console.error("Error saving chat history:", error);
   }
 }
