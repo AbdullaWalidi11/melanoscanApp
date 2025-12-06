@@ -31,11 +31,8 @@ export default function SurveyPage2() {
       await saveUserProfile(surveyData);
       console.log("Risk Profile Saved to DB");
       
-      Alert.alert(
-        "Profile Ready",
-        "Your risk profile has been saved. The AI will now use this context to analyze your scans.",
-        [{ text: "OK", onPress: () => navigation.replace("MainTabs") }]
-      );
+      // 3. NAVIGATE TO MAIN APP
+      navigation.replace("MainTabs");
     } catch (e) {
       console.error(e);
       Alert.alert("Error", "Failed to save profile.");

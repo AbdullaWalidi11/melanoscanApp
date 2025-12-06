@@ -206,7 +206,7 @@ const ChatScreen = () => {
         )}
 
         {/* Input Area */}
-        <View className="p-4 bg-[#FF9B9B] rounded-t-3xl">
+        <View className="p-4 mb-20 bg-[#FF9B9B] rounded-t-3xl">
           <View className="flex-row items-center bg-white rounded-full px-2 py-1 shadow-md">
             <TextInput
               className="flex-1 px-4 py-3 text-gray-700 text-base"
