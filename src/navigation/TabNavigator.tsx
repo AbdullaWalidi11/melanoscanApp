@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 
+import MainHeader from "../components/MainHeader";
 // === NEW IMPORT ===
 import ScanMethodPopup from "../components/ScanMethodPopup";
 
@@ -42,7 +43,8 @@ export default function TabNavigator() {
 
       <Tab.Navigator
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
+          header: () => <MainHeader />,
           tabBarStyle: { height: 80, backgroundColor: "#fff" },
         }}
         tabBar={({ state, descriptors, navigation }) => {

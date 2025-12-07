@@ -14,7 +14,7 @@ export const chatWithGemini = async (
 ) => {
   try {
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
     });
     // Clean base64 just in case
     const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, "");

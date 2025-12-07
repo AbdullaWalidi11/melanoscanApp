@@ -54,12 +54,7 @@ export default function HistoryScreen() {
     // 4. SAFE VIEW STRUCTURE (No SafeAreaView)
     <View className="flex-1 bg-[#fff] pt-12">
       
-      {/* ----- HEADER ----- */}
-      {/* Using a flat color since we removed LinearGradient import to keep it simple, 
-          or you can re-add LinearGradient if you installed the package. */}
-      <View className="w-full h-16 bg-[#ff9aa8] items-center justify-center rounded-b-2xl mb-4">
-        <Text className="text-xl font-bold text-white">History</Text>
-      </View>
+      
 
       {/* ----- CONTENT ----- */}
       <ScrollView

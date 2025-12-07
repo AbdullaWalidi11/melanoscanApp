@@ -94,7 +94,7 @@ export const generateContextPrompt = async (lesionId: number): Promise<ContextPa
     - Region: ${lesion.region}
     - AI Analysis: ${lesion.resultLabel || "Pending"}
     - Confidence: ${Math.round((lesion.confidence || 0) * 100)}%
-    - User Notes: "${lesion.description || "None"}"
+    - Diagnosis: ${lesion.diagnosis || "Not provided"}
     - Date Scanned: ${new Date(lesion.createdAt).toLocaleDateString()}
     `;
 
@@ -108,7 +108,7 @@ export const generateContextPrompt = async (lesionId: number): Promise<ContextPa
     ${scanData}
 
     Your Goal:
-    Answer the user's questions about this specific lesion based on the visual evidence and their risk profile.
+    Answer the user's questions about this specific lesion based on the visual (scanData) evidence and their risk profile.
     
     Rules:
     1. Be empathetic but objective.

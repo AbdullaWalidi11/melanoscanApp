@@ -11,6 +11,7 @@ export function createLesionsTable() {
         description TEXT,
         imageUri TEXT,
         resultLabel TEXT,
+        diagnosis TEXT,
         confidence REAL,
         date TEXT,
         createdAt TEXT,

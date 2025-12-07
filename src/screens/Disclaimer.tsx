@@ -9,18 +9,7 @@ export default function DisclaimerScreen() {
   return (
     <View className="flex-1 bg-white">
       {/* ----- HEADER ----- */}
-      <View className="bg-[#e2728f] pt-12 pb-4 px-4 flex-row items-center relative">
-        <TouchableOpacity 
-          onPress={() => navigation.goBack()} 
-          className="absolute left-4 bottom-4 z-10"
-        >
-          <ChevronLeft color="white" size={28} />
-        </TouchableOpacity>
-        
-        <View className="flex-1 items-center">
-          <Text className="text-white text-xl font-bold">Disclaimer & Learn</Text>
-        </View>
-      </View>
+      
 
       <ScrollView className="flex-1 bg-[#fff0f3]" contentContainerStyle={{ paddingBottom: 40 }}>
         

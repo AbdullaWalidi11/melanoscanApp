@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import * as Google from "expo-auth-session/providers/google";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useAuth } from "../context/AuthContext";
 
+// ✅ Correct Native Import
+import { signInWithGoogle } from "../services/Firebase";
+
 // Services
-import { emailSignIn, googleSignIn } from "../services/authService"; // Removed guestSignIn import
-import { syncLocalToCloud, runFullSync } from "../services/SyncService";
+import { emailSignIn } from "../services/authService"; 
+import { runFullSync } from "../services/SyncService";
 
 export default function Login() {
   const navigation = useNavigation<any>();
@@ -29,57 +31,47 @@ export default function Login() {
     setLoading(true);
     try {
         const user = await emailSignIn(email, password);
-        setUser(user); // Set real Firebase user
+        setUser(user); 
 
-        // ❌ DELETE: syncLocalToCloud().catch(...);  <- This is redundant
-
-        // ✅ AWAIT: Run the full sync (Push local data, then Pull cloud history).
+        // ✅ Run full sync logic (Push local -> Pull cloud)
         await runFullSync(); 
 
-        // ✅ Navigate: Only navigate once the data restore is complete.
         navigation.replace("MainTabs");
 
     } catch (error: any) {
         console.error("Login error:", error);
-        // Note: You can add more specific error alerts here using error.code
         Alert.alert("Login Failed", "Please check your credentials.");
     } finally {
-        // Stop loading spinner after all network activity is done.
         setLoading(false);
     }
-};
+  };
 
-  // --- Google Sign-In ---
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    androidClientId: "240587310989-lmji3qktn8pdr4os4soeshk4i96e7064.apps.googleusercontent.com",
-    clientId: "240587310989-fie4a1hjgml2pqeuec9akjjl45uc5eha.apps.googleusercontent.com",
-  });
-
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { id_token } = response.params;
-      handleGoogleLogin(id_token);
-    }
-  }, [response]);
-
-  const handleGoogleLogin = async (token: string) => {
+  // --- Google Sign-In (Native) ---
+  const handleNativeGoogleLogin = async () => {
     setLoading(true);
     try {
-      const user = await googleSignIn(token);
-      setUser(user); // Set real Firebase user
-      syncLocalToCloud().catch(console.error); // Sync offline data
+      // 1. Sign In
+      const userCredential = await signInWithGoogle();
+      
+      // 2. Force Context Update (Don't wait for listener)
+      setUser(userCredential.user);
+
+      // 3. Sync Data (Just like Email Login)
+      await runFullSync();
+
+      // 4. Force Navigation (The missing piece!)
       navigation.replace("MainTabs");
-    } catch (error) {
-      Alert.alert("Error", "Failed to sign in with Google.");
+
+    } catch (e) {
+      console.log("Google Sign-In cancelled/failed", e);
+      Alert.alert("Sign In Cancelled", "Could not sign in with Google.");
     } finally {
       setLoading(false);
     }
   };
 
-  // --- TRUE OFFLINE GUEST MODE ---
+  // --- Guest Mode ---
   const handleNoSignIn = () => {
-    // 1. DO NOT call firebase.auth().
-    // 2. Just update the local UI state so the user can pass the 'gate'.
     const offlineUser = { 
         uid: 'offline_guest', 
         isAnonymous: true, 
@@ -88,8 +80,6 @@ export default function Login() {
     };
     
     setUser(offlineUser);
-    
-    // 3. Go to Onboarding (Landing Pages)
     navigation.navigate("LandingPage1"); 
   };
 
@@ -163,11 +153,11 @@ export default function Login() {
         <View className="flex-1 h-[1px] bg-gray-300" />
       </View>
 
-      {/* Google */}
+      {/* ✅ CLEANED GOOGLE BUTTON */}
       <TouchableOpacity
         className="flex-row items-center bg-white border border-gray-300 py-4 pl-2 rounded-full mb-5 shadow-sm"
-        disabled={!request || loading}
-        onPress={() => promptAsync()}
+        disabled={loading}
+        onPress={handleNativeGoogleLogin}
       >
         <Image
           source={{ uri: "https://img.icons8.com/color/48/google-logo.png" }}

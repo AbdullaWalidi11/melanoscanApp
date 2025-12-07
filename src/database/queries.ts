@@ -7,6 +7,7 @@ export interface Scan {
   description?: string;
   date: string;
   resultLabel: string;
+  diagnosis?: string;
   confidence: number;
   createdAt: string;
   region: string;
@@ -18,12 +19,14 @@ export async function saveLesion({
   description,
   imageUri,
   resultLabel,
+  diagnosis,
   confidence,
 }: {
   region: string;
   description?: string;
   imageUri?: string | null;
   resultLabel?: string;
+  diagnosis?: string;
   confidence?: number;
 }) {
   const db = getDB();
@@ -33,13 +36,14 @@ export async function saveLesion({
 
   try {
     const result = await db.runAsync(
-      `INSERT INTO lesions (region, description, imageUri, resultLabel, confidence, date, createdAt, isSynced, isDeleted)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0)`,
+      `INSERT INTO lesions (region, description, imageUri, resultLabel, diagnosis, confidence, date, createdAt, isSynced, isDeleted)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0)`,
       [
         region,
         description || null,
         imageUri || null,
         resultLabel || null,
+        diagnosis || null,
         confidence || null,
         dateString,
         createdAt,
@@ -188,13 +192,14 @@ export async function insertOrUpdateFromCloud(data: any) {
     // 2. Insert new record
     await db.runAsync(
       `INSERT INTO lesions 
-       (region, description, imageUri, resultLabel, confidence, date, createdAt, firebaseId, isSynced, isDeleted, chatHistory)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?)`,
+       (region, description, imageUri, resultLabel, diagnosis, confidence, date, createdAt, firebaseId, isSynced, isDeleted, chatHistory)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?)`,
       [
         data.region,
         data.description,
         data.imageUri,
         data.resultLabel,
+        data.diagnosis || null,
         data.confidence,
         data.date,
         data.createdAt,
@@ -324,5 +329,21 @@ export async function saveChatHistory(lesionId: number, messages: any[]) {
     );
   } catch (error) {
     console.error("Error saving chat history:", error);
+  }
+}
+
+// ... existing imports
+
+// ✅ MODIFIED: Only count scans that have a real region (User explicitly saved them)
+export async function countTotalScans(): Promise<number> {
+  const db = getDB();
+  try {
+    const result = await db.getFirstAsync<{ count: number }>(
+      `SELECT COUNT(*) as count FROM lesions WHERE isDeleted = 0 AND region != 'Unspecified'`
+    );
+    return result?.count || 0;
+  } catch (error) {
+    console.error("Error counting scans:", error);
+    return 0;
   }
 }

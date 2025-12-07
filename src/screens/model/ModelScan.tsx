@@ -10,6 +10,8 @@ import {
   View,
   TouchableOpacity
 } from "react-native";
+import * as Notifications from 'expo-notifications';
+import { scheduleRescanReminder } from "../../services/notificationService";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { MessageCircle } from "lucide-react-native";
 import Constants from "expo-constants";
@@ -17,13 +19,14 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { loadTensorflowModel } from "react-native-fast-tflite";
 // import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import * as ImagePicker from 'expo-image-picker';
+import { useAuth } from "../../context/AuthContext"; // Add useAuth to check if guest
 
 // ✅ 1. NEW IMPORTS FOR DECODING
 import * as jpeg from "jpeg-js";
 import { Buffer } from "buffer";
 
 import SaveToHistoryPopup from "../../components/SaveToHistoryPopUp";
-import { saveLesion, updateLesion } from "../../database/queries";
+import { saveLesion, updateLesion, countTotalScans } from "../../database/queries";
 
 const isExpoGo = Constants.appOwnership === "expo";
 const modelAsset = require("../../../assets/melanoscan_model.tflite");
@@ -46,6 +49,7 @@ export default function MelanoScanPredict() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { mode } = route.params || {};
+  const { user } = useAuth();
 
   const [savedId, setSavedId] = useState<number | null>(null);
   const [model, setModel] = useState<any>(null);
@@ -91,8 +95,9 @@ export default function MelanoScanPredict() {
 
   // --- IMAGE PICKER ---
   // --- IMAGE PICKER (With Cropping) ---
+  // --- IMAGE PICKER ---
   const pickImage = async (fromCamera = false) => {
-    // 1. Request Permissions (Expo handles this cleaner)
+    // 1. Permission Checks (Keep existing logic)
     if (fromCamera) {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -107,30 +112,37 @@ export default function MelanoScanPredict() {
         }
     }
 
-    // 2. Launch Camera or Gallery with CROP UI
-    let result;
+    // 2. Configure Options
     const options: ImagePicker.ImagePickerOptions = {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true, // <--- THIS IS THE MAGIC KEY
-        aspect: [1, 1],      // <--- FORCE SQUARE CROP
+        
+        // ✅ CHANGED: Only enable cropping if taking a photo
+        allowsEditing: fromCamera, 
+        
+        aspect: [1, 1], // This is ignored if allowsEditing is false
         quality: 1,
     };
 
+    let result;
     if (fromCamera) {
         result = await ImagePicker.launchCameraAsync(options);
     } else {
         result = await ImagePicker.launchImageLibraryAsync(options);
     }
 
-    // 3. Handle Result
-    if (!result.canceled && result.assets && result.assets.length > 0) {
+    // 3. Handle Result (Keep existing logic)
+    if (result.canceled) {
+        if (!imageUri) navigation.goBack();
+        return;
+    }
+
+    if (result.assets && result.assets.length > 0) {
         const uri = result.assets[0].uri;
         
         setImageUri(uri);
         setResult(null);
         setLatencyMs(null);
 
-        // Run inference on the CROPPED, CENTERED image
         runInference(uri);
     }
   };
@@ -225,6 +237,7 @@ export default function MelanoScanPredict() {
         imageUri,
         resultLabel: result?.label,
         confidence: result?.confidence,
+        diagnosis: result ? diagnosisMap[result.rawClass] : undefined,
       });
 
       if (saved.success) {
@@ -304,6 +317,7 @@ export default function MelanoScanPredict() {
         onClose={() => setShowSavePopup(false)}
         onSave={async (data: any) => {
           try {
+            // 1. Save or Update Logic (Existing)
             if (savedId) {
                 await updateLesion(savedId, data.region, data.description);
             } else {
@@ -313,8 +327,42 @@ export default function MelanoScanPredict() {
                   imageUri,
                   resultLabel: result?.label,
                   confidence: result?.confidence,
+                  diagnosis: result ? diagnosisMap[result.rawClass] : undefined,
                 });
             }
+
+            // 2. ✅ LOGIC: Smart Schedule (Weekly vs Monthly)
+            // If Malignant/High Risk -> 7 Days. Else -> 30 Days.
+            const isHighRisk = result?.label === "Malignant";
+            const daysLater = isHighRisk ? 7 : 30;
+            
+            await scheduleRescanReminder(data.region, daysLater);
+            
+            // 3. ✅ LOGIC: Persistent Guest Check (> 3 Scans)
+            // We use a small timeout to let the DB save finish first
+            if (isExpoGo) { /* skip in expo go if needed */ }
+            
+            // We need to verify if user is guest. 
+            // Since we can't easily access 'user' from context inside this callback without 
+            // wrapping the whole component in AuthContext, we'll do a quick DB check.
+            // 3. ✅ LOGIC: Smart Guest Nag
+            // Only annoy them if they are ACTUALLY a guest (isAnonymous)
+            if (user?.isAnonymous) {
+                const totalScans = await countTotalScans();
+            
+            // If we have 3, 6, 9... scans, nag the user
+            if (totalScans > 0 && totalScans % 3 === 0) {
+                 // Trigger a local notification immediately
+                 Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: "Don't lose your progress!",
+                        body: `You have ${totalScans} scans saved locally. Sign in now to back them up safely to the cloud.`,
+                    },
+                    trigger: null, // Show immediately
+                 });
+            }
+          }
+
             setShowSavePopup(false);
             navigation.navigate("MainTabs", { screen: "History" });
           } catch (err) {

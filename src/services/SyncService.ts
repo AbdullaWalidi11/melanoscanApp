@@ -53,6 +53,7 @@ export async function syncLocalToCloud() {
           imageUri: firestoreImageUri,
           confidence: lesion.confidence,
           resultLabel: lesion.resultLabel,
+          diagnosis: lesion.diagnosis || "",
           date: lesion.date,
           createdAt: lesion.createdAt,
           syncedAt: new Date().toISOString(),

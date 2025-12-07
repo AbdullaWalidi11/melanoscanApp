@@ -87,16 +87,7 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      {/* ----- HEADER ----- */}
-      <View className="bg-[#e2728f] pt-12 pb-4 px-4 flex-row items-center justify-between">
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ChevronLeft color="white" size={28} />
-        </TouchableOpacity>
-        <Text className="text-white text-xl font-bold">Profile</Text>
-        <TouchableOpacity>
-          <Settings color="white" size={24} />
-        </TouchableOpacity>
-      </View>
+
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* ----- PROFILE IMAGE & NAME ----- */}
