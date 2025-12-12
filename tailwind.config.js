@@ -6,7 +6,12 @@ module.exports = {
   ],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        // This name must match the string used in React Native styles
+        italianno: ["Italianno_400Regular"], 
+      },
+    },
   },
   plugins: [],
 };

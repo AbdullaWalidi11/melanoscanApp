@@ -33,6 +33,25 @@ export function createLesionsTable() {
       );`
     );
 
+
+    db.execSync(
+      `CREATE TABLE IF NOT EXISTS comparisons (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        parentLesionId INTEGER NOT NULL,  -- Links to the original "Baseline" lesion
+        oldImageUri TEXT,
+        newImageUri TEXT,
+        status TEXT,        -- "STABLE", "EVOLVING", "CONCERNING"
+        score INTEGER,      -- 0-100
+        reasoning TEXT,
+        advice TEXT,
+        date TEXT,
+        createdAt TEXT,
+        FOREIGN KEY(parentLesionId) REFERENCES lesions(id) ON DELETE CASCADE
+      );`
+    );
+    
+    console.log("✅ Comparison table ready.");
+
     console.log("✅ Database tables (Lesions & Profile) ready.");
   } catch (error) {
     console.error("❌ Error creating lesions table:", error);

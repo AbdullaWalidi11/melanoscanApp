@@ -41,21 +41,22 @@ export default function MainHeader() {
   };
 
   return (
-    <View className="flex-row items-center justify-between px-4 pt-12 pb-4 bg-[#FF9B9B] shadow-sm">
+    <View className="flex-row items-center justify-between px-4 pt-8  bg-[#fe8d93] shadow-lg shadow-black">
       
-      {/* 1. Notification Bell */}
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Bell color="white" size={28} fill="white" />
+      {/* 3. Menu Button */}
+      <TouchableOpacity onPress={() => navigation.navigate("Profile")}
+        className="ml-3">
+        <Menu color="white" size={36} />
       </TouchableOpacity>
 
-      {/* 2. Title */}
-      <Text className="text-white text-3xl font-bold font-serif italic tracking-wider">
-        MelanoScan
-      </Text>
+      <Text style={styles.appName}>MelanoScan</Text>
 
-      {/* 3. Menu Button */}
-      <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-        <Menu color="white" size={32} />
+     
+
+       {/* 1. Notification Bell */}
+      <TouchableOpacity onPress={() => setModalVisible(true)}
+        className="mr-3">
+        <Bell color="white" size={32} fill="white"  />
       </TouchableOpacity>
 
       {/* --- NOTIFICATION SETTINGS MODAL --- */}
@@ -79,8 +80,8 @@ export default function MainHeader() {
                 <Text className="text-gray-500 text-xs">Educational info about skin health.</Text>
               </View>
               <Switch
-                trackColor={{ false: "#767577", true: "#FF9B9B" }}
-                thumbColor={monthlyTips ? "#e2728f" : "#f4f3f4"}
+                trackColor={{ false: "#767577", true: "#F19B9B" }}
+                thumbColor={monthlyTips ? "#fe8d93" : "#f4f3f4"}
                 // ✅ Connects to smart logic
                 onValueChange={() => handleToggle(monthlyTips, setMonthlyTips)}
                 value={monthlyTips}
@@ -94,8 +95,8 @@ export default function MainHeader() {
                 <Text className="text-gray-500 text-xs">Weekly nudges to check flagged lesions.</Text>
               </View>
               <Switch
-                trackColor={{ false: "#767577", true: "#FF9B9B" }}
-                thumbColor={weeklyReminders ? "#e2728f" : "#f4f3f4"}
+                trackColor={{ false: "#767577", true: "#F19B9B" }}
+                thumbColor={weeklyReminders ? "#fe8d93" : "#f4f3f4"}
                 // ✅ Connects to smart logic
                 onValueChange={() => handleToggle(weeklyReminders, setWeeklyReminders)}
                 value={weeklyReminders}
@@ -105,7 +106,7 @@ export default function MainHeader() {
             {/* Close Button */}
             <Pressable
               onPress={() => setModalVisible(false)}
-              className="bg-[#e2728f] py-4 rounded-xl items-center"
+              className="bg-[#fe8d93] py-4 rounded-xl items-center"
             >
               <Text className="text-white font-bold text-lg">Done</Text>
             </Pressable>
@@ -116,3 +117,15 @@ export default function MainHeader() {
     </View>
   );
 }
+
+const styles = {
+ appName: {
+    fontFamily: "Italianno_400Regular",
+    fontSize: 45,
+    color: "#ffffffff",
+    textShadowColor: "#B08C8C",
+    textShadowOffset: { width: 2, height: 1 },
+    textShadowRadius: 1,
+    zIndex: 2, 
+  },
+};

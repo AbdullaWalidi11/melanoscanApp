@@ -1,5 +1,6 @@
 import { getDB } from "./db";
 import { SurveyData } from "../context/SurveyContext";
+import { Alert } from "react-native";
 // ✅ Added 'export' here so we can import it in HomeScreen
 export interface Scan {
   id: string;
@@ -50,7 +51,8 @@ export async function saveLesion({
       ]
     );
     return { success: true, id: result.lastInsertRowId };
-  } catch (error) {
+  } catch (error: any) {
+    Alert.alert("Database Error", error.toString());
     console.error("Error saving lesion:", error);
     throw error;
   }
@@ -346,4 +348,47 @@ export async function countTotalScans(): Promise<number> {
     console.error("Error counting scans:", error);
     return 0;
   }
+}
+
+export async function saveComparisonLog(data: {
+  parentLesionId: number;
+  oldImageUri: string;
+  newImageUri: string;
+  status: string;
+  score: number;
+  reasoning: string;
+  advice: string;
+}) {
+  const db = getDB();
+  const now = new Date();
+  
+  try {
+    await db.runAsync(
+      `INSERT INTO comparisons (parentLesionId, oldImageUri, newImageUri, status, score, reasoning, advice, date, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        data.parentLesionId,
+        data.oldImageUri,
+        data.newImageUri,
+        data.status,
+        data.score,
+        data.reasoning,
+        data.advice,
+        now.toLocaleDateString(),
+        now.toISOString()
+      ]
+    );
+    console.log("✅ Comparison log saved.");
+  } catch (error) {
+    console.error("Error saving comparison log:", error);
+    throw error;
+  }
+}
+
+export async function getComparisonLogs(parentLesionId: number) {
+  const db = getDB();
+  return await db.getAllAsync(
+    `SELECT * FROM comparisons WHERE parentLesionId = ? ORDER BY createdAt DESC`,
+    [parentLesionId]
+  );
 }

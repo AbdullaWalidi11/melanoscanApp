@@ -1,19 +1,26 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Eye, EyeOff } from "lucide-react-native";
+import { Eye, EyeOff, Check } from "lucide-react-native";
 import { useAuth } from "../context/AuthContext";
 
 // ✅ Correct Native Import
 import { signInWithGoogle } from "../services/Firebase";
 
 // Services
-import { emailSignIn } from "../services/authService"; 
+import { emailSignIn } from "../services/authService";
 import { runFullSync } from "../services/SyncService";
 
 export default function Login() {
   const navigation = useNavigation<any>();
-  const { setUser } = useAuth(); 
+  const { setUser } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,25 +31,24 @@ export default function Login() {
   // --- Email/Password Login ---
   const handleEmailLogin = async () => {
     if (!email || !password) {
-        Alert.alert("Error", "Please enter both email and password.");
-        return;
+      Alert.alert("Error", "Please enter both email and password.");
+      return;
     }
 
     setLoading(true);
     try {
-        const user = await emailSignIn(email, password);
-        setUser(user); 
+      const user = await emailSignIn(email, password);
+      setUser(user);
 
-        // ✅ Run full sync logic (Push local -> Pull cloud)
-        await runFullSync(); 
+      // ✅ Run full sync logic (Push local -> Pull cloud)
+      await runFullSync();
 
-        navigation.replace("MainTabs");
-
+      navigation.replace("MainTabs");
     } catch (error: any) {
-        console.error("Login error:", error);
-        Alert.alert("Login Failed", "Please check your credentials.");
+      console.error("Login error:", error);
+      Alert.alert("Login Failed", "Please check your credentials.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -52,7 +58,7 @@ export default function Login() {
     try {
       // 1. Sign In
       const userCredential = await signInWithGoogle();
-      
+
       // 2. Force Context Update (Don't wait for listener)
       setUser(userCredential.user);
 
@@ -61,7 +67,6 @@ export default function Login() {
 
       // 4. Force Navigation (The missing piece!)
       navigation.replace("MainTabs");
-
     } catch (e) {
       console.log("Google Sign-In cancelled/failed", e);
       Alert.alert("Sign In Cancelled", "Could not sign in with Google.");
@@ -72,24 +77,26 @@ export default function Login() {
 
   // --- Guest Mode ---
   const handleNoSignIn = () => {
-    const offlineUser = { 
-        uid: 'offline_guest', 
-        isAnonymous: true, 
-        email: null, 
-        displayName: 'Guest' 
+    const offlineUser = {
+      uid: "offline_guest",
+      isAnonymous: true,
+      email: null,
+      displayName: "Guest",
     };
-    
+
     setUser(offlineUser);
-    navigation.navigate("LandingPage1"); 
+    navigation.navigate("LandingPage1");
   };
 
   return (
     <View className="flex-1 bg-white px-6 justify-center">
-      <Text className="text-center text-4xl font-bold mb-24 text-[#e2728f]">Login</Text>
+      <Text className="text-center text-4xl font-bold mb-24 ">Login</Text>
 
       {/* Email */}
       <View className="mb-4">
-        <Text className="text-lg font-medium mb-2 text-gray-700">Email Address</Text>
+        <Text className="text-lg font-medium mb-2 text-gray-700">
+          Email Address
+        </Text>
         <TextInput
           placeholder="Enter your email"
           value={email}
@@ -116,7 +123,11 @@ export default function Login() {
           className="absolute right-5 top-[52px]"
           onPress={() => setShowPassword(!showPassword)}
         >
-          {showPassword ? <Eye size={20} color="gray" /> : <EyeOff size={20} color="gray" />}
+          {showPassword ? (
+            <Eye size={20} color="gray" />
+          ) : (
+            <EyeOff size={20} color="gray" />
+          )}
         </TouchableOpacity>
       </View>
 
@@ -126,18 +137,27 @@ export default function Login() {
           className="flex-row items-center"
           onPress={() => setRemember(!remember)}
         >
-          <View className={`w-5 h-5 mr-2 rounded border ${remember ? "border-[#e2728f] bg-[#e2728f]" : "border-gray-400"}`} />
+          <View
+            className={`w-5 h-5 mr-2 rounded border items-center justify-center ${
+              remember ? "border-[#e2728f]" : "border-gray-400"
+            }`}
+          >
+            
+            {remember && <Check size={14} color="#e2728f" strokeWidth={4} />}
+          </View>
           <Text className="text-sm text-gray-600">Remember me</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-          <Text className="text-sm text-[#e2728f] font-medium">Forgot Password?</Text>
+          <Text className="text-sm text-[#fe8d93] font-medium">
+            Forgot Password?
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Login Button */}
-      <TouchableOpacity 
-        className="bg-[#e2728f] py-5 rounded-full mb-3 shadow-md" 
+      <TouchableOpacity
+        className="bg-[#fe8d93] py-5 rounded-full mb-3 shadow-md"
         onPress={handleEmailLogin}
         disabled={loading}
       >
@@ -175,7 +195,9 @@ export default function Login() {
         disabled={loading}
       >
         <Image
-          source={{ uri: "https://img.icons8.com/ios-filled/50/ffffff/user.png" }}
+          source={{
+            uri: "https://img.icons8.com/ios-filled/50/ffffff/user.png",
+          }}
           className="w-9 h-9 ml-4"
         />
         <Text className="flex-1 text-center text-base font-medium text-white mr-10">
@@ -187,7 +209,7 @@ export default function Login() {
       <View className="flex-row justify-center mt-8">
         <Text className="text-gray-600 text-sm">Don’t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-          <Text className="text-[#e2728f] font-medium text-sm">Sign up</Text>
+          <Text className="text-[#fe8d93] font-medium text-sm">Sign up</Text>
         </TouchableOpacity>
       </View>
     </View>

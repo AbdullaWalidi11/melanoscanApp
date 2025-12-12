@@ -1,12 +1,20 @@
 import React from "react";
-import { View, Text, ScrollView, Pressable, Alert } from "react-native";
+import { View, Text, ScrollView, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { Montserrat_400Regular, Montserrat_600SemiBold, useFonts } from "@expo-google-fonts/montserrat";
 import Dropdown from "../../components/Dropdown";
 import { useSurvey } from "../../context/SurveyContext";
 
 export default function SurveyPage1() {
   const navigation = useNavigation<any>();
   const { surveyData, setSurveyData } = useSurvey();
+
+  // Load fonts for consistent styling with the landing page
+  let [fontsLoaded] = useFonts({
+    Montserrat_400Regular,
+    Montserrat_600SemiBold,
+  });
 
   const handleChange = (key: keyof typeof surveyData, value: string) => {
     setSurveyData({ ...surveyData, [key]: value });
@@ -25,18 +33,50 @@ export default function SurveyPage1() {
     navigation.replace("MainTabs");
   };
 
+  if (!fontsLoaded) {
+    return <View className="flex-1 items-center justify-center"><ActivityIndicator /></View>;
+  }
+
   return (
-    <View className="flex-1 bg-[#e2728f] pt-16">
+    // 1. Updated Base Background Color to match landing page
+    <View className="flex-1 bg-[#FFC5C8] pt-10 relative overflow-hidden">
       
+      {/* 3. Third Geometric Shape (Far Left Layer) */}
+      <View className="absolute inset-0 transform -translate-x-80 -translate-y-16 rotate-45 -z-20 opacity-80">
+        <View className="w-[600px] h-[600px]">
+          <LinearGradient
+            colors={["#fca7ac", "#ff9da1", "#fe8d93"]}
+            locations={[0, 0.38, 1]}
+            className="w-full h-full"
+          />
+        </View>
+      </View>
+      {/* 2. The Geometric Gradient Background Effect (Replicated from Landing Page) */}
+      {/* This places a large rotated gradient square in the background */}
+      <View className="absolute inset-0 transform -translate-x-96 -translate-y-10 rotate-45 -z-10">
+        <View className="w-[600px] h-[600px]">
+          <LinearGradient
+            colors={["#fca7ac", "#ff9da1", "#fe8d93"]}
+            locations={[0, 0.38, 1]}
+            className="w-full h-full"
+          />
+        </View>
+      </View>
+
+
       {/* Header Text */}
       <View className="px-8 mb-8">
-        <Text className="text-center text-base text-white font-bold">
+        {/* Added Montserrat font family for consistency */}
+        <Text 
+          className="text-center text-lg text-white" 
+          style={{ fontFamily: "Montserrat_600SemiBold", lineHeight: 28 }}
+        >
           Answering this survey will allow us to personalize your experience with our AI assistant.
         </Text>
       </View>
 
       {/* White Card Container */}
-      <View className="flex-1 bg-white rounded-t-3xl pt-8 overflow-hidden px-5">
+      <View className="flex-1 bg-white rounded-t-[40px] pt-8 overflow-hidden px-5 shadow-xl">
         <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
           
           {/* Q1: Age */}
@@ -52,15 +92,15 @@ export default function SurveyPage1() {
             label="What is your gender?"
             selectedValue={surveyData.gender}
             onValueChange={(v) => handleChange("gender", v)}
-            options={["Male", "Female", "Other"]}
+            options={["Male", "Female"]}
           />
 
           {/* Q3: Hair Color */}
           <Dropdown
-            label="Natural Hair Color (at age 20)"
+            label="Natural Hair Color "
             selectedValue={surveyData.hairColor}
             onValueChange={(v) => handleChange("hairColor", v)}
-            options={["Red / Auburn", "Blonde", "Light Brown", "Dark Brown", "Black"]}
+            options={["Red / Auburn", "Blonde", "Brown", "Black"]}
           />
 
           {/* Q4: Eye Color */}
@@ -134,20 +174,24 @@ export default function SurveyPage1() {
 
         </ScrollView>
 
-        {/* Navigation Buttons */}
-        <View className="flex-row justify-end mt-4 mb-8">
+        {/* Navigation Buttons - Updated colors and fonts */}
+        <View className="flex-row justify-end mt-4 mb-8 gap-x-4">
           <Pressable
             onPress={handleSkip}
-            className="py-4 px-14 mr-2 border border-[#e2728f] rounded-xl items-center"
+            // Updated border color to #FF8080
+            className="py-4 px-14 border border-[#FF8080] rounded-xl items-center justify-center"
           >
-            <Text className="text-[#e2728f] font-semibold">Skip</Text>
+            {/* Updated text color and font */}
+            <Text style={{ fontFamily: "Montserrat_600SemiBold" }} className="text-[#FF8080] text-base">Skip</Text>
           </Pressable>
 
           <Pressable
             onPress={handleNext}
-            className="py-4 px-14 ml-2 bg-[#e2728f] rounded-xl items-center"
+            // Updated bg color to #FF8080
+            className="py-4 px-14 bg-[#FF8080] rounded-xl items-center justify-center shadow-sm"
           >
-            <Text className="text-white font-semibold">Next</Text>
+             {/* Updated font */}
+            <Text style={{ fontFamily: "Montserrat_600SemiBold" }} className="text-white text-base">Next</Text>
           </Pressable>
         </View>
 

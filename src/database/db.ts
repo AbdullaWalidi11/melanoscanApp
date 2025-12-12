@@ -4,7 +4,7 @@ let db: SQLite.SQLiteDatabase;
 
 export function getDB() {
   if (!db) {
-    db = SQLite.openDatabaseSync("melanoscan.db");
+    db = SQLite.openDatabaseSync("melanoscanApp.db");
   }
   return db;
 }

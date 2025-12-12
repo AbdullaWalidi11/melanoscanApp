@@ -1,4 +1,4 @@
-import auth from '@react-native-firebase/auth'; 
+import auth, { sendPasswordResetEmail } from '@react-native-firebase/auth'; 
 import { AUTH } from './Firebase'; 
 
 // ✅ Guest Sign-In
@@ -40,4 +40,15 @@ export const googleSignIn = async (idToken: string) => {
   
   const result = await AUTH.signInWithCredential(credential);
   return result.user;
+};
+
+export const sendPasswordReset = async (email: string) => {
+  try {
+    // 2. Pass the AUTH instance as the first argument
+    await sendPasswordResetEmail(AUTH, email);
+    return true;
+  } catch (error) {
+    console.error("Password Reset Error:", error);
+    throw error;
+  }
 };

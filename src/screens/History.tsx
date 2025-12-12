@@ -71,7 +71,7 @@ export default function HistoryScreen() {
                 // Note: You need to create a screen named "LesionsByRegion" in AppNavigator later
                 navigation.navigate("LesionsByRegion", { region: item.name });
               }}
-              className="w-[45%] bg-white rounded-xl border border-[#f5b4b4] shadow-sm mb-6 p-3 items-center"
+              className="w-[45%] bg-white rounded-3xl border border-[#f5b4b4] shadow-md mb-6 p-3 items-center"
               activeOpacity={0.8}
             >
               
@@ -85,7 +85,7 @@ export default function HistoryScreen() {
                 {item.name}
               </Text>
 
-              <Text className="text-center text-3xl font-bold text-[#ff6d7c] mt-1">
+              <Text className="text-center text-3xl font-bold text-[#fe8d93] mt-1">
                 {item.count}
               </Text>
             </TouchableOpacity>

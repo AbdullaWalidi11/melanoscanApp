@@ -36,56 +36,81 @@ export default function Home({ navigation }: Props) {
 
   return (
     // Keeping the safe "View" structure
-    <View className="flex-1 bg-white pt-12">
-      <ScrollView showsVerticalScrollIndicator={false} className="px-4 pb-28">
-        <ScanMethodPopup
-          visible={showScanMethodPopup}
-          onClose={() => setShowScanMethodPopup(false)}
-          onTakePhoto={() =>
-            navigation.navigate("ModelScan", { mode: "camera" })
-          }
-          onUploadImage={() =>
-            navigation.navigate("ModelScan", { mode: "gallery" })
-          }
-        />
-
-        {/* ----- HEADER ----- */}
-        <View className="flex flex-row items-center justify-between py-3">
-          <Text className="text-2xl font-bold text-[#e2728f]">MelanoScan</Text>
-          <View className="w-7 h-7 bg-gray-300 rounded-md" />
-        </View>
-
+    <View className="flex-1 bg-white pt-2">
+      <ScanMethodPopup
+        visible={showScanMethodPopup}
+        onClose={() => setShowScanMethodPopup(false)}
+        onTakePhoto={() => navigation.navigate("ModelScan", { mode: "camera" })}
+        onUploadImage={() =>
+          navigation.navigate("ModelScan", { mode: "gallery" })
+        }
+      />
+      <ScrollView showsVerticalScrollIndicator={false} className="px-2 pb-28">
         {/* ----- SCAN CTA CARD ----- */}
-        <View className="bg-[#ffe1e8] rounded-2xl p-4 mt-2">
-          <Text className="text-[#444] font-semibold">
-            Early checks save lives — A small step today can make a big
-            difference tomorrow, check your skin now!
-          </Text>
-
-          {/* Images still commented out for safety */}
-          {/* <Image ... /> */}
-          <View className="w-full h-32 bg-gray-300 rounded-xl my-3 opacity-50" />
-
-          <TouchableOpacity
-            className="bg-[#e2728f] rounded-full py-3 w-36"
-            onPress={() => setShowScanMethodPopup(true)}
-          >
-            <Text className="text-center text-white font-semibold">
-              Scan Now
+        <View className="flex-row items-center bg-white rounded-3xl shadow-md p-4 mt-2">
+          {/* Left Column: Text and Button */}
+          <View className="flex-1 flex-col pr-2 relative items-center">
+            <Text className="text-[#444] font-semibold mb-4 text-base text-center leading-5 ">
+              Early checks save lives — A small step today can make a big
+              difference tomorrow, check your skin now!
             </Text>
-          </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-[#fe8d93] rounded-full py-3 w-36 shadow-sm items-center justify-center"
+              onPress={() => setShowScanMethodPopup(true)}
+            >
+              <Text className="text-white font-semibold text-lg">Scan Now</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Right Column: Image */}
+          <Image
+            source={require("../../assets/images/scan now.png")} // Ensure this path is correct
+            resizeMode="contain"
+            className="w-40 h-40 self-end"
+          />
         </View>
 
         {/* ----- SURVEY CTA ----- */}
-        <TouchableOpacity onPress={() => navigation.navigate("SurveyPage1")}>
-          <View className="bg-[#ffb6c6] rounded-2xl p-4 mt-4">
-            <Text className="text-white font-bold text-lg">
-              Answer Survey ? ? ?
+        <TouchableOpacity
+          onPress={() => navigation.navigate("SurveyPage1")}
+          style={styles.surveyButton}
+        >
+          <View className="bg-[#fe8d93] rounded-3xl p-5 mt-4 relative overflow-hidden min-h-[120px] justify-center px-4">
+            {/* === SCATTERED DECORATIVE CIRCLES === */}
+
+            {/* 1. Large faint one in the top-left area */}
+            <View className="absolute -top-6 left-8 w-24 h-24 bg-white rounded-full opacity-10" />
+
+            {/* 2. Medium one near the bottom-center */}
+            <View className="absolute -bottom-4 left-32 w-10 h-10 bg-white rounded-full opacity-20" />
+
+            {/* 3. Small one floating in top-right */}
+            <View className="absolute top-4 right-16 w-8 h-8 bg-white rounded-full opacity-20" />
+
+            {/* 5. Big one cut off at the bottom-right corner */}
+            <View className="absolute -bottom-8 -right-4 w-20 h-20 bg-white rounded-full opacity-10" />
+
+            <Text className="absolute top-4 right-16 text-white font-semibold text-7xl opacity-70">
+              ?
             </Text>
-            <Text className="text-white mt-1">
-              to get even more accurate results — don't hesitate answering the
-              survey
+            <Text className="absolute top-2 right-4 text-white font-semibold text-5xl opacity-70">
+              ?
             </Text>
+            <Text className="absolute top-8 right-5 text-white font-semibold text-5xl opacity-70">
+              ?
+            </Text>
+
+            {/* === TEXT CONTENT (Z-Index ensures it sits on top) === */}
+            <View className="z-10 relative items-start ">
+              <Text className="text-white font-bold text-3xl">
+                Answer Survey
+              </Text>
+              <Text className="text-white mt-1 pr-4 text-center">
+                to get even more accurate results — don't hesitate answering the
+                survey
+              </Text>
+            </View>
           </View>
         </TouchableOpacity>
 
@@ -120,7 +145,6 @@ export default function Home({ navigation }: Props) {
                     className="w-full h-full"
                     resizeMode="cover"
                   />
-
                 </View>
 
                 <Text
@@ -147,20 +171,39 @@ export default function Home({ navigation }: Props) {
         </ScrollView>
 
         {/* ----- EDUCATION CARD ----- */}
-        <View className="bg-white rounded-2xl shadow border border-gray-100 mt-5 p-3">
-          <View className="w-full h-28 bg-gray-200 rounded-lg mb-3" />
-          <Text className="font-semibold text-[#333] mb-1">
-            Educating yourself about the ABCDE rule is so crucial for early skin
-            diagnosis.
-          </Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Disclaimer")}
-            className="bg-[#000] px-4 py-2 rounded-xl self-start mt-2"
-          >
-            <Text className="text-white">Read more</Text>
-          </TouchableOpacity>
+        <View className="bg-gray-100 rounded-2xl flex-row items-center shadow border border-gray-200 mt-5 p-3">
+          {/* IMAGE LEFT */}
+          <Image
+            source={require("../../assets/images/ABCDE.jpg")}
+            resizeMode="cover"
+            className="w-32 h-32 rounded-xl mr-3"
+          />
+
+          {/* TEXT + BUTTON RIGHT */}
+          <View className="flex-1 items-center">
+            <Text className="font-semibold text-[#333] mb-2 text-center">
+              Educating yourself about the ABCDE rule is so crucial for early
+              skin diagnosis.
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Disclaimer")}
+              className="bg-[#000] px-4 py-2 rounded-xl mt-1"
+            >
+              <Text className="text-white">Read more</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
   );
 }
+
+const styles = {
+  surveyButton: {
+    shadowColor: "#111",
+    shadowOffset: { width: 2, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+  },
+};

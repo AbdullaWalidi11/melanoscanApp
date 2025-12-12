@@ -146,7 +146,7 @@ export default function ProfileScreen() {
         <View className="px-6 mt-10 mb-12">
           <TouchableOpacity
             onPress={isCloudUser ? handleLogout : handleLogin} // <-- LOGIC SWITCH
-            className="bg-[#e2728f] flex-row justify-center items-center py-4 rounded-full shadow-md active:opacity-80"
+            className="bg-[#fe8d93] flex-row justify-center items-center py-4 rounded-full shadow-md active:opacity-80"
           >
             {isCloudUser ? (
               // SHOW LOGOUT BUTTON

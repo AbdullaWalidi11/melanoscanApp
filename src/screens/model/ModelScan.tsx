@@ -8,9 +8,10 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
-import * as Notifications from 'expo-notifications';
+import { Alert } from "react-native";
+import * as Notifications from "expo-notifications";
 import { scheduleRescanReminder } from "../../services/notificationService";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { MessageCircle } from "lucide-react-native";
@@ -18,15 +19,20 @@ import Constants from "expo-constants";
 import * as ImageManipulator from "expo-image-manipulator";
 import { loadTensorflowModel } from "react-native-fast-tflite";
 // import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import { useAuth } from "../../context/AuthContext"; // Add useAuth to check if guest
 
 // ✅ 1. NEW IMPORTS FOR DECODING
 import * as jpeg from "jpeg-js";
 import { Buffer } from "buffer";
+import { validateImageQuality } from "../../services/imageValidation";
 
 import SaveToHistoryPopup from "../../components/SaveToHistoryPopUp";
-import { saveLesion, updateLesion, countTotalScans } from "../../database/queries";
+import {
+  saveLesion,
+  updateLesion,
+  countTotalScans,
+} from "../../database/queries";
 
 const isExpoGo = Constants.appOwnership === "expo";
 const modelAsset = require("../../../assets/melanoscan_model.tflite");
@@ -69,7 +75,7 @@ export default function MelanoScanPredict() {
   useEffect(() => {
     if (isExpoGo) {
       setLoading(false);
-      return; 
+      return;
     }
     (async () => {
       try {
@@ -85,11 +91,11 @@ export default function MelanoScanPredict() {
 
   // --- AUTO TRIGGER ---
   useEffect(() => {
-    if (isExpoGo) return; 
+    if (isExpoGo) return;
     if (!model) return;
     if (!imageUri) {
-        if (mode === "camera") pickImage(true);
-        if (mode === "gallery") pickImage(false);
+      if (mode === "camera") pickImage(true);
+      if (mode === "gallery") pickImage(false);
     }
   }, [mode, model]);
 
@@ -99,51 +105,84 @@ export default function MelanoScanPredict() {
   const pickImage = async (fromCamera = false) => {
     // 1. Permission Checks (Keep existing logic)
     if (fromCamera) {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== 'granted') {
-            alert('Sorry, we need camera permissions to make this work!');
-            return;
-        }
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need camera permissions to make this work!");
+        return;
+      }
     } else {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            alert('Sorry, we need gallery permissions!');
-            return;
-        }
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need gallery permissions!");
+        return;
+      }
     }
 
     // 2. Configure Options
     const options: ImagePicker.ImagePickerOptions = {
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        
-        // ✅ CHANGED: Only enable cropping if taking a photo
-        allowsEditing: fromCamera, 
-        
-        aspect: [1, 1], // This is ignored if allowsEditing is false
-        quality: 1,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+
+      // ✅ CHANGED: Only enable cropping if taking a photo
+      allowsEditing: fromCamera,
+
+      aspect: [1, 1], // This is ignored if allowsEditing is false
+      quality: 1,
     };
 
     let result;
     if (fromCamera) {
-        result = await ImagePicker.launchCameraAsync(options);
+      result = await ImagePicker.launchCameraAsync(options);
     } else {
-        result = await ImagePicker.launchImageLibraryAsync(options);
+      result = await ImagePicker.launchImageLibraryAsync(options);
     }
 
     // 3. Handle Result (Keep existing logic)
     if (result.canceled) {
-        if (!imageUri) navigation.goBack();
-        return;
+      if (!imageUri) navigation.goBack();
+      return;
     }
 
     if (result.assets && result.assets.length > 0) {
-        const uri = result.assets[0].uri;
-        
-        setImageUri(uri);
-        setResult(null);
-        setLatencyMs(null);
+      const uri = result.assets[0].uri;
 
-        runInference(uri);
+      // ---------------------------------------------------------
+      // ✅ 4. THE QUALITY GATEKEEPER
+      // ---------------------------------------------------------
+      // We show a loading state while checking (it's very fast, <100ms)
+      setBusy(true);
+
+      const qualityCheck = await validateImageQuality(uri);
+
+      if (!qualityCheck.isValid) {
+        setBusy(false); // Stop loading
+
+        Alert.alert(
+          "Poor Image Quality",
+          qualityCheck.error || "Image quality is too low.",
+          [
+            {
+              text: "Try Again",
+              onPress: () => {
+                // Optional: If you want to immediately re-open the picker
+                // pickImage(fromCamera);
+                // For now, we just stay on screen so user can choose action
+              },
+            },
+          ]
+        );
+        return; // 🛑 STOP HERE. Do not set URI, do not run AI.
+      }
+
+      // ---------------------------------------------------------
+      // ✅ 5. IF PASSED, PROCEED TO AI
+      // ---------------------------------------------------------
+      setImageUri(uri);
+      setResult(null);
+      setLatencyMs(null);
+
+      // runInference handles its own setBusy(false) when done
+      runInference(uri);
     }
   };
 
@@ -164,19 +203,19 @@ export default function MelanoScanPredict() {
       );
 
       const base64 = manip.base64!;
-      
+
       // B. Decode JPEG to Raw Pixel Data (Buffer)
       // We use Buffer to convert base64 -> binary, then jpeg-js to get pixels
-      const imgBuffer = Buffer.from(base64, 'base64');
-      const rawData = jpeg.decode(imgBuffer, { useTArray: true }); 
+      const imgBuffer = Buffer.from(base64, "base64");
+      const rawData = jpeg.decode(imgBuffer, { useTArray: true });
       // rawData.data is a Uint8Array: [R, G, B, A, R, G, B, A, ...]
 
       // C. Pre-process & Normalize
-      // We need to convert RGBA (4 channels) to RGB (3 channels) 
+      // We need to convert RGBA (4 channels) to RGB (3 channels)
       // AND normalize from [0, 255] to [-1, 1]
       const floatData = new Float32Array(224 * 224 * 3);
       let p = 0; // Pointer for floatData (RGB)
-      
+
       for (let i = 0; i < rawData.data.length; i += 4) {
         const r = rawData.data[i];
         const g = rawData.data[i + 1];
@@ -186,7 +225,8 @@ export default function MelanoScanPredict() {
         // EfficientNet Normalization: (value / 127.5) - 1.0
         floatData[p++] = r;
         floatData[p++] = g;
-        floatData[p++] = b;      }
+        floatData[p++] = b;
+      }
 
       // D. Run Model
       const output = await model.run([floatData]);
@@ -228,11 +268,11 @@ export default function MelanoScanPredict() {
     try {
       setBusy(true);
       if (savedId) {
-           navigation.navigate("ChatScreen", { lesionId: savedId });
-           return;
+        navigation.navigate("ChatScreen", { lesionId: savedId });
+        return;
       }
       const saved = await saveLesion({
-        region: "Unspecified", 
+        region: "Unspecified",
         description: "Started chat immediately",
         imageUri,
         resultLabel: result?.label,
@@ -241,7 +281,7 @@ export default function MelanoScanPredict() {
       });
 
       if (saved.success) {
-        setSavedId(saved.id); 
+        setSavedId(saved.id);
         navigation.navigate("ChatScreen", { lesionId: saved.id });
       }
     } catch (e) {
@@ -269,7 +309,11 @@ export default function MelanoScanPredict() {
         </Pressable>
 
         {imageUri && (
-          <Image source={{ uri: imageUri }} className="w-full h-64 rounded-2xl mb-4 bg-gray-200" resizeMode="cover" />
+          <Image
+            source={{ uri: imageUri }}
+            className="w-full h-64 rounded-2xl mb-4 bg-gray-200"
+            resizeMode="cover"
+          />
         )}
 
         {busy && (
@@ -281,31 +325,46 @@ export default function MelanoScanPredict() {
 
         {result && !busy && (
           <View>
-            <View className={`rounded-xl p-4 mb-4 ${result.label === "Malignant" ? "bg-red-100 border border-red-400" : result.label === "Benign" ? "bg-green-100 border border-green-400" : "bg-yellow-100 border border-yellow-400"}`}>
+            <View
+              className={`rounded-xl p-4 mb-4 ${result.label === "Malignant" ? "bg-red-100 border border-red-400" : result.label === "Benign" ? "bg-green-100 border border-green-400" : "bg-yellow-100 border border-yellow-400"}`}
+            >
               <Text className="font-semibold text-lg">
                 {result.label === "Malignant" && "High Risk"}
                 {result.label === "Benign" && "Low Risk"}
                 {result.label === "Suspicious" && "Uncertain"}
               </Text>
               <Text className="mt-2 text-gray-700">
-                AI Prediction: {result.rawClass.toUpperCase()} ({(result.confidence * 100).toFixed(1)}%)
+                AI Prediction: {result.rawClass.toUpperCase()} (
+                {(result.confidence * 100).toFixed(1)}%)
               </Text>
             </View>
 
-            <TouchableOpacity 
-                onPress={handleChat}
-                className="flex-row items-center justify-center bg-black py-4 rounded-full shadow-lg mb-6 mt-4"
+            <TouchableOpacity
+              onPress={handleChat}
+              className="flex-row items-center justify-center bg-black py-4 rounded-full shadow-lg mb-6 mt-4"
             >
-                <MessageCircle color="white" size={24} fill="white" />
-                <Text className="text-white font-bold text-lg ml-3">Ask AI Assistant</Text>
+              <MessageCircle color="white" size={24} fill="white" />
+              <Text className="text-white font-bold text-lg ml-3">
+                Ask AI Assistant
+              </Text>
             </TouchableOpacity>
 
             <View className="items-center mb-6">
-              <Pressable onPress={() => pickImage(true)} className="bg-[#e2728f] w-56 py-3 rounded-full mb-3">
-                <Text className="text-white text-center font-semibold">Scan again</Text>
+              <Pressable
+                onPress={() => pickImage(true)}
+                className="bg-[#e2728f] w-56 py-3 rounded-full mb-3"
+              >
+                <Text className="text-white text-center font-semibold">
+                  Scan again
+                </Text>
               </Pressable>
-              <Pressable onPress={() => setShowSavePopup(true)} className="border border-[#e2728f] w-56 py-3 rounded-full">
-                <Text className="text-[#e2728f] text-center font-semibold">Save to History</Text>
+              <Pressable
+                onPress={() => setShowSavePopup(true)}
+                className="border border-[#e2728f] w-56 py-3 rounded-full"
+              >
+                <Text className="text-[#e2728f] text-center font-semibold">
+                  Save to History
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -319,53 +378,56 @@ export default function MelanoScanPredict() {
           try {
             // 1. Save or Update Logic (Existing)
             if (savedId) {
-                await updateLesion(savedId, data.region, data.description);
+              await updateLesion(savedId, data.region, data.description);
             } else {
-                await saveLesion({
-                  region: data.region,
-                  description: data.description,
-                  imageUri,
-                  resultLabel: result?.label,
-                  confidence: result?.confidence,
-                  diagnosis: result ? diagnosisMap[result.rawClass] : undefined,
-                });
+              await saveLesion({
+                region: data.region,
+                description: data.description,
+                imageUri,
+                resultLabel: result?.label,
+                confidence: result?.confidence,
+                diagnosis: result ? diagnosisMap[result.rawClass] : undefined,
+              });
             }
 
             // 2. ✅ LOGIC: Smart Schedule (Weekly vs Monthly)
             // If Malignant/High Risk -> 7 Days. Else -> 30 Days.
             const isHighRisk = result?.label === "Malignant";
             const daysLater = isHighRisk ? 7 : 30;
-            
+
             await scheduleRescanReminder(data.region, daysLater);
-            
+
             // 3. ✅ LOGIC: Persistent Guest Check (> 3 Scans)
             // We use a small timeout to let the DB save finish first
-            if (isExpoGo) { /* skip in expo go if needed */ }
-            
-            // We need to verify if user is guest. 
-            // Since we can't easily access 'user' from context inside this callback without 
+            if (isExpoGo) {
+              /* skip in expo go if needed */
+            }
+
+            // We need to verify if user is guest.
+            // Since we can't easily access 'user' from context inside this callback without
             // wrapping the whole component in AuthContext, we'll do a quick DB check.
             // 3. ✅ LOGIC: Smart Guest Nag
             // Only annoy them if they are ACTUALLY a guest (isAnonymous)
             if (user?.isAnonymous) {
-                const totalScans = await countTotalScans();
-            
-            // If we have 3, 6, 9... scans, nag the user
-            if (totalScans > 0 && totalScans % 3 === 0) {
-                 // Trigger a local notification immediately
-                 Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: "Don't lose your progress!",
-                        body: `You have ${totalScans} scans saved locally. Sign in now to back them up safely to the cloud.`,
-                    },
-                    trigger: null, // Show immediately
-                 });
+              const totalScans = await countTotalScans();
+
+              // If we have 3, 6, 9... scans, nag the user
+              if (totalScans > 0 && totalScans % 3 === 0) {
+                // Trigger a local notification immediately
+                Notifications.scheduleNotificationAsync({
+                  content: {
+                    title: "Don't lose your progress!",
+                    body: `You have ${totalScans} scans saved locally. Sign in now to back them up safely to the cloud.`,
+                  },
+                  trigger: null, // Show immediately
+                });
+              }
             }
-          }
 
             setShowSavePopup(false);
             navigation.navigate("MainTabs", { screen: "History" });
-          } catch (err) {
+          } catch (err: any) {
+            Alert.alert("Database Error", err.toString());
             console.error("Error saving:", err);
           }
         }}

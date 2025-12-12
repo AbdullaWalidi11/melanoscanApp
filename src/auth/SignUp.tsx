@@ -79,7 +79,7 @@ export default function SignUpScreen() {
       <ScrollView className="flex-1 px-6">
         <View className="flex-1 justify-center mt-20">
           {/* Title */}
-          <Text className="text-3xl font-bold text-center mb-8 py-8 text-[#e2728f]">
+          <Text className="text-3xl font-bold text-center mb-8 py-8">
             Create an Account
           </Text>
 
@@ -170,7 +170,7 @@ export default function SignUpScreen() {
 
           {/* Sign Up Button */}
           <TouchableOpacity
-            className="bg-[#e2728f] py-5 rounded-full shadow-md mb-6"
+            className="bg-[#fe8d93] py-5 rounded-full shadow-md mb-6"
             onPress={signUp}
             disabled={loading}
           >
@@ -183,7 +183,7 @@ export default function SignUpScreen() {
           <Text className="text-center text-sm text-gray-600 mb-10">
             Already have an account?{" "}
             <Text
-              className="text-[#e2728f] font-semibold"
+              className="text-[#fe8d93] font-semibold"
               onPress={() => navigation.navigate("Login")}
             >
               Login
