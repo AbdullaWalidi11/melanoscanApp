@@ -77,38 +77,33 @@ export default function Home({ navigation }: Props) {
           style={styles.surveyButton}
         >
           <View className="bg-[#fe8d93] rounded-3xl p-5 mt-4 relative overflow-hidden min-h-[120px] justify-center px-4">
-            {/* === SCATTERED DECORATIVE CIRCLES === */}
-
-            {/* 1. Large faint one in the top-left area */}
+            {/* === DECORATIVE BACKGROUND === */}
+            {/* Faint circles */}
             <View className="absolute -top-6 left-8 w-24 h-24 bg-white rounded-full opacity-10" />
-
-            {/* 2. Medium one near the bottom-center */}
             <View className="absolute -bottom-4 left-32 w-10 h-10 bg-white rounded-full opacity-20" />
-
-            {/* 3. Small one floating in top-right */}
             <View className="absolute top-4 right-16 w-8 h-8 bg-white rounded-full opacity-20" />
-
-            {/* 5. Big one cut off at the bottom-right corner */}
             <View className="absolute -bottom-8 -right-4 w-20 h-20 bg-white rounded-full opacity-10" />
 
-            <Text className="absolute top-4 right-16 text-white font-semibold text-7xl opacity-70">
+            {/* Question Marks (Positioned on the right) */}
+            <Text className="absolute top-2 right-4 text-white font-semibold text-6xl opacity-40 transform rotate-12">
               ?
             </Text>
-            <Text className="absolute top-2 right-4 text-white font-semibold text-5xl opacity-70">
+            <Text className="absolute bottom-[-10] right-16 text-white font-semibold text-7xl opacity-20 -rotate-12">
               ?
             </Text>
-            <Text className="absolute top-8 right-5 text-white font-semibold text-5xl opacity-70">
+            <Text className="absolute top-10 right-28 text-white font-semibold text-4xl opacity-30 rotate-45">
               ?
             </Text>
 
-            {/* === TEXT CONTENT (Z-Index ensures it sits on top) === */}
-            <View className="z-10 relative items-start ">
-              <Text className="text-white font-bold text-3xl">
+            {/* === TEXT CONTENT === */}
+            {/* Constrained width to prevent overlap */}
+            <View className="z-10 relative w-[65%] py-2">
+              <Text className="text-white font-bold text-3xl mb-1">
                 Answer Survey
               </Text>
-              <Text className="text-white mt-1 pr-4 text-center">
-                to get even more accurate results — don't hesitate answering the
-                survey
+              <Text className="text-white/90 text-sm font-medium leading-5 ">
+                To get even more accurate results. don't hesitate to answer the
+                survey.
               </Text>
             </View>
           </View>

@@ -78,7 +78,7 @@ export default function SaveToHistoryPopup({
 
         {/* Save */}
         <TouchableOpacity
-          className={`w-40 py-3 rounded-full ${region ? "bg-[#e2728f]" : "bg-gray-300"}`}
+          className={`w-40 py-3 rounded-full ${region ? "bg-[#fe8d93]" : "bg-gray-300"}`}
           disabled={!region} // Disable save if no region selected
           onPress={() => {
             if (!region) return;
