@@ -16,12 +16,14 @@ import LandingPage3 from "../landingPages/Page3";
 import SurveyPage1 from "../screens/survey/SurveyPage1";
 import SurveyPage2 from "../screens/survey/SurveyPage2";
 import LesionsByRegion from "../screens/LesionsByRegion";
-import ModelScan from "../screens/model/ModelScan";
+import ScanUpload from "../screens/model/ScanUpload";
+import AnalysisResult from "../screens/model/AnalysisResult";
 import LesionDetails from "../screens/LesionDetails";
 import ChatScreen from "../screens/chatScreen";
 import ComparisonHistory from "../screens/comparison/ComparisonHistory";
 import CompareProcessing from "../screens/comparison/CompareProcessing";
 import CompareResult from "../screens/comparison/CompareResult";
+import LogDetailScreen from "../screens/comparison/LogDetailScreen";
 import ForgotPassword from "../auth/ForgotPassword";
 
 const Stack = createNativeStackNavigator();
@@ -50,7 +52,9 @@ export default function AppNavigator() {
       <Stack.Screen name="LesionsByRegion" component={LesionsByRegion} />
       <Stack.Screen name="LesionDetails" component={LesionDetails} />
 
-      <Stack.Screen name="ModelScan" component={ModelScan} />
+      {/* Refactored Scan Flow */}
+      <Stack.Screen name="ModelScan" component={ScanUpload} />
+      <Stack.Screen name="AnalysisResult" component={AnalysisResult} />
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
 
       {/* === SURVEY === */}
@@ -63,6 +67,7 @@ export default function AppNavigator() {
       <Stack.Screen name="ComparisonHistory" component={ComparisonHistory} />
       <Stack.Screen name="CompareProcessing" component={CompareProcessing} />
       <Stack.Screen name="CompareResult" component={CompareResult} />
+      <Stack.Screen name="LogDetailScreen" component={LogDetailScreen} />
 
       {/* === AUTH === */}
       <Stack.Screen name="Login" component={LoginScreen} />

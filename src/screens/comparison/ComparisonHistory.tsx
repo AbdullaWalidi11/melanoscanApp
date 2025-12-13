@@ -1,103 +1,196 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
-import { Ionicons } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { getComparisonLogs } from "../../database/queries";
+import {
+  Montserrat_600SemiBold,
+  Montserrat_700Bold,
+  useFonts,
+} from "@expo-google-fonts/montserrat";
+
+const { width } = Dimensions.get("window");
 
 export default function ComparisonHistory() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { parentLesionId, imageUri } = route.params; // Passed from List Screen
+  const { parentLesionId, imageUri, description } = route.params;
 
   const [logs, setLogs] = useState<any[]>([]);
+  const [timeline, setTimeline] = useState<any[]>([]);
 
-  // Load logs whenever screen opens
+  const [fontsLoaded] = useFonts({
+    Montserrat_600SemiBold,
+    Montserrat_700Bold,
+  });
+
+  // Load logs
   useFocusEffect(
     useCallback(() => {
       async function load() {
         try {
           const data = await getComparisonLogs(parentLesionId);
           setLogs(data);
+
+          // Construct Timeline: [Baseline Item, ...Log Items]
+          // Baseline Item (The original lesion)
+          const baselineItem = {
+            type: "BASELINE",
+            id: "baseline",
+            date: "Original", // You might want to pass the real creation date if available
+            imageUri: imageUri,
+            status: "START",
+          };
+
+          // Logs (Each log represents a new snapshot in time)
+          // We use the `newImageUri` of the log as the snapshot image for that point in time
+          const historyItems = data.map((log: any) => ({
+            type: "LOG",
+            id: log.id,
+            date: log.date,
+            imageUri: log.newImageUri, // This snapshot
+            status: log.status,
+            logData: log, // Keep full log data to pass to details
+          }));
+
+          setTimeline([baselineItem, ...historyItems]);
         } catch (e) {
           console.error(e);
         }
       }
       load();
-    }, [parentLesionId])
+    }, [parentLesionId, imageUri])
   );
 
+  if (!fontsLoaded) return <View className="flex-1 bg-white" />;
+
+  const handleItemPress = (item: any) => {
+    if (item.type === "BASELINE") {
+      // Maybe show a simple large view or just do nothing for now?
+      // For now, let's just ignore or show an alert
+      // alert("This is the original baseline scan.");
+    } else {
+      // Navigate to Detail View for this specific comparison log
+      navigation.navigate("LogDetailScreen", { log: item.logData });
+    }
+  };
+
   return (
-    <View className="flex-1 bg-white pt-12">
-        
-        {/* HEADER */}
-        <View className="px-4 flex-row items-center mb-6">
-            <TouchableOpacity onPress={() => navigation.goBack()} className="p-2 mr-2">
-                <Ionicons name="arrow-back" size={24} color="#333" />
-            </TouchableOpacity>
-            <Text className="text-xl font-bold text-gray-800">Comparison Log</Text>
+    // 1. Base Background with Pink/Coral Color
+    <View className="flex-1 bg-[#FFC5C8] relative overflow-hidden">
+      {/* === TOP HEADER (Back Button) === */}
+      <View className="absolute top-12 left-6 z-50">
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {/* === BACKGROUND GEOMETRY (Replicated from LesionsByRegion) === */}
+      {/* 3. Third Geometric Shape (Far Left Layer) */}
+      <View className="absolute inset-0 transform -translate-x-80 -translate-y-16 rotate-45 -z-20 opacity-80">
+        <View className="w-[600px] h-[600px]">
+          <LinearGradient
+            colors={["#fca7ac", "#ff9da1", "#fe8d93"]}
+            locations={[0, 0.38, 1]}
+            className="w-full h-full"
+          />
+        </View>
+      </View>
+      {/* 2. The Geometric Gradient Background Effect */}
+      <View className="absolute inset-0 transform -translate-x-[400px] -translate-y-10 rotate-45 -z-10">
+        <View className="w-[600px] h-[600px]">
+          <LinearGradient
+            colors={["#ff9da1", "#ff9da1", "#fe8d93"]}
+            locations={[0, 0.38, 1]}
+            className="w-full h-full"
+          />
+        </View>
+      </View>
+
+      {/* === MAIN CONTENT (White Sheet) === */}
+      <View className="flex-1 bg-white mt-28 rounded-t-[40px] overflow-hidden shadow-2xl">
+        {/* TITLE SECTION */}
+        <View className="items-center px-6 pt-8 pb-4">
+          <Text
+            style={{ fontFamily: "Montserrat_700Bold" }}
+            className="text-2xl text-[#5a3e3e] text-center mb-1"
+          >
+            {description || "Lesion History"}
+          </Text>
         </View>
 
-        {/* THUMBNAIL OF MOLE (Context) */}
-        <View className="items-center mb-8">
-            <Image 
-                source={imageUri ? { uri: imageUri } : require("../../../assets/images/face.png")} 
-                className="w-20 h-20 rounded-full border-4 border-gray-100"
-            />
-            <Text className="text-gray-500 text-xs mt-2">Tracking History</Text>
-        </View>
+        {/* GRID TIMELINE SCROLL */}
+        <View className="flex-1 mt-4">
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingBottom: 40,
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "flex-start",
+            }}
+          >
+            {timeline.map((item, index) => {
+              // Calculate 3 items per row
+              // Math.floor is essential to avoid sub-pixel rounding causing the 3rd item to wrap
+              const itemSize = Math.floor((width - 48) / 3);
 
-        {/* TIMELINE LIST */}
-        <ScrollView className="px-6">
-            {logs.length === 0 && (
-                <Text className="text-center text-gray-400 mt-10">No comparisons recorded yet.</Text>
-            )}
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={() => handleItemPress(item)}
+                  style={{ width: itemSize }}
+                  className="mb-4 items-center"
+                  activeOpacity={0.8}
+                >
+                  {/* Card Container - Adjusted size to fit */}
+                  <View className="bg-white rounded-2xl p-1.5 shadow-sm border border-gray-200 w-[95%] items-center">
+                    {/* Image */}
+                    <Image
+                      source={{ uri: item.imageUri }}
+                      className="w-full aspect-square rounded-xl bg-gray-100 mb-2"
+                      resizeMode="cover"
+                    />
 
-            {logs.map((log, index) => {
-                const isStable = log.status === "STABLE";
-                return (
-                    <View key={log.id} className="flex-row mb-8">
-                        {/* Timeline Line */}
-                        <View className="items-center mr-4">
-                            <View 
-                                className={`w-4 h-4 rounded-full ${isStable ? "bg-green-500" : "bg-red-500"}`} 
-                            />
-                            {/* Vertical Line (don't show for last item) */}
-                            {index !== logs.length - 1 && (
-                                <View className="w-0.5 h-full bg-gray-200 mt-1" />
-                            )}
-                        </View>
+                    {/* Date */}
+                    <Text
+                      style={{ fontFamily: "Montserrat_700Bold" }}
+                      className="text-[#c4a4a4] text-[9px] mb-1"
+                      numberOfLines={1}
+                    >
+                      {item.date}
+                    </Text>
 
-                        {/* Content Card */}
-                        <View className="flex-1 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                            <View className="flex-row justify-between mb-2">
-                                <Text className="font-bold text-gray-800">{log.date}</Text>
-                                <Text 
-                                    className="font-bold text-xs px-2 py-1 rounded"
-                                    style={{ 
-                                        color: isStable ? "#2E7D32" : "#C62828",
-                                        backgroundColor: isStable ? "#E8F5E9" : "#FFEBEE"
-                                    }}
-                                >
-                                    {log.status}
-                                </Text>
-                            </View>
-
-                            {/* Images Row */}
-                            <View className="flex-row space-x-2 mb-3">
-                                <Image source={{ uri: log.oldImageUri }} className="w-12 h-12 rounded bg-gray-200" />
-                                <Ionicons name="arrow-forward" size={16} color="#999" style={{ alignSelf: 'center' }} />
-                                <Image source={{ uri: log.newImageUri }} className="w-12 h-12 rounded bg-gray-200" />
-                            </View>
-
-                            <Text className="text-gray-600 text-sm leading-5">
-                                {log.reasoning}
-                            </Text>
-                        </View>
-                    </View>
-                );
+                    {/* Status Dot */}
+                    {item.status !== "START" && (
+                      <View
+                        className={`h-1 w-6 rounded-full mt-0.5 ${
+                          item.status === "STABLE"
+                            ? "bg-green-300"
+                            : "bg-red-300"
+                        }`}
+                      />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              );
             })}
-             <View className="h-20" />
-        </ScrollView>
+          </ScrollView>
+        </View>
+      </View>
     </View>
   );
 }

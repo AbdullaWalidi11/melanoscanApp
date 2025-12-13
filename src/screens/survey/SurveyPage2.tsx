@@ -73,10 +73,10 @@ export default function SurveyPage2() {
       </View>
 
       {/* Layer 2: Middle Layer */}
-      <View className="absolute inset-0 transform -translate-x-60 -translate-y-40 rotate-45 -z-10 opacity-60">
+      <View className="absolute inset-0 transform -translate-x-[400px] -translate-y-40 rotate-45 -z-10 opacity-60">
         <View className="w-[600px] h-[600px]">
           <LinearGradient
-            colors={["#fca7ac", "#ff9da1", "#fe8d93"]}
+            colors={["#ff9da1", "#ff9da1", "#fe8d93"]}
             locations={[0, 0.38, 1]}
             className="w-full h-full"
           />
@@ -196,14 +196,14 @@ export default function SurveyPage2() {
         <View className="flex-row justify-end mt-4 mb-8 gap-x-4">
           <Pressable
             onPress={handleSkip}
-            className="py-4 px-14 border border-[#FF8080] rounded-xl items-center justify-center"
+            className="py-4 px-14 border border-[#fe8d93] rounded-xl items-center justify-center"
           >
-            <Text style={{ fontFamily: "Montserrat_600SemiBold" }} className="text-[#FF8080] text-base">Skip</Text>
+            <Text style={{ fontFamily: "Montserrat_600SemiBold" }} className="text-[#fe8d93] text-base">Skip</Text>
           </Pressable>
 
           <Pressable
             onPress={handleSubmit}
-            className="py-4 px-12 bg-[#FF8080] rounded-xl items-center justify-center shadow-sm"
+            className="py-4 px-12 bg-[#fe8d93] rounded-xl items-center justify-center shadow-sm"
           >
             <Text style={{ fontFamily: "Montserrat_600SemiBold" }} className="text-white text-base">Submit</Text>
           </Pressable>

@@ -53,10 +53,10 @@ export default function SurveyPage1() {
       </View>
       {/* 2. The Geometric Gradient Background Effect (Replicated from Landing Page) */}
       {/* This places a large rotated gradient square in the background */}
-      <View className="absolute inset-0 transform -translate-x-96 -translate-y-10 rotate-45 -z-10">
+      <View className="absolute inset-0 transform -translate-x-[400px] -translate-y-10 rotate-45 -z-10">
         <View className="w-[600px] h-[600px]">
           <LinearGradient
-            colors={["#fca7ac", "#ff9da1", "#fe8d93"]}
+            colors={["#ff9da1", "#ff9da1", "#fe8d93"]}
             locations={[0, 0.38, 1]}
             className="w-full h-full"
           />
@@ -179,16 +179,16 @@ export default function SurveyPage1() {
           <Pressable
             onPress={handleSkip}
             // Updated border color to #FF8080
-            className="py-4 px-14 border border-[#FF8080] rounded-xl items-center justify-center"
+            className="py-4 px-14 border border-[#fe8d93] rounded-xl items-center justify-center"
           >
             {/* Updated text color and font */}
-            <Text style={{ fontFamily: "Montserrat_600SemiBold" }} className="text-[#FF8080] text-base">Skip</Text>
+            <Text style={{ fontFamily: "Montserrat_600SemiBold" }} className="text-[#fe8d93] text-base">Skip</Text>
           </Pressable>
 
           <Pressable
             onPress={handleNext}
             // Updated bg color to #FF8080
-            className="py-4 px-14 bg-[#FF8080] rounded-xl items-center justify-center shadow-sm"
+            className="py-4 px-14 bg-[#fe8d93] rounded-xl items-center justify-center shadow-sm"
           >
              {/* Updated font */}
             <Text style={{ fontFamily: "Montserrat_600SemiBold" }} className="text-white text-base">Next</Text>

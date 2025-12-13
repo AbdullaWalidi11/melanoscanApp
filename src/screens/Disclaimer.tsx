@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ChevronLeft, TriangleAlert, Info } from "lucide-react-native";
 
@@ -9,10 +9,11 @@ export default function DisclaimerScreen() {
   return (
     <View className="flex-1 bg-white">
       {/* ----- HEADER ----- */}
-      
 
-      <ScrollView className="flex-1 bg-[#fff0f3]" contentContainerStyle={{ paddingBottom: 40 }}>
-        
+      <ScrollView
+        className="flex-1 bg-[#fff0f3]"
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* ----- IMPORTANT DISCLAIMER CARD ----- */}
         <View className="bg-white mx-4 mt-6 p-4 rounded-xl shadow-sm border-l-8 border-red-500 flex-row items-start">
           <View className="mr-4 mt-1">
@@ -23,8 +24,9 @@ export default function DisclaimerScreen() {
               IMPORTANT DISCLAIMER
             </Text>
             <Text className="text-gray-700 leading-5">
-              This app is a screening aid, <Text className="font-bold">NOT</Text> a diagnostic tool. 
-              Always consult a professional dermatologist for any skin concerns.
+              This app is a screening aid,{" "}
+              <Text className="font-bold">NOT</Text> a diagnostic tool. Always
+              consult a professional dermatologist for any skin concerns.
             </Text>
           </View>
         </View>
@@ -35,11 +37,16 @@ export default function DisclaimerScreen() {
             Understanding Skin Cancer
           </Text>
           <View className="flex-row">
-            {/* Image Placeholder */}
-            <View className="w-24 h-24 bg-gray-200 rounded-lg mr-4" />
+            {/* Understanding Skin Cancer Image */}
+            <Image
+              source={require("../../assets/images/understanding.png")}
+              className="w-24 h-24 rounded-lg mr-2"
+              resizeMode="cover"
+            />
             <Text className="flex-1 text-gray-600 leading-5">
-              Early detection is a pivotal form of defense. Skin cancer is the abnormal growth of skin cells, 
-              most often developing on skin exposed to the sun. However, this common form of cancer can also 
+              Early detection is a pivotal form of defense. Skin cancer is the
+              abnormal growth of skin cells, most often developing on skin
+              exposed to the sun. However, this common form of cancer can also
               occur on areas of your skin not ordinarily exposed to sunlight.
             </Text>
           </View>
@@ -53,11 +60,15 @@ export default function DisclaimerScreen() {
 
           {/* A - Asymmetry */}
           <View className="bg-white p-4 rounded-2xl mb-3 flex-row items-center shadow-sm">
-            <View className="w-16 h-16 bg-orange-100 rounded-lg mr-4 items-center justify-center">
-               <Text className="text-orange-400 font-bold">Img A</Text>
-            </View>
+            <Image
+              source={require("../../assets/images/A.png")}
+              className="w-16 h-16 rounded-lg mr-4"
+              resizeMode="contain"
+            />
             <View className="flex-1">
-              <Text className="font-bold text-lg text-gray-800">A - Asymmetry</Text>
+              <Text className="font-bold text-lg text-gray-800">
+                A - Asymmetry
+              </Text>
               <Text className="text-gray-600">
                 One half of the mole does not match the other half.
               </Text>
@@ -66,11 +77,15 @@ export default function DisclaimerScreen() {
 
           {/* B - Border */}
           <View className="bg-white p-4 rounded-2xl mb-3 flex-row items-center shadow-sm">
-            <View className="w-16 h-16 bg-orange-100 rounded-lg mr-4 items-center justify-center">
-               <Text className="text-orange-400 font-bold">Img B</Text>
-            </View>
+            <Image
+              source={require("../../assets/images/B.png")}
+              className="w-16 h-16 rounded-lg mr-4"
+              resizeMode="contain"
+            />
             <View className="flex-1">
-              <Text className="font-bold text-lg text-gray-800">B - Border</Text>
+              <Text className="font-bold text-lg text-gray-800">
+                B - Border
+              </Text>
               <Text className="text-gray-600">
                 The edges are irregular, ragged, notched, or blurred.
               </Text>
@@ -79,24 +94,31 @@ export default function DisclaimerScreen() {
 
           {/* C - Color */}
           <View className="bg-white p-4 rounded-2xl mb-3 flex-row items-center shadow-sm">
-            <View className="w-16 h-16 bg-orange-100 rounded-lg mr-4 items-center justify-center">
-               <Text className="text-orange-400 font-bold">Img C</Text>
-            </View>
+            <Image
+              source={require("../../assets/images/C.png")}
+              className="w-16 h-16 rounded-lg mr-4"
+              resizeMode="contain"
+            />
             <View className="flex-1">
               <Text className="font-bold text-lg text-gray-800">C - Color</Text>
               <Text className="text-gray-600">
-                The color is not the same all over and may include shades of brown or black.
+                The color is not the same all over and may include shades of
+                brown or black.
               </Text>
             </View>
           </View>
 
           {/* D - Diameter */}
           <View className="bg-white p-4 rounded-2xl mb-3 flex-row items-center shadow-sm">
-            <View className="w-16 h-16 bg-orange-100 rounded-lg mr-4 items-center justify-center">
-               <Text className="text-orange-400 font-bold">Img D</Text>
-            </View>
+            <Image
+              source={require("../../assets/images/D.png")}
+              className="w-16 h-16 rounded-lg mr-4"
+              resizeMode="contain"
+            />
             <View className="flex-1">
-              <Text className="font-bold text-lg text-gray-800">D - Diameter</Text>
+              <Text className="font-bold text-lg text-gray-800">
+                D - Diameter
+              </Text>
               <Text className="text-gray-600">
                 The spot is larger than 6 millimeters across (about ¼ inch).
               </Text>
@@ -105,11 +127,15 @@ export default function DisclaimerScreen() {
 
           {/* E - Evolving */}
           <View className="bg-white p-4 rounded-2xl mb-3 flex-row items-center shadow-sm">
-            <View className="w-16 h-16 bg-orange-100 rounded-lg mr-4 items-center justify-center">
-               <Text className="text-orange-400 font-bold">Img E</Text>
-            </View>
+            <Image
+              source={require("../../assets/images/E.png")}
+              className="w-16 h-16 rounded-lg mr-4"
+              resizeMode="contain"
+            />
             <View className="flex-1">
-              <Text className="font-bold text-lg text-gray-800">E - Evolving</Text>
+              <Text className="font-bold text-lg text-gray-800">
+                E - Evolving
+              </Text>
               <Text className="text-gray-600">
                 The mole is changing in size, shape, or color over time.
               </Text>
@@ -123,30 +149,37 @@ export default function DisclaimerScreen() {
             Stay Vigilant
           </Text>
           <Text className="text-gray-600 leading-6">
-            Perform regular self-checks on your skin. Look for new growths or existing moles that change. 
-            If you notice anything suspicious, book an appointment with a doctor immediately.
+            Perform regular self-checks on your skin. Look for new growths or
+            existing moles that change. If you notice anything suspicious, book
+            an appointment with a doctor immediately.
           </Text>
         </View>
 
         {/* ----- EXTRA CONTENT (SCROLLABLE AREA) ----- */}
-        
+
         {/* Prevention Tips */}
         <View className="mx-4 mt-6">
           <Text className="text-xl font-bold text-gray-900 mb-3 ml-1">
             Prevention Tips
           </Text>
-          
+
           <View className="bg-blue-50 p-4 rounded-xl mb-2 flex-row">
             <Text className="text-blue-500 font-bold mr-2">•</Text>
-            <Text className="text-gray-700 flex-1">Apply sunscreen (SPF 30+) every 2 hours when outdoors.</Text>
+            <Text className="text-gray-700 flex-1">
+              Apply sunscreen (SPF 30+) every 2 hours when outdoors.
+            </Text>
           </View>
           <View className="bg-blue-50 p-4 rounded-xl mb-2 flex-row">
             <Text className="text-blue-500 font-bold mr-2">•</Text>
-            <Text className="text-gray-700 flex-1">Seek shade, especially between 10 AM and 4 PM.</Text>
+            <Text className="text-gray-700 flex-1">
+              Seek shade, especially between 10 AM and 4 PM.
+            </Text>
           </View>
           <View className="bg-blue-50 p-4 rounded-xl mb-2 flex-row">
             <Text className="text-blue-500 font-bold mr-2">•</Text>
-            <Text className="text-gray-700 flex-1">Avoid tanning beds and sunlamps entirely.</Text>
+            <Text className="text-gray-700 flex-1">
+              Avoid tanning beds and sunlamps entirely.
+            </Text>
           </View>
         </View>
 
@@ -163,14 +196,14 @@ export default function DisclaimerScreen() {
             {"\n\n"}
             1. A sore that doesn't heal.
             {"\n"}
-            2. Spread of pigment from the border of a spot into surrounding skin.
+            2. Spread of pigment from the border of a spot into surrounding
+            skin.
             {"\n"}
             3. Redness or a new swelling beyond the border of the mole.
             {"\n"}
             4. Change in sensation, such as itchiness, tenderness, or pain.
           </Text>
         </View>
-
       </ScrollView>
     </View>
   );

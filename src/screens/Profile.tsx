@@ -34,7 +34,7 @@ export default function ProfileScreen() {
       [
         { text: "Cancel", style: "cancel" },
         {
-          text: "Log Out - Wipe Data",
+          text: "Log Out",
           style: "destructive",
           onPress: async () => {
             try {
@@ -93,7 +93,7 @@ export default function ProfileScreen() {
         {/* ----- PROFILE IMAGE & NAME ----- */}
         <View className="items-center mt-8 mb-8">
           <View className="w-32 h-32 bg-[#ffb6c6] rounded-full items-center justify-center mb-4 shadow-sm">
-            <Camera color="white" size={48} />
+            <User color="white" size={48} />
           </View>
           <Text className="text-2xl font-bold text-gray-800">
             {user?.displayName || "Guest User"}
@@ -101,25 +101,6 @@ export default function ProfileScreen() {
           <Text className="text-[#e2728f] font-medium">
             {user?.isAnonymous ? "Offline Account" : "Skin Health Enthusiast"}
           </Text>
-        </View>
-
-        {/* ----- PERSONAL INFORMATION ----- */}
-        <View className="px-6 mb-8">
-          <View className="flex-row items-center mb-3">
-            <User color="#555" size={24} />
-            <Text className="text-lg font-semibold ml-3 text-gray-700">
-              Personal Information
-            </Text>
-          </View>
-          <View className="pl-11">
-            <Text className="text-gray-600 py-1">
-              <Text className="font-medium">Email:</Text>{" "}
-              {user?.email || "Not linked"}
-            </Text>
-            {/* Placeholders for future data */}
-            <Text className="text-gray-400 py-1">Phone: +1 234 567 890</Text>
-            <Text className="text-gray-400 py-1">DOB: Jan 1, 1990</Text>
-          </View>
         </View>
 
         {/* ----- MENU ITEMS ----- */}
@@ -158,7 +139,7 @@ export default function ProfileScreen() {
               // SHOW LOGIN/SYNC BUTTON for GUEST USER
               <>
                 <LogIn color="white" size={20} style={{ marginRight: 8 }} />
-                <Text className="text-white text-lg font-semibold">Log In / Sync Data</Text>
+                <Text className="text-white text-lg font-semibold">Log In </Text>
               </>
             )}
           </TouchableOpacity>

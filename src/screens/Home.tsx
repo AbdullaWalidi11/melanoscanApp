@@ -133,9 +133,12 @@ export default function Home({ navigation }: Props) {
           ) : (
             // Map over Database Results
             recentScans.map((scan) => (
-              <View
+              <TouchableOpacity
                 key={scan.id}
                 className="mr-3 bg-white shadow-sm border border-gray-100 rounded-xl p-2 w-[140px]"
+                onPress={() =>
+                  navigation.navigate("LesionDetails", { lesionId: scan.id })
+                }
               >
                 {/* CONTAINER FOR IMAGE */}
                 <View className="w-full h-24 bg-gray-200 rounded-md mb-2 relative overflow-hidden">
@@ -165,7 +168,7 @@ export default function Home({ navigation }: Props) {
                     day: "numeric",
                   })}
                 </Text>
-              </View>
+              </TouchableOpacity>
             ))
           )}
         </ScrollView>

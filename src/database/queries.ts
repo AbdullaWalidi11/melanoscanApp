@@ -142,8 +142,10 @@ export async function getLastThreeScans(): Promise<Scan[]> {
 
 export async function markLesionAsSynced(localId: number, firebaseId: string) {
   const db = getDB();
-  console.log(`Marking lesion ${localId} as synced with firebaseId: ${firebaseId}`);
-  
+  console.log(
+    `Marking lesion ${localId} as synced with firebaseId: ${firebaseId}`
+  );
+
   try {
     await db.runAsync(
       `UPDATE lesions 
@@ -158,7 +160,7 @@ export async function markLesionAsSynced(localId: number, firebaseId: string) {
 
 // New function to get unsynced lesions
 
-export async function getUnsyncedLesions(): Promise<Scan[]>  {
+export async function getUnsyncedLesions(): Promise<Scan[]> {
   const db = getDB();
   try {
     // Get all active (not deleted) lesions that haven't been synced yet
@@ -218,7 +220,9 @@ export async function insertOrUpdateFromCloud(data: any) {
 // NEW: Scenario 4 (Sync Deletions)
 // Get items that were deleted offline (isDeleted=1) but Firebase doesn't know yet (isSynced=0)
 // Note: When we "Soft Delete", we set isSynced=0 so the sync service picks it up.
-export async function getDeletedPendingSync(): Promise<{ id: number; firebaseId: string }[]> {
+export async function getDeletedPendingSync(): Promise<
+  { id: number; firebaseId: string }[]
+> {
   const db = getDB();
   try {
     const results = await db.getAllAsync(
@@ -247,14 +251,14 @@ export async function clearDatabase() {
   const db = getDB();
   try {
     console.log("⚠️ Wiping local database (Logout)...");
-    await db.runAsync(`DELETE FROM lesions`); 
+    await db.runAsync(`DELETE FROM lesions`);
     // Or drop table if you prefer: await db.runAsync(`DROP TABLE IF EXISTS lesions`);
   } catch (error) {
     console.error("Error clearing DB:", error);
   }
 }
 
-//  Save User Profile 
+//  Save User Profile
 export async function saveUserProfile(data: SurveyData) {
   const db = getDB();
   const now = new Date().toISOString();
@@ -276,11 +280,27 @@ export async function saveUserProfile(data: SurveyData) {
         ?
       )`,
       [
-        data.age, data.gender, data.hairColor, data.eyeColor, data.skinTone,
-        data.sunReaction, data.freckling, data.workEnvironment, data.climate, data.ancestry,
-        data.personalHistory, data.familyHistory, data.childhoodSunburns, data.tanningBeds,
-        data.moleCount, data.uglyDuckling, data.recentChanges, data.sunscreen, data.protection, data.checkups,
-        now
+        data.age,
+        data.gender,
+        data.hairColor,
+        data.eyeColor,
+        data.skinTone,
+        data.sunReaction,
+        data.freckling,
+        data.workEnvironment,
+        data.climate,
+        data.ancestry,
+        data.personalHistory,
+        data.familyHistory,
+        data.childhoodSunburns,
+        data.tanningBeds,
+        data.moleCount,
+        data.uglyDuckling,
+        data.recentChanges,
+        data.sunscreen,
+        data.protection,
+        data.checkups,
+        now,
       ]
     );
     console.log("✅ User Risk Profile saved to SQLite.");
@@ -290,11 +310,13 @@ export async function saveUserProfile(data: SurveyData) {
   }
 }
 
-// Get User Profile (For AI Context) 
+// Get User Profile (For AI Context)
 export async function getUserProfile(): Promise<SurveyData | null> {
   const db = getDB();
   try {
-    const result = await db.getFirstAsync(`SELECT * FROM user_profile WHERE id = 1`);
+    const result = await db.getFirstAsync(
+      `SELECT * FROM user_profile WHERE id = 1`
+    );
     return result as SurveyData;
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -304,7 +326,11 @@ export async function getUserProfile(): Promise<SurveyData | null> {
 
 // Add to src/database/queries.ts
 
-export async function updateLesion(id: number, region: string, description: string) {
+export async function updateLesion(
+  id: number,
+  region: string,
+  description: string
+) {
   const db = getDB();
   try {
     await db.runAsync(
@@ -323,7 +349,7 @@ export async function saveChatHistory(lesionId: number, messages: any[]) {
   const db = getDB();
   try {
     const jsonString = JSON.stringify(messages);
-    
+
     // We update chatHistory AND set isSynced=0 so it uploads to cloud later!
     await db.runAsync(
       `UPDATE lesions SET chatHistory = ?, isSynced = 0 WHERE id = ?`,
@@ -361,7 +387,7 @@ export async function saveComparisonLog(data: {
 }) {
   const db = getDB();
   const now = new Date();
-  
+
   try {
     await db.runAsync(
       `INSERT INTO comparisons (parentLesionId, oldImageUri, newImageUri, status, score, reasoning, advice, date, createdAt)
@@ -375,7 +401,7 @@ export async function saveComparisonLog(data: {
         data.reasoning,
         data.advice,
         now.toLocaleDateString(),
-        now.toISOString()
+        now.toISOString(),
       ]
     );
     console.log("✅ Comparison log saved.");
@@ -388,7 +414,16 @@ export async function saveComparisonLog(data: {
 export async function getComparisonLogs(parentLesionId: number) {
   const db = getDB();
   return await db.getAllAsync(
-    `SELECT * FROM comparisons WHERE parentLesionId = ? ORDER BY createdAt DESC`,
+    `SELECT * FROM comparisons WHERE parentLesionId = ? ORDER BY createdAt ASC`, // Crucial: Oldest to Newest for the timeline
+    [parentLesionId]
+  );
+}
+
+// NEW: Get the absolute latest comparison to know the most recent image
+export async function getLatestComparisonLog(parentLesionId: number) {
+  const db = getDB();
+  return await db.getFirstAsync<any>(
+    `SELECT * FROM comparisons WHERE parentLesionId = ? ORDER BY createdAt DESC LIMIT 1`,
     [parentLesionId]
   );
 }
