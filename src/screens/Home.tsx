@@ -6,12 +6,15 @@ import ScanMethodPopup from "../components/ScanMethodPopup";
 // 1. IMPORT DATABASE FUNCTIONS
 import { getLastThreeScans, Scan } from "../database/queries";
 
+import { useTranslation } from "react-i18next";
+
 // Define Props
 type Props = {
   navigation: any;
 };
 
 export default function Home({ navigation }: Props) {
+  const { t } = useTranslation();
   const [showScanMethodPopup, setShowScanMethodPopup] = useState(false);
 
   // 2. STATE FOR SCANS
@@ -51,15 +54,16 @@ export default function Home({ navigation }: Props) {
           {/* Left Column: Text and Button */}
           <View className="flex-1 flex-col pr-2 relative items-center">
             <Text className="text-[#444] font-semibold mb-4 text-base text-center leading-5 ">
-              Early checks save lives — A small step today can make a big
-              difference tomorrow, check your skin now!
+              {t("home.early_check")}
             </Text>
 
             <TouchableOpacity
-              className="bg-[#fe8d93] rounded-full py-3 w-36 shadow-sm items-center justify-center"
+              className="bg-[#fe948d] rounded-full py-3 w-36 shadow-sm items-center justify-center"
               onPress={() => setShowScanMethodPopup(true)}
             >
-              <Text className="text-white font-semibold text-lg">Scan Now</Text>
+              <Text className="text-white font-semibold text-lg">
+                {t("home.scan_now")}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -76,7 +80,7 @@ export default function Home({ navigation }: Props) {
           onPress={() => navigation.navigate("SurveyPage1")}
           style={styles.surveyButton}
         >
-          <View className="bg-[#fe8d93] rounded-3xl p-5 mt-4 relative overflow-hidden min-h-[120px] justify-center px-4">
+          <View className="bg-[#fe948d] rounded-3xl p-5 mt-4 relative overflow-hidden min-h-[120px] justify-center px-4">
             {/* === DECORATIVE BACKGROUND === */}
             {/* Faint circles */}
             <View className="absolute -top-6 left-8 w-24 h-24 bg-white rounded-full opacity-10" />
@@ -99,18 +103,19 @@ export default function Home({ navigation }: Props) {
             {/* Constrained width to prevent overlap */}
             <View className="z-10 relative w-[65%] py-2">
               <Text className="text-white font-bold text-3xl mb-1">
-                Answer Survey
+                {t("home.answer_survey")}
               </Text>
               <Text className="text-white/90 text-sm font-medium leading-5 ">
-                To get even more accurate results. don't hesitate to answer the
-                survey.
+                {t("home.survey_desc")}
               </Text>
             </View>
           </View>
         </TouchableOpacity>
 
         {/* ----- LAST SCANNING SECTION (DYNAMIC) ----- */}
-        <Text className="text-lg font-semibold mt-4">Your Last Scanning</Text>
+        <Text className="text-lg font-semibold mt-4">
+          {t("home.last_scans")}
+        </Text>
 
         <ScrollView
           horizontal
@@ -122,7 +127,7 @@ export default function Home({ navigation }: Props) {
             // Empty State
             <View className="mt-3 bg-gray-50 p-4 rounded-xl w-64 border border-dashed border-gray-300">
               <Text className="text-gray-400 text-center">
-                No scans found. Take your first photo!
+                {t("home.no_scans")}
               </Text>
             </View>
           ) : (
@@ -146,10 +151,10 @@ export default function Home({ navigation }: Props) {
                 </View>
 
                 <Text
-                  className="text-xs font-bold text-[#e2728f]"
+                  className="text-xs font-bold text-[#fe948d]"
                   numberOfLines={1}
                 >
-                  {scan.resultLabel || "Analyzing..."}
+                  {scan.resultLabel || t("home.analyzing")}
                 </Text>
                 <Text
                   className="text-xs font-semibold text-gray-700"
@@ -180,15 +185,14 @@ export default function Home({ navigation }: Props) {
           {/* TEXT + BUTTON RIGHT */}
           <View className="flex-1 items-center">
             <Text className="font-semibold text-[#333] mb-2 text-center">
-              Educating yourself about the ABCDE rule is so crucial for early
-              skin diagnosis.
+              {t("home.abcde_education")}
             </Text>
 
             <TouchableOpacity
               onPress={() => navigation.navigate("Disclaimer")}
               className="bg-[#000] px-4 py-2 rounded-xl mt-1"
             >
-              <Text className="text-white">Read more</Text>
+              <Text className="text-white">{t("home.read_more")}</Text>
             </TouchableOpacity>
           </View>
         </View>

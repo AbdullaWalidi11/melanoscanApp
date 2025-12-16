@@ -23,18 +23,18 @@ export default function Splash() {
         if (fontsLoaded || fontError) {
           // 1. Hide the native white splash screen
           await SplashScreen.hideAsync();
-          
+
           // 2. Wait 3 seconds while showing this custom Pink Animated screen
           const timer = setTimeout(() => {
             // CHANGED: Use navigation.replace instead of router.replace
             // This ensures the user cannot go "back" to the splash screen
-            navigation.replace("Login"); 
+            navigation.replace("Login");
           }, 3000);
 
           return () => clearTimeout(timer);
         }
       } catch (error) {
-        console.warn('Splash screen error:', error);
+        console.warn("Splash screen error:", error);
         await SplashScreen.hideAsync();
       }
     };
@@ -65,12 +65,12 @@ export default function Splash() {
         <View style={styles.logo_contianer}>
           {/* CHANGED: Path adjusted for new folder depth (../../) */}
           <Image
-            source={require("../../assets/images/appLogo.png")} 
+            source={require("../../assets/images/appLogo.png")}
             style={styles.logo}
             resizeMode="contain"
           />
         </View>
-        
+
         {/* App name */}
         <Text style={styles.appName}>MelanoScan</Text>
       </View>
@@ -96,15 +96,15 @@ const styles = StyleSheet.create({
   logo_contianer: {
     width: 200,
     height: 200,
-    backgroundColor: "#f69da1ff", 
+    backgroundColor: "#f69da1ff",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 50,
-    borderColor:"#FFD8D8", 
+    borderColor: "#FFD8D8",
     borderWidth: 1,
     zIndex: 4,
     shadowColor: "#181717ff",
-    shadowOffset: {width: 1, height: 1},
+    shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 10,
     elevation: 10,
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 2, height: 1 },
     textShadowRadius: 1,
     zIndex: 2,
-    marginTop: 20, 
+    marginTop: 20,
   },
   circle: {
     position: "absolute",
@@ -154,5 +154,5 @@ const styles = StyleSheet.create({
   },
   logo_app_contianer: {
     alignItems: "center",
-  }
+  },
 });

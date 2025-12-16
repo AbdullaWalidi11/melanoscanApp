@@ -63,7 +63,7 @@ export async function saveLesion({
 export async function getLesionsByRegion(region: string) {
   const db = getDB();
   // Added: AND isDeleted = 0
-  const sql = `SELECT * FROM lesions WHERE region = ? AND isDeleted = 0 ORDER BY date DESC;`;
+  const sql = `SELECT * FROM lesions WHERE LOWER(region) = LOWER(?) AND isDeleted = 0 ORDER BY date DESC;`;
   const params: (string | number | null)[] = [region];
 
   try {
@@ -80,7 +80,7 @@ export async function getLesionsByRegion(region: string) {
 export async function countLesionsByRegion(region: string): Promise<number> {
   const db = getDB();
   // Added: AND isDeleted = 0
-  const sql = `SELECT COUNT(*) as count FROM lesions WHERE region = ? AND isDeleted = 0;`;
+  const sql = `SELECT COUNT(*) as count FROM lesions WHERE LOWER(region) = LOWER(?) AND isDeleted = 0;`;
   const params: (string | number | null)[] = [region];
 
   try {
@@ -426,4 +426,15 @@ export async function getLatestComparisonLog(parentLesionId: number) {
     `SELECT * FROM comparisons WHERE parentLesionId = ? ORDER BY createdAt DESC LIMIT 1`,
     [parentLesionId]
   );
+}
+
+export async function deleteComparisonLog(id: number) {
+  const db = getDB();
+  try {
+    await db.runAsync(`DELETE FROM comparisons WHERE id = ?`, [id]);
+    console.log(`Deleted comparison log ${id}`);
+  } catch (error) {
+    console.error("Error deleting comparison log:", error);
+    throw error;
+  }
 }

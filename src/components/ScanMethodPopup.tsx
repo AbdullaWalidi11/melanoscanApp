@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { X } from "lucide-react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { useTranslation } from "react-i18next";
 
 interface ScanMethodPopupProps {
   visible: boolean;
@@ -16,6 +17,8 @@ export default function ScanMethodPopup({
   onTakePhoto,
   onUploadImage,
 }: ScanMethodPopupProps) {
+  const { t } = useTranslation();
+
   if (!visible) return null;
 
   return (
@@ -27,28 +30,28 @@ export default function ScanMethodPopup({
         </TouchableOpacity>
 
         <Text className="text-lg font-medium text-center">
-          Choose a method to scan{"\n"}and get result
+          {t("components.scan_popup.title")}
         </Text>
 
         {/* Take Photo */}
         <TouchableOpacity
           onPress={onTakePhoto}
-          className="bg-[#fe8d93] w-44 py-4 rounded-xl mt-6  flex-row items-center justify-center space-x-2"
+          className="bg-[#fe948d] w-44 py-4 rounded-xl mt-6  flex-row items-center justify-center space-x-2"
         >
           <Icon name="camera" size={20} color="#fff" />
           <Text className="text-center text-white font-semibold ml-3">
-            Take photo
+            {t("components.scan_popup.take_photo")}
           </Text>
         </TouchableOpacity>
 
         {/* Upload Image */}
         <TouchableOpacity
           onPress={onUploadImage}
-          className="border border-[#e2728f] w-44 py-4 rounded-xl mt-3 flex-row items-center justify-center space-x-2"
+          className="border border-[#fe948d] w-44 py-4 rounded-xl mt-3 flex-row items-center justify-center space-x-2"
         >
-          <Icon name="upload" size={20} color="#fe8d93" />
-          <Text className="text-center text-[#fe8d93] font-semibold ml-2">
-            Upload image
+          <Icon name="upload" size={20} color="#fe948d" />
+          <Text className="text-center text-[#fe948d] font-semibold ml-2">
+            {t("components.scan_popup.upload_image")}
           </Text>
         </TouchableOpacity>
       </View>

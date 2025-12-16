@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 // ✅ 1. IMPORT ICONS
 import { Home, FileText, Info, User } from "lucide-react-native";
@@ -18,6 +19,7 @@ import DisclaimerScreen from "../screens/Disclaimer";
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
+  const { t } = useTranslation();
   const [popupVisible, setPopupVisible] = useState(false);
   const navigation = useNavigation<any>();
 
@@ -53,11 +55,11 @@ export default function TabNavigator() {
 
           // ✅ HELPER: Returns the correct color (Same pink, different opacity)
           const getColor = (focused: boolean) =>
-            focused ? "#fe8d93" : "rgba(254, 141, 147, 0.5)";
+            focused ? "#fe948d" : "rgba(254, 141, 147, 0.5)";
 
           // ✅ HELPER: Returns the correct text style
           const getTextStyle = (focused: boolean) =>
-            `text-[10px] mt-1 text-[#fe8d93] ${focused ? "font-bold opacity-100" : "font-normal opacity-50"}`;
+            `text-[10px] mt-1 text-[#fe948d] ${focused ? "font-bold opacity-100" : "font-normal opacity-50"}`;
 
           return (
             <View className="flex-row bg-white border-t border-white justify-between items-center px-10 pb-5 mb-10 h-24 shadow-2xl shadow-black">
@@ -68,7 +70,9 @@ export default function TabNavigator() {
               >
                 {/* Replace Image with Icon */}
                 <Home size={28} color={getColor(isHomeFocused)} />
-                <Text className={getTextStyle(isHomeFocused)}>Home</Text>
+                <Text className={getTextStyle(isHomeFocused)}>
+                  {t("components.sidebar.menu.home")}
+                </Text>
               </TouchableOpacity>
 
               {/* === DISCLAIMER === */}
@@ -78,14 +82,14 @@ export default function TabNavigator() {
               >
                 <Info size={28} color={getColor(isDisclaimerFocused)} />
                 <Text className={getTextStyle(isDisclaimerFocused)}>
-                  Disclaimer
+                  {t("components.sidebar.menu.disclaimer")}
                 </Text>
               </TouchableOpacity>
 
               {/* === CAMERA (Keep Image or use Camera Icon) === */}
               <TouchableOpacity
                 onPress={handleCameraPress}
-                className="absolute left-1/2 -top-12 ml-2 bg-[#fe8d93] w-[65px] h-[65px] rounded-2xl items-center justify-center shadow-2xl shadow-white"
+                className="absolute left-1/2 -top-12 ml-2 bg-[#fe948d] w-[65px] h-[65px] rounded-2xl items-center justify-center shadow-2xl shadow-white"
               >
                 {/* You can keep your custom image here if you prefer, or switch to an Icon */}
                 <Image
@@ -100,7 +104,9 @@ export default function TabNavigator() {
                 className="items-center ml-2"
               >
                 <FileText size={28} color={getColor(isHistoryFocused)} />
-                <Text className={getTextStyle(isHistoryFocused)}>History</Text>
+                <Text className={getTextStyle(isHistoryFocused)}>
+                  {t("components.sidebar.menu.history")}
+                </Text>
               </TouchableOpacity>
 
               {/* === PROFILE === */}
@@ -109,7 +115,9 @@ export default function TabNavigator() {
                 className="items-center"
               >
                 <User size={28} color={getColor(isProfileFocused)} />
-                <Text className={getTextStyle(isProfileFocused)}>Profile</Text>
+                <Text className={getTextStyle(isProfileFocused)}>
+                  {t("components.sidebar.menu.profile")}
+                </Text>
               </TouchableOpacity>
             </View>
           );

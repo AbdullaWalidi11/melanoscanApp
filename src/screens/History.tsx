@@ -1,12 +1,14 @@
 import React, { useCallback, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View, Image } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 // 1. DATABASE IMPORT
 import { countLesionsByRegion } from "../database/queries";
 
 export default function HistoryScreen() {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
 
   // Initial State
   const [regions, setRegions] = useState([
@@ -19,15 +21,14 @@ export default function HistoryScreen() {
   ]);
 
   // 2. COMMENTED OUT IMAGES (To prevent crash)
- const regionImages: Record<string, any> = {
+  const regionImages: Record<string, any> = {
     face: require("../../assets/images/face.png"),
     body: require("../../assets/images/body.png"),
     "right arm": require("../../assets/images/right-arm.png"),
     "left arm": require("../../assets/images/left-arm.png"),
     "right leg": require("../../assets/images/right-leg.png"),
     "left leg": require("../../assets/images/left-leg.png"),
-  }; 
-
+  };
 
   // 3. LOAD DATA ON FOCUS
   useFocusEffect(
@@ -47,20 +48,14 @@ export default function HistoryScreen() {
       }
 
       loadCounts();
-    }, []) 
+    }, [])
   );
 
   return (
     // 4. SAFE VIEW STRUCTURE (No SafeAreaView)
     <View className="flex-1 bg-[#fff] pt-12">
-      
-      
-
       {/* ----- CONTENT ----- */}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        className="px-6 pb-32"
-      >
+      <ScrollView showsVerticalScrollIndicator={false} className="px-6 pb-32">
         {/* Grid of 6 Cards */}
         <View className="flex flex-row flex-wrap justify-between">
           {regions.map((item, index) => (
@@ -74,7 +69,6 @@ export default function HistoryScreen() {
               className="w-[45%] bg-white rounded-3xl border border-[#f5b4b4] shadow-md mb-6 p-3 items-center"
               activeOpacity={0.8}
             >
-              
               <Image
                 source={regionImages[item.name]}
                 className="w-16 h-16 rounded-xl mb-2"
@@ -82,10 +76,12 @@ export default function HistoryScreen() {
               />
 
               <Text className="text-center font-semibold text-[#444] capitalize">
-                {item.name}
+                {t(
+                  `components.save_popup.body_parts.${item.name.replace(" ", "_")}`
+                )}
               </Text>
 
-              <Text className="text-center text-3xl font-bold text-[#fe8d93] mt-1">
+              <Text className="text-center text-3xl font-bold text-[#fe948d] mt-1">
                 {item.count}
               </Text>
             </TouchableOpacity>

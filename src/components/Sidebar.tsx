@@ -23,7 +23,13 @@ import {
   LogIn,
   Globe,
   ChevronRight,
+  MapPin,
 } from "lucide-react-native";
+import { openNearestDermatologist } from "../services/linkingService";
+
+import { useTranslation } from "react-i18next";
+import { setLanguage } from "../i18n";
+import CustomAlert, { AlertAction } from "./CustomAlert";
 
 const { width } = Dimensions.get("window");
 const SIDEBAR_WIDTH = width * 0.75;
@@ -34,6 +40,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ visible, onClose }: SidebarProps) {
+  const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
   const { user, setUser } = useAuth();
   const slideAnim = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
@@ -43,6 +50,31 @@ export default function Sidebar({ visible, onClose }: SidebarProps) {
 
   // Internal state to keep Modal visible during exit animation
   const [showModal, setShowModal] = useState(false);
+
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message?: string;
+    actions: AlertAction[];
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    actions: [],
+  });
+
+  const showAlert = (
+    title: string,
+    message: string | undefined,
+    actions: AlertAction[]
+  ) => {
+    setAlertConfig({ visible: true, title, message, actions });
+  };
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
 
   useEffect(() => {
     if (visible) {
@@ -86,29 +118,30 @@ export default function Sidebar({ visible, onClose }: SidebarProps) {
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      "Log Out",
-      "Are you sure you want to log out? All local data will be cleared from this device for your privacy.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Log Out",
-          style: "destructive",
-          onPress: async () => {
-            onClose();
-            try {
-              await clearDatabase();
-              if (AUTH.currentUser) {
-                await AUTH.signOut();
-              }
-              setUser(null);
-            } catch (error) {
-              console.error("Logout error:", error);
+    showAlert(t("sidebar.logout"), t("components.sidebar.logout_confirm_msg"), [
+      {
+        text: t("home.cancel"),
+        style: "cancel",
+        onPress: hideAlert,
+      },
+      {
+        text: t("sidebar.logout"),
+        style: "destructive",
+        onPress: async () => {
+          hideAlert();
+          onClose();
+          try {
+            await clearDatabase();
+            if (AUTH.currentUser) {
+              await AUTH.signOut();
             }
-          },
+            setUser(null);
+          } catch (error) {
+            console.error("Logout error:", error);
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleLogin = () => {
@@ -116,6 +149,25 @@ export default function Sidebar({ visible, onClose }: SidebarProps) {
     setTimeout(() => {
       navigation.navigate("Login");
     }, 300);
+  };
+
+  const handleLanguageChange = () => {
+    showAlert(t("sidebar.language"), undefined, [
+      {
+        text: "English",
+        onPress: () => {
+          setLanguage("en");
+          hideAlert();
+        },
+      },
+      {
+        text: "Türkçe",
+        onPress: () => {
+          setLanguage("tr");
+          hideAlert();
+        },
+      },
+    ]);
   };
 
   // Safe check if needed, though local state handles it
@@ -164,15 +216,17 @@ export default function Sidebar({ visible, onClose }: SidebarProps) {
           style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}
         >
           {/* Header */}
-          <View className="pt-12 pb-6 px-6 bg-[#fe8d93] items-center">
+          <View className="pt-12 pb-6 px-6 bg-[#fe948d] items-center">
             <View className="w-20 h-20 bg-white rounded-full items-center justify-center mb-3 shadow-sm">
               <User color="#fe8d93" size={40} />
             </View>
             <Text className="text-xl font-bold text-white">
-              {user?.displayName || "Guest User"}
+              {user?.displayName || t("components.sidebar.guest_user")}
             </Text>
             <Text className="text-white/80 text-sm">
-              {user?.isAnonymous ? "Offline Account" : "Member"}
+              {user?.isAnonymous
+                ? t("components.sidebar.offline_account")
+                : t("components.sidebar.member")}
             </Text>
             <TouchableOpacity
               onPress={onClose}
@@ -186,30 +240,36 @@ export default function Sidebar({ visible, onClose }: SidebarProps) {
           <View className="flex-1 px-6 pt-4 bg-white">
             <MenuItem
               icon={<Home color="#555" size={24} />}
-              text="Home"
+              text={t("components.sidebar.menu.home")}
               onPress={() => handleNavigation("Home")}
             />
             <MenuItem
               icon={<FileText color="#555" size={24} />}
-              text="History"
-              onPress={() => handleNavigation("History")}
+              text={t("components.sidebar.menu.history")}
+              onPress={() => handleNavigation("ComparisonHistory")}
             />
             <MenuItem
               icon={<User color="#555" size={24} />}
-              text="Profile"
+              text={t("components.sidebar.menu.profile")}
               onPress={() => handleNavigation("Profile")}
             />
             <MenuItem
               icon={<Globe color="#555" size={24} />}
-              text="Languages"
-              onPress={() =>
-                Alert.alert("Languages", "Language settings coming soon!")
-              }
+              text={t("sidebar.language")}
+              onPress={handleLanguageChange}
             />
             <MenuItem
               icon={<Info color="#555" size={24} />}
-              text="Disclaimer"
+              text={t("components.sidebar.menu.disclaimer")}
               onPress={() => handleNavigation("Disclaimer")}
+            />
+            <MenuItem
+              icon={<MapPin color="#555" size={24} />}
+              text={t("sidebar.find_clinic")}
+              onPress={() => {
+                onClose();
+                openNearestDermatologist();
+              }}
             />
           </View>
 
@@ -217,23 +277,34 @@ export default function Sidebar({ visible, onClose }: SidebarProps) {
           <View className="p-6 border-t border-gray-100 bg-white pb-10">
             <TouchableOpacity
               onPress={isCloudUser ? handleLogout : handleLogin}
-              className="flex-row items-center justify-center bg-[#fe8d93] py-3 rounded-xl border border-gray-200"
+              className="flex-row items-center justify-center bg-[#fe948d] py-3 rounded-xl border border-gray-200"
             >
               {isCloudUser ? (
                 <>
                   <LogOut color="#fe8d93" size={20} />
-                  <Text className="ml-2 text-[#f8f9fa] font-bold">Log Out</Text>
+                  <Text className="ml-2 text-[#f8f9fa] font-bold">
+                    {t("sidebar.logout")}
+                  </Text>
                 </>
               ) : (
                 <>
                   <LogIn color="#fe8d93" size={20} />
-                  <Text className="ml-2 text-[#f8f9fa] font-bold">Log In</Text>
+                  <Text className="ml-2 text-[#f8f9fa] font-bold">
+                    {t("components.sidebar.menu.login")}
+                  </Text>
                 </>
               )}
             </TouchableOpacity>
           </View>
         </Animated.View>
       </View>
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        onClose={hideAlert}
+      />
     </Modal>
   );
 }

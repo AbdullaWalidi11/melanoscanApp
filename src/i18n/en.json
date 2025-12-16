@@ -1,0 +1,466 @@
+{
+  "home": {
+    "early_check": "Early checks save lives — A small step today can make a big difference tomorrow, check your skin now!",
+    "scan_now": "Scan Now",
+    "answer_survey": "Answer Survey",
+    "survey_desc": "To get even more accurate results, don't hesitate to answer the survey.",
+    "last_scans": "Your Last Scanning",
+    "no_scans": "No scans found. Take your first photo!",
+    "abcde_education": "Educating yourself about the ABCDE rule is so crucial for early skin diagnosis.",
+    "read_more": "Read more",
+    "analyzing": "Analyzing...",
+    "scan_method_title": "Choose Scan Method",
+    "camera": "Camera",
+    "gallery": "Gallery",
+    "cancel": "Cancel",
+    "permission_required": "Permission Required",
+    "enable_notifications": "Please enable notifications in your phone settings.",
+    "done": "Done"
+  },
+  "header": {
+    "notifications_title": "Notification Settings",
+    "notifications_desc": "Manage how MelanoScan keeps you informed.",
+    "monthly_tips": "Monthly Skin Tips",
+    "monthly_tips_desc": "Educational info about skin health.",
+    "weekly_reminders": "High-Risk Reminders",
+    "weekly_reminders_desc": "Weekly nudges to check flagged lesions."
+  },
+  "sidebar": {
+    "language": "Language",
+    "settings": "Settings",
+    "logout": "Log Out",
+    "find_clinic": "Find Clinic"
+  },
+  "disclaimer": {
+    "title": "IMPORTANT DISCLAIMER",
+    "body": "This app is a screening aid, <bold>NOT</bold> a diagnostic tool. Always consult a professional dermatologist for any skin concerns.",
+    "understanding_title": "Understanding Skin Cancer",
+    "understanding_body": "Early detection is a pivotal form of defense. Skin cancer is the abnormal growth of skin cells, most often developing on skin exposed to the sun. However, this common form of cancer can also occur on areas of your skin not ordinarily exposed to sunlight.",
+    "abcde_title": "The ABCDE Rule",
+    "a_title": "A - Asymmetry",
+    "a_desc": "One half of the mole does not match the other half.",
+    "b_title": "B - Border",
+    "b_desc": "The edges are irregular, ragged, notched, or blurred.",
+    "c_title": "C - Color",
+    "c_desc": "The color is not the same all over and may include shades of brown or black.",
+    "d_title": "D - Diameter",
+    "d_desc": "The spot is larger than 6 millimeters across (about ¼ inch).",
+    "e_title": "E - Evolving",
+    "e_desc": "The mole is changing in size, shape, or color over time.",
+    "vigilant_title": "Stay Vigilant",
+    "vigilant_body": "Perform regular self-checks on your skin. Look for new growths or existing moles that change. If you notice anything suspicious, book an appointment with a doctor immediately.",
+    "prevention_title": "Prevention Tips",
+    "tip_1": "Apply sunscreen (SPF 30+) every 2 hours when outdoors.",
+    "tip_2": "Seek shade, especially between 10 AM and 4 PM.",
+    "tip_3": "Avoid tanning beds and sunlamps entirely.",
+    "doctor_title": "When to see a doctor?",
+    "doctor_body": "You should consult a dermatologist if you notice:\n\n1. A sore that doesn't heal.\n2. Spread of pigment from the border of a spot into surrounding skin.\n3. Redness or a new swelling beyond the border of the mole.\n4. Change in sensation, such as itchiness, tenderness, or pain."
+  },
+  "profile": {
+    "guest_user": "Guest User",
+    "offline_account": "Offline Account",
+    "enthusiast": "Skin Health Enthusiast",
+    "account_settings": "Account Settings",
+    "notifications": "Notifications",
+    "language": "Language",
+    "privacy_policy": "Privacy Policy",
+    "log_out": "Log Out",
+    "log_in": "Log In",
+    "logout_alert_title": "Log Out",
+    "logout_alert_body": "Are you sure you want to log out? All local data will be cleared from this device for your privacy.",
+    "cancel": "Cancel",
+    "confirm_logout": "Log Out"
+  },
+  "analysis_result": {
+    "title": "Analysing your photo",
+    "asymmetry_title": "Asymmetry",
+    "asymmetry_desc": "If you draw a line through the mole and the two halves look very different, this uneven shape can be an early warning sign of melanoma.",
+    "border_title": "Border",
+    "border_desc": "Melanomas often have uneven borders. Look for edges that are ragged, notched, or blurred.",
+    "color_title": "Color",
+    "color_desc": "Benign moles are usually one shade. Melanomas may contain different shades of brown, black, or even red, white, or blue.",
+    "diameter_title": "Diameter",
+    "diameter_desc": "Melanomas are usually larger than 6mm (roughly the size of a pencil eraser), though they can be smaller.",
+    "evolving_title": "Evolving",
+    "evolving_desc": "Any change—in size, shape, color, elevation, or another trait, or any new symptom like bleeding, itching or crusting.",
+    "back": "Back",
+    "high_risk": "High Risk:",
+    "medium_risk": "Medium Risk:",
+    "low_risk": "Low Risk:",
+    "high_risk_desc": " This lesion exhibits specific irregular features—such as asymmetry, border irregularity, or color variation—that are often associated with higher-risk conditions. We strongly advise that you schedule an appointment with a dermatologist for a professional evaluation and dermoscopic examination as soon as possible.",
+    "medium_risk_desc": " The analysis detects some features that are ambiguous or deviate from a typical benign pattern. We suggest monitoring this spot closely for changes over the next few weeks and consulting a doctor if you notice any evolution.",
+    "low_risk_desc": " Our AI analysis indicates that this spot currently displays benign characteristics typical of common moles. Although the risk appears minimal at this time, it is important to practice regular self-checks and monitor the area for any changes in size, shape, or color in the future.",
+    "result": "Result:",
+    "diagnosis": "Diagnosis:",
+    "advice": "Advice:",
+    "advice_desc": "If you ever feel unsure, don't hesitate to consult a healthcare professional.",
+    "uncertain_title": "if you are uncertain or not convinced with the scan result, its totally fine - To make sure if its a mistake or not, you can:",
+    "scan_again": "Scan again",
+    "save_history": "Save to History",
+    "you_can_also": "You can also:",
+    "ai_insight": "Get tailored insights from our AI assistant. Click the robot to start a chat for more accurate guidance.",
+    "footer_disclaimer": "This scan result is not a diagnosis. Please, consult a doctor for an accurate diagnosis and treatment recommendations",
+    "error_title": "Error",
+    "analysis_failed": "Analysis failed.",
+    "auto_saved": "Auto-saved scan",
+    "malignant": "Malignant",
+    "benign": "Benign",
+    "suspicious": "Suspicious",
+    "lesions": "Lesions"
+  },
+  "lesion_details": {
+    "default_title": "Lesion Details",
+    "scanned_on": "Scanned on {{date}}",
+    "delete_title": "Delete Scan",
+    "delete_confirm": "Are you sure? This cannot be undone.",
+    "delete": "Delete",
+    "location": "Location:",
+    "save_saved_title": "Saved",
+    "save_saved_body": "Lesion details updated successfully."
+  },
+  "history": {
+    "title": "History",
+    "scan_compare": "Scan and Compare",
+    "comparison_history": "Comparison History",
+    "delete_lesion": "Delete Lesion",
+    "delete_confirm": "Are you sure?",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "start_comparison": "Start Comparison",
+    "start_compare_msg": "Take a new photo to compare against this baseline scan.",
+    "camera": "Camera",
+    "gallery": "Gallery",
+    "no_scans": "No scans yet.",
+    "tap_to_add": "Tap the camera button on the home screen to add your first scan.",
+    "scan_suffix": "scan",
+    "errors": {
+      "delete_failed": "Failed to delete scan locally.",
+      "camera_perm": "Camera permission needed.",
+      "gallery_perm": "Gallery permission needed.",
+      "poor_quality": "Poor Image Quality",
+      "capture_error": "Could not capture image."
+    },
+    "lesions": "Lesions"
+  },
+  "compare_result": {
+    "improved": "Improved",
+    "unchanged": "Unchanged",
+    "worsened": "Worsened",
+    "non_comparable": "Non-Comparable",
+    "no_change": "No Change Detected",
+    "changes_detected": "Changes Detected",
+    "ai_analysis": "AI Analysis",
+    "advice_label": "Advice:",
+    "saving": "Saving...",
+    "add_to_history": "Add to History",
+    "saved_title": "Saved",
+    "saved_body": "Comparison added to history.",
+    "error_title": "Error",
+    "error_body": "Could not save result."
+  },
+  "chat": {
+    "title": "Model Conversation",
+    "placeholder": "Type a message...",
+    "thinking": "Thinking...",
+    "analyzing": "Analyzing...",
+    "error_loading": "Error loading scan data.",
+    "connection_error": "Connection error. Please try again.",
+    "initial_greeting": "Hello. I've reviewed your scan and risk profile. How can I help?"
+  },
+  "comparison_processing": {
+    "title": "Comparing Images",
+    "loading": "Checking evolving state...",
+    "asymmetry_title": "Asymmetry",
+    "asymmetry_desc": "If you draw a line through the mole and the two halves look very different, this uneven shape can be an early warning sign of melanoma.",
+    "footer_disclaimer": "This scan result is not a diagnosis. Please, consult a doctor for an accurate diagnosis and treatment recommendations.",
+    "failed_title": "Comparison Failed",
+    "go_back": "Go Back",
+    "generic_error": "Something went wrong during analysis."
+  },
+  "comparison_history": {
+    "title": "Lesion History",
+    "baseline_alert": "This is the original baseline scan."
+  },
+  "log_detail": {
+    "title": "Comparison Detail",
+    "change": "Change",
+    "previous": "Previous",
+    "this_scan": "This Scan",
+    "analysis": "Analysis",
+    "recommendation": "Recommendation"
+  },
+  "scan_upload": {
+    "upload_photo": "Upload photo",
+    "uploading": "uploading . . .",
+    "upload_succeeded": "upload succeeded",
+    "wait_message": "Your photo is uploading. It might take a minute so stay patient",
+    "analyze_photo": "Analyze Photo",
+    "permission_denied": "Permission Denied",
+    "permission_msg": "We need {{type}} permissions."
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "email_label": "Email Address",
+      "email_placeholder": "Enter your email",
+      "password_label": "Password",
+      "password_placeholder": "Enter your password",
+      "remember_me": "Remember me",
+      "forgot_password": "Forgot Password?",
+      "login_btn": "Login",
+      "logging_in": "Logging in...",
+      "or_sign_in_with": "Or Sign In With",
+      "google_btn": "Sign In With Google",
+      "guest_btn": "Continue Without Signing In",
+      "no_account": "Don’t have an account?",
+      "signup_link": "Sign up",
+      "alerts": {
+        "error": "Error",
+        "fill_all": "Please enter both email and password.",
+        "login_failed": "Login Failed",
+        "check_creds": "Please check your credentials.",
+        "google_fail_title": "Sign In Cancelled",
+        "google_fail_msg": "Could not sign in with Google."
+      }
+    },
+    "signup": {
+      "title": "Create an Account",
+      "name_label": "Name",
+      "name_placeholder": "User Name",
+      "create_pass_label": "Create Password",
+      "confirm_pass_label": "Confirm Password",
+      "create_pass_placeholder": "Create Password",
+      "confirm_pass_placeholder": "Confirm Password",
+      "signup_btn": "Sign Up",
+      "creating_account": "Creating Account...",
+      "have_account": "Already have an account?",
+      "login_link": "Login",
+      "alerts": {
+        "fill_all": "Please fill in all fields",
+        "pass_length": "Password must be at least 6 characters",
+        "pass_mismatch": "Passwords do not match",
+        "success_title": "Success",
+        "success_msg": "Account created! Please check your email for a verification link.",
+        "fail_msg": "Sign up failed. Please try again."
+      }
+    },
+    "forgot": {
+      "title": "Forgot Password?",
+      "desc": "Don't worry! It happens. Please enter the email associated with your account.",
+      "send_btn": "Send Reset Link",
+      "sending": "Sending...",
+      "alerts": {
+        "enter_email": "Please enter your email address.",
+        "check_email_title": "Check your email",
+        "check_email_msg": "We have sent a password reset link to your email address.",
+        "fail_msg": "Could not send reset email. Please check the email provided."
+      }
+    }
+  },
+  "landing": {
+    "page1": {
+      "title": "Catch Skin Changes \nEarly!",
+      "desc": "Take a quick photo of your skin and let AI highlight potential risks. Early checks can make all the difference."
+    },
+    "page2": {
+      "title": "Your Health, Your \n Privacy",
+      "desc": "All scans stay on your device. No internet needed, no data shared — your photos remain yours."
+    },
+    "page3": {
+      "title": "Stay on Top of Your \n Skin Health",
+      "desc": "Track lesions over time, set reminders, and learn how to care for your skin with easy medical tips."
+    },
+    "next": "Next",
+    "skip": "skip",
+    "get_started": "Get Started"
+  },
+  "survey": {
+    "header": "Answering this survey will allow us to personalize your experience with our AI assistant.",
+    "age_label": "What is your age group?",
+    "gender_label": "What is your gender?",
+    "hair_label": "Natural Hair Color",
+    "eye_label": "Natural Eye Color",
+    "skin_label": "What is your skin type?",
+    "sun_reaction_label": "Reaction to 1 hour of sun (no protection)?",
+    "freckles_label": "Do you have freckles?",
+    "work_label": "Where do you spend most of your day?",
+    "climate_label": "How sunny is the place you live?",
+    "ancestry_label": "Do you have Northern European ancestry?",
+    "history_personal_label": "Have you ever been diagnosed with skin cancer?",
+    "history_family_label": "Has anyone in your immediate family had skin cancer?",
+    "sunburns_label": "Did you have blistering sunburns as a child?",
+    "tanning_beds_label": "Have you used tanning beds?",
+    "mole_count_label": "Estimate the number of moles on your body:",
+    "ugly_duckling_label": "Do you have a mole that looks different from others?",
+    "changes_label": "Have you noticed any moles changing recently?",
+    "sunscreen_label": "How often do you wear sunscreen?",
+    "protection_label": "Do you wear protective clothing in the sun?",
+    "checkups_label": "How often do you get a professional skin check?",
+    "next": "Next",
+    "skip": "Skip",
+    "submit": "Submit",
+    "alerts": {
+      "missing_info_title": "Missing Info",
+      "missing_info_msg": "Please answer the basic questions to proceed.",
+      "complete_profile_title": "Complete the Profile",
+      "complete_profile_msg": "To give you accurate AI advice, we need a complete risk profile.\n\nPlease answer all questions, or tap 'Skip'.",
+      "save_error": "Failed to save profile."
+    },
+    "options": {
+      "age": {
+        "under_18": "Under 18",
+        "18_24": "18-24",
+        "25_34": "25-34",
+        "35_44": "35-44",
+        "45_54": "45-54",
+        "55_64": "55-64",
+        "65_plus": "65+"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "hair_color": {
+        "red_auburn": "Red / Auburn",
+        "blonde": "Blonde",
+        "brown": "Brown",
+        "black": "Black"
+      },
+      "eye_color": {
+        "blue_grey": "Blue / Grey",
+        "green_hazel": "Green / Hazel",
+        "light_brown": "Light Brown",
+        "dark_brown": "Dark Brown"
+      },
+      "skin_tone": {
+        "type_1": "Type I (Very fair, always burns)",
+        "type_2": "Type II (Fair, burns easily)",
+        "type_3": "Type III (Medium, sometimes burns)",
+        "type_4": "Type IV (Olive, rarely burns)",
+        "type_5": "Type V (Brown, never burns)",
+        "type_6": "Type VI (Black)"
+      },
+      "sun_reaction": {
+        "blister_burn": "Painful blister / Burn",
+        "mild_burn": "Mild burn, then peel",
+        "burn_tan": "Burn then tan",
+        "tan_immediately": "Tan immediately",
+        "nothing": "Nothing / Darken slightly"
+      },
+      "freckles": {
+        "none": "None",
+        "few": "A few on face/shoulders",
+        "many": "Many / All over"
+      },
+      "work_env": {
+        "indoors": "Mostly Indoors",
+        "mixed": "Mixed / Commuting",
+        "outdoors": "Mostly Outdoors"
+      },
+      "climate": {
+        "cloudy": "Cloudy / Rainy",
+        "moderate": "Moderate",
+        "sunny": "Very Sunny / Tropical"
+      },
+      "ancestry": {
+        "yes": "Yes",
+        "no": "No",
+        "unsure": "Unsure"
+      },
+      "history_personal": {
+        "no": "No",
+        "melanoma": "Yes, Melanoma",
+        "non_melanoma": "Yes, Non-Melanoma (BCC/SCC)",
+        "unsure": "Unsure"
+      },
+      "history_family": {
+        "no": "No",
+        "parent_sibling": "Yes (Parent/Sibling)",
+        "distant": "Yes (Distant Relative)",
+        "unsure": "Unsure"
+      },
+      "sunburns": {
+        "no": "No",
+        "once_twice": "Yes, once or twice",
+        "frequently": "Yes, frequently"
+      },
+      "tanning_beds": {
+        "never": "Never",
+        "few_past": "A few times in the past",
+        "regularly_past": "Yes, regularly (Past)",
+        "currently": "Yes, currently"
+      },
+      "mole_count": {
+        "few": "Few (< 20)",
+        "average": "Average (20-50)",
+        "many": "Many (> 50)"
+      },
+      "ugly_duckling": {
+        "no": "No",
+        "yes": "Yes",
+        "not_sure": "Not sure"
+      },
+      "recent_changes": {
+        "no": "No",
+        "slight": "Yes, slight change",
+        "significant": "Yes, significant change"
+      },
+      "sunscreen": {
+        "daily": "Daily / Always",
+        "sunny_days": "Only on sunny days",
+        "rarely": "Rarely / Never"
+      },
+      "protection": {
+        "always": "Always",
+        "sometimes": "Sometimes",
+        "rarely": "Rarely"
+      },
+      "checkups": {
+        "yearly": "Yearly",
+        "few_years": "Every few years",
+        "issue_only": "Only when I see an issue",
+        "never": "Never"
+      }
+    }
+  },
+  "components": {
+    "dropdown": {
+      "select_option": "Select an option",
+      "placeholder": "Select an option"
+    },
+    "save_popup": {
+      "title": "Choose which part of your body\nis the mole located in",
+      "choose_part": "Choose body part",
+      "desc_placeholder": "Description (e.g., small mole)",
+      "save": "Save",
+      "cancel": "Cancel",
+      "body_parts": {
+        "face": "Face",
+        "body": "Body",
+        "right_arm": "Right Arm",
+        "left_arm": "Left Arm",
+        "right_leg": "Right Leg",
+        "left_leg": "Left Leg"
+      }
+    },
+    "scan_popup": {
+      "title": "Choose a method to scan\nand get result",
+      "take_photo": "Take photo",
+      "upload_image": "Upload image"
+    },
+    "sidebar": {
+      "guest_user": "Guest User",
+      "offline_account": "Offline Account",
+      "member": "Member",
+      "menu": {
+        "home": "Home",
+        "history": "History",
+        "profile": "Profile",
+        "disclaimer": "Disclaimer",
+        "login": "Log In",
+        "logout": "Log Out"
+      },
+      "logout_confirm_msg": "Are you sure you want to log out? All local data will be cleared from this device for your privacy."
+    }
+  }
+}

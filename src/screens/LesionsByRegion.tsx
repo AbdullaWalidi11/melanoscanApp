@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import {
-  Alert,
   Image,
   ScrollView,
   Text,
@@ -17,6 +16,8 @@ import {
 } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
+import CustomAlert, { AlertAction } from "../components/CustomAlert";
 
 // Database & Validation
 import {
@@ -29,6 +30,7 @@ import {
   Montserrat_400Regular,
   Montserrat_600SemiBold,
   useFonts,
+  useFonts as useGoogleFonts, // Alias for safety or useFonts hook directly
 } from "@expo-google-fonts/montserrat";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -45,6 +47,7 @@ type Lesion = {
 export default function LesionsByRegionScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  const { t } = useTranslation();
 
   // Load Fonts (HOOK)
   let [fontsLoaded] = useFonts({
@@ -57,13 +60,47 @@ export default function LesionsByRegionScreen() {
     ? regionParam[0]
     : regionParam;
 
+  // Safely cast to string for replacement, assuming proper region string
+  const regionKey = regionString.replace(" ", "_");
+
   const [lesions, setLesions] = useState<Lesion[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedLesion, setSelectedLesion] = useState<Lesion | null>(null);
 
-  const title = regionString
-    ? regionString.toString().replace(/\b\w/g, (c: string) => c.toUpperCase())
-    : "";
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message?: string;
+    actions: AlertAction[];
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    actions: [],
+  });
+
+  const hideAlert = () =>
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+
+  const showCustomAlert = (
+    title: string,
+    message: string,
+    actions: AlertAction[] = [{ text: "OK", onPress: hideAlert }]
+  ) => {
+    setAlertConfig({ visible: true, title, message, actions });
+  };
+
+  // We want to translate the region name.
+  // We can match it against our known regions or just display it if unknown.
+  // Using the key mapping from components.save_popup.body_parts
+  const translatedRegion = t(`components.save_popup.body_parts.${regionKey}`, {
+    defaultValue: regionString,
+  });
+
+  // Title case for English fallback or just use translation
+  const title = translatedRegion; // || regionString.replace(/\b\w/g, (c) => c.toUpperCase());
+
   const correctRegion = regionString ? regionString.toLowerCase() : "";
 
   // --- LOAD DATA (HOOK) ---
@@ -90,27 +127,37 @@ export default function LesionsByRegionScreen() {
       await deleteLesionById(id);
       setLesions((prev) => prev.filter((l) => l.id !== id));
     } catch (error) {
-      Alert.alert("Error", "Failed to delete scan locally.");
+      showCustomAlert(
+        t("history.errors.delete_failed"),
+        t("history.errors.delete_failed")
+      ); // Using same string for title/msg as simplified
     }
   }, []);
 
   // --- OPTION A: START NEW COMPARISON ---
+  // --- OPTION A: START NEW COMPARISON ---
   const handleStartComparison = async (originalLesion: Lesion) => {
-    Alert.alert(
-      "Start Comparison",
-      "Take a new photo to compare against this baseline scan.",
-      [
+    setAlertConfig({
+      visible: true,
+      title: t("history.start_comparison"),
+      message: t("history.start_compare_msg"),
+      actions: [
         {
-          text: "Camera",
-          onPress: () => pickImageForComparison(originalLesion, true),
+          text: t("history.camera"),
+          onPress: () => {
+            hideAlert();
+            pickImageForComparison(originalLesion, true);
+          },
         },
         {
-          text: "Gallery",
-          onPress: () => pickImageForComparison(originalLesion, false),
+          text: t("history.gallery"),
+          onPress: () => {
+            hideAlert();
+            pickImageForComparison(originalLesion, false);
+          },
         },
-        { text: "Cancel", style: "cancel" },
-      ]
-    );
+      ],
+    });
   };
 
   // --- OPTION B: VIEW PAST LOGS ---
@@ -130,11 +177,12 @@ export default function LesionsByRegionScreen() {
     try {
       if (fromCamera) {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== "granted") return alert("Camera permission needed.");
+        if (status !== "granted") return alert(t("history.errors.camera_perm"));
       } else {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") return alert("Gallery permission needed.");
+        if (status !== "granted")
+          return alert(t("history.errors.gallery_perm"));
       }
 
       setLoading(true);
@@ -163,7 +211,10 @@ export default function LesionsByRegionScreen() {
       const qualityCheck = await validateImageQuality(newImageUri);
       if (!qualityCheck.isValid) {
         setLoading(false);
-        Alert.alert("Poor Image Quality", qualityCheck.error);
+        showCustomAlert(
+          t("history.errors.poor_quality"),
+          qualityCheck.error || ""
+        );
         return;
       }
 
@@ -195,7 +246,10 @@ export default function LesionsByRegionScreen() {
     } catch (error) {
       console.error("Comparison Error:", error);
       setLoading(false);
-      Alert.alert("Error", "Could not capture image.");
+      showCustomAlert(
+        t("auth.login.alerts.error"),
+        t("history.errors.capture_error")
+      );
     }
   };
 
@@ -226,7 +280,7 @@ export default function LesionsByRegionScreen() {
                     style={{ fontFamily: "Montserrat_600SemiBold" }}
                     className="text-[#8B5E3C] text-base"
                   >
-                    scan and compare
+                    {t("history.scan_compare")}
                   </Text>
                 </TouchableOpacity>
 
@@ -244,7 +298,7 @@ export default function LesionsByRegionScreen() {
                     style={{ fontFamily: "Montserrat_600SemiBold" }}
                     className="text-[#8B5E3C] text-base"
                   >
-                    comparison history
+                    {t("history.comparison_history")}
                   </Text>
                 </TouchableOpacity>
 
@@ -253,17 +307,27 @@ export default function LesionsByRegionScreen() {
                   className="p-4 items-center justify-center"
                   onPress={() => {
                     if (selectedLesion) {
-                      Alert.alert("Delete Lesion", "Are you sure?", [
-                        { text: "Cancel", style: "cancel" },
-                        {
-                          text: "Delete",
-                          style: "destructive",
-                          onPress: () => {
-                            handleDelete(selectedLesion.id);
-                            setSelectedLesion(null);
+                      setAlertConfig({
+                        visible: true,
+                        title: t("history.delete_lesion"),
+                        message: t("history.delete_confirm"),
+                        actions: [
+                          {
+                            text: t("history.cancel"),
+                            style: "cancel",
+                            onPress: hideAlert,
                           },
-                        },
-                      ]);
+                          {
+                            text: t("history.delete"),
+                            style: "destructive",
+                            onPress: () => {
+                              handleDelete(selectedLesion.id);
+                              setSelectedLesion(null);
+                              hideAlert();
+                            },
+                          },
+                        ],
+                      });
                     }
                   }}
                 >
@@ -271,7 +335,7 @@ export default function LesionsByRegionScreen() {
                     style={{ fontFamily: "Montserrat_600SemiBold" }}
                     className="text-red-500 text-base"
                   >
-                    Delete
+                    {t("history.delete")}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -287,7 +351,14 @@ export default function LesionsByRegionScreen() {
 
   return (
     // 1. Base Background with Pink/Coral Color
-    <View className="flex-1 bg-[#FFC5C8] relative overflow-hidden">
+    <View className="flex-1 bg-[#ffc0b5] relative overflow-hidden">
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        onClose={hideAlert}
+      />
       {renderOptionsModal()}
       {/* === TOP HEADER (Back Button) === */}
       <View className="absolute top-12 left-6 z-50">
@@ -301,7 +372,7 @@ export default function LesionsByRegionScreen() {
       <View className="absolute inset-0 transform -translate-x-80 -translate-y-16 rotate-45 -z-20 opacity-80">
         <View className="w-[600px] h-[600px]">
           <LinearGradient
-            colors={["#fca7ac", "#ff9da1", "#fe8d93"]}
+            colors={["#fe948d", "#ff9da1", "#fe8d93"]}
             locations={[0, 0.38, 1]}
             className="w-full h-full"
           />
@@ -311,7 +382,7 @@ export default function LesionsByRegionScreen() {
       <View className="absolute inset-0 transform -translate-x-[400px] -translate-y-10 rotate-45 -z-10">
         <View className="w-[600px] h-[600px]">
           <LinearGradient
-            colors={["#ff9da1", "#ff9da1", "#fe8d93"]}
+            colors={["#fe948d", "#ff9da1", "#fe8d93"]}
             locations={[0, 0.38, 1]}
             className="w-full h-full"
           />
@@ -327,7 +398,7 @@ export default function LesionsByRegionScreen() {
             style={{ fontFamily: "Montserrat_600SemiBold" }}
             className="text-[#7b3f3f] text-2xl"
           >
-            {title} Lesions
+            {title} {t("history.lesions")}
           </Text>
         </View>
 
@@ -340,9 +411,11 @@ export default function LesionsByRegionScreen() {
         <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 100 }}>
           {lesions.length === 0 && (
             <View className="items-center mt-10">
-              <Text className="text-gray-400 text-lg">No scans yet.</Text>
+              <Text className="text-gray-400 text-lg">
+                {t("history.no_scans")}
+              </Text>
               <Text className="text-gray-400 text-xs text-center px-10 mt-2">
-                Tap the camera button on the home screen to add your first scan.
+                {t("history.tap_to_add")}
               </Text>
             </View>
           )}
@@ -375,7 +448,9 @@ export default function LesionsByRegionScreen() {
                   style={{ fontFamily: "Montserrat_600SemiBold" }}
                   numberOfLines={1}
                 >
-                  {item.description ? item.description : `${title} scan`}
+                  {item.description
+                    ? item.description
+                    : `${title} ${t("history.scan_suffix")}`}
                 </Text>
 
                 {/* 2. MIDDLE: Date (Lighter) */}

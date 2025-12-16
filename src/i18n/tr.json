@@ -1,0 +1,456 @@
+{
+  "home": {
+    "early_check": "Erken teşhis hayat kurtarır — Bugün atacağınız küçük bir adım yarın büyük bir fark yaratabilir, cildinizi hemen kontrol edin!",
+    "scan_now": "Şimdi Tara",
+    "answer_survey": "Anketi Cevapla",
+    "survey_desc": "Daha doğru sonuçlar almak için anketi cevaplamaktan çekinmeyin.",
+    "last_scans": "Son Taramalarınız",
+    "no_scans": "Hiç tarama bulunamadı. İlk fotoğrafınızı çekin!",
+    "abcde_education": "ABCDE kuralı hakkında bilgi edinmek, erken cilt teşhisi için çok önemlidir.",
+    "read_more": "Daha fazla oku",
+    "analyzing": "Analiz ediliyor...",
+    "scan_method_title": "Tarama Yöntemini Seçin",
+    "camera": "Kamera",
+    "gallery": "Galeri",
+    "cancel": "İptal",
+    "permission_required": "İzin Gerekli",
+    "enable_notifications": "Lütfen telefon ayarlarınızdan bildirimleri etkinleştirin.",
+    "done": "Tamam"
+  },
+  "header": {
+    "notifications_title": "Bildirim Ayarları",
+    "notifications_desc": "MelanoScan'in sizi nasıl bilgilendireceğini yönetin.",
+    "monthly_tips": "Aylık Cilt İpuçları",
+    "monthly_tips_desc": "Cilt sağlığı hakkında eğitici bilgiler.",
+    "weekly_reminders": "Yüksek Risk Hatırlatıcıları",
+    "weekly_reminders_desc": "İşaretlenen lezyonları kontrol etmeniz için haftalık uyarılar."
+  },
+  "sidebar": {
+    "language": "Dil",
+    "settings": "Ayarlar",
+    "logout": "Çıkış Yap",
+    "find_clinic": "En Yakın Klinik"
+  },
+  "disclaimer": {
+    "title": "ÖNEMLİ YASAL UYARI",
+    "body": "Bu uygulama bir tarama yardımcısıdır, teşhis aracı <bold>DEĞİLDİR</bold>. Herhangi bir cilt sorunu için her zaman uzman bir dermatoloğa danışın.",
+    "understanding_title": "Cilt Kanserini Anlamak",
+    "understanding_body": "Erken teşhis, savunmanın en önemli biçimidir. Cilt kanseri, cilt hücrelerinin anormal büyümesidir ve çoğunlukla güneşe maruz kalan ciltte gelişir. Ancak, bu yaygın kanser türü cildinizin normalde güneş ışığına maruz kalmayan bölgelerinde de görülebilir.",
+    "abcde_title": "ABCDE Kuralı",
+    "a_title": "A - Asimetri",
+    "a_desc": "Benin bir yarısı diğer yarısıyla eşleşmez.",
+    "b_title": "B - Sınır (Border)",
+    "b_desc": "Kenarlar düzensiz, pürüzlü, çentikli veya bulanıktır.",
+    "c_title": "C - Renk (Color)",
+    "c_desc": "Renk her yerde aynı değildir ve kahverengi veya siyahın tonlarını içerebilir.",
+    "d_title": "D - Çap (Diameter)",
+    "d_desc": "Leke 6 milimetreden (yaklaşık ¼ inç) daha büyüktür.",
+    "e_title": "E - Evrim (Evolving)",
+    "e_desc": "Ben zamanla boyut, şekil veya renk değiştirir.",
+    "vigilant_title": "Tetikte Olun",
+    "vigilant_body": "Cildinizde düzenli olarak kendi kendinize kontroller yapın. Yeni büyümeler veya değişen mevcut benler olup olmadığına bakın. Şüpheli bir şey fark ederseniz hemen bir doktordan randevu alın.",
+    "prevention_title": "Önleme İpuçları",
+    "tip_1": "Dışarıdayken her 2 saatte bir güneş kremi (SPF 30+) sürün.",
+    "tip_2": "Özellikle sabah 10 ile öğleden sonra 4 arasında gölgede kalın.",
+    "tip_3": "Solaryum ve güneş lambalarından tamamen kaçının.",
+    "doctor_title": "Ne zaman doktora görünmeli?",
+    "doctor_body": "Şunları fark ederseniz bir dermatoloğa danışmalısınız:\n\n1. İyileşmeyen bir yara.\n2. Leke sınırından çevreleyen cilde pigment yayılması.\n3. Ben sınırının ötesinde kızarıklık veya yeni bir şişlik.\n4. Kaşıntı, hassasiyet veya ağrı gibi his değişiklikleri."
+  },
+  "profile": {
+    "guest_user": "Misafir Kullanıcı",
+    "offline_account": "Çevrimdışı Hesap",
+    "enthusiast": "Cilt Sağlığı Meraklısı",
+    "account_settings": "Hesap Ayarları",
+    "notifications": "Bildirimler",
+    "language": "Dil",
+    "privacy_policy": "Gizlilik Politikası",
+    "log_out": "Çıkış Yap",
+    "log_in": "Giriş Yap",
+    "logout_alert_title": "Çıkış Yap",
+    "logout_alert_body": "Çıkış yapmak istediğinizden emin misiniz? Gizliliğiniz için bu cihazdaki tüm yerel veriler silinecektir.",
+    "cancel": "İptal",
+    "confirm_logout": "Çıkış Yap"
+  },
+  "analysis_result": {
+    "title": "Fotoğrafınız analiz ediliyor",
+    "asymmetry_title": "Asimetri",
+    "asymmetry_desc": "Benin içinden bir çizgi çizerseniz ve iki yarısı çok farklı görünüyorsa, bu düzensiz şekil melanomun erken uyarı işareti olabilir.",
+    "back": "Geri",
+    "high_risk": "Yüksek Risk:",
+    "low_risk": "Düşük Risk:",
+    "high_risk_desc": " Bu lezyon profesyonel tıbbi dikkat gerektirebilecek özellikler gösteriyor. Lütfen bir dermatoloğa danışın.",
+    "low_risk_desc": " Analizimiz cilt lekenizin iyi huylu göründüğünü ve çok düşük risk taşıdığını gösteriyor. Bu güven verici olsa da, bölgeyi düzenli olarak izlemenizi öneririz.",
+    "result": "Sonuç:",
+    "diagnosis": "Teşhis:",
+    "advice": "Tavsiye:",
+    "advice_desc": "Emin olmadığınız bir durum olursa, bir sağlık uzmanına danışmaktan çekinmeyin.",
+    "uncertain_title": "Tarama sonucundan emin değilseniz veya ikna olmadıysanız sorun değil - Hata olup olmadığından emin olmak için şunları yapabilirsiniz:",
+    "scan_again": "Tekrar Tara",
+    "save_history": "Geçmişe Kaydet",
+    "you_can_also": "Ayrıca şunları yapabilirsiniz:",
+    "ai_insight": "Yapay zeka asistanımızdan kişiye özel bilgiler alın. Daha doğru rehberlik için robota tıklayarak sohbeti başlatın.",
+    "footer_disclaimer": "Bu tarama sonucu bir teşhis değildir. Doğru teşhis ve tedavi önerileri için lütfen bir doktora danışın.",
+    "error_title": "Hata",
+    "analysis_failed": "Analiz başarısız oldu.",
+    "auto_saved": "Otomatik kaydedilen tarama",
+    "malignant": "Kötü Huylu",
+    "benign": "İyi Huylu",
+    "suspicious": "Şüpheli",
+    "lesions": "Lezyon"
+  },
+  "lesion_details": {
+    "default_title": "Lezyon Detayları",
+    "scanned_on": "{{date}} tarihinde tarandı",
+    "delete_title": "Taramayı Sil",
+    "delete_confirm": "Emin misiniz? Bu işlem geri alınamaz.",
+    "delete": "Sil",
+    "location": "Konum:",
+    "save_saved_title": "Kaydedildi",
+    "save_saved_body": "Lezyon detayları başarıyla güncellendi."
+  },
+  "history": {
+    "title": "Geçmiş",
+    "scan_compare": "Tara ve Karşılaştır",
+    "comparison_history": "Karşılaştırma Geçmişi",
+    "delete_lesion": "Lezyonu Sil",
+    "delete_confirm": "Emin misiniz?",
+    "delete": "Sil",
+    "cancel": "İptal",
+    "start_comparison": "Karşılaştırmayı Başlat",
+    "start_compare_msg": "Bu temel taramaya karşı karşılaştırma yapmak için yeni bir fotoğraf çekin.",
+    "camera": "Kamera",
+    "gallery": "Galeri",
+    "no_scans": "Henüz tarama yok.",
+    "tap_to_add": "İlk taramanızı eklemek için ana ekrandaki kamera düğmesine dokunun.",
+    "scan_suffix": "taraması",
+    "errors": {
+      "delete_failed": "Tarama yerel olarak silinemedi.",
+      "camera_perm": "Kamera izni gerekli.",
+      "gallery_perm": "Galeri izni gerekli.",
+      "poor_quality": "Düşük Görüntü Kalitesi",
+      "capture_error": "Görüntü yakalanamadı."
+    },
+    "lesions": "Lezyonları"
+  },
+  "compare_result": {
+    "improved": "İyileşti",
+    "unchanged": "Değişmedi",
+    "worsened": "Kötüleşti",
+    "non_comparable": "Karşılaştırılamaz",
+    "no_change": "Değişiklik Algılanmadı",
+    "changes_detected": "Değişiklik Algılandı",
+    "ai_analysis": "Yapay Zeka Analizi",
+    "advice_label": "Tavsiye:",
+    "saving": "Kaydediliyor...",
+    "add_to_history": "Geçmişe Ekle",
+    "saved_title": "Kaydedildi",
+    "saved_body": "Karşılaştırma geçmişe eklendi.",
+    "error_title": "Hata",
+    "error_body": "Sonuç kaydedilemedi."
+  },
+  "chat": {
+    "title": "Model Konuşması",
+    "placeholder": "Bir mesaj yazın...",
+    "thinking": "Düşünüyor...",
+    "analyzing": "Analiz ediliyor...",
+    "error_loading": "Tarama verileri yüklenirken hata oluştu.",
+    "connection_error": "Bağlantı hatası. Lütfen tekrar deneyin.",
+    "initial_greeting": "Merhaba. Taramanızı ve risk profilinizi inceledim. Size nasıl yardımcı olabilirim?"
+  },
+  "comparison_processing": {
+    "title": "Görüntüler Karşılaştırılıyor",
+    "loading": "Gelişen durum kontrol ediliyor...",
+    "asymmetry_title": "Asimetri",
+    "asymmetry_desc": "Ben üzerinden bir çizgi çizerseniz ve iki yarım çok farklı görünüyorsa, bu düzensiz şekil melanomun erken bir uyarı işareti olabilir.",
+    "footer_disclaimer": "Bu tarama sonucu bir teşhis değildir. Doğru teşhis ve tedavi önerileri için lütfen bir doktora danışın.",
+    "failed_title": "Karşılaştırma Başarısız",
+    "go_back": "Geri Dön",
+    "generic_error": "Analiz sırasında bir hata oluştu."
+  },
+  "comparison_history": {
+    "title": "Lezyon Geçmişi",
+    "baseline_alert": "Bu orijinal temel taramadır."
+  },
+  "log_detail": {
+    "title": "Karşılaştırma Detayı",
+    "change": "Değişim",
+    "previous": "Önceki",
+    "this_scan": "Bu Tarama",
+    "analysis": "Analiz",
+    "recommendation": "Öneri"
+  },
+  "scan_upload": {
+    "upload_photo": "Fotoğraf yükle",
+    "uploading": "yükleniyor . . .",
+    "upload_succeeded": "yükleme başarılı",
+    "wait_message": "Fotoğrafınız yükleniyor. Bu işlem bir dakika sürebilir, lütfen bekleyin",
+    "analyze_photo": "Fotoğrafı Analiz Et",
+    "permission_denied": "İzin Reddedildi",
+    "permission_msg": "{{type}} iznine ihtiyacımız var."
+  },
+  "auth": {
+    "login": {
+      "title": "Giriş Yap",
+      "email_label": "E-posta Adresi",
+      "email_placeholder": "E-postanızı girin",
+      "password_label": "Şifre",
+      "password_placeholder": "Şifrenizi girin",
+      "remember_me": "Beni hatırla",
+      "forgot_password": "Şifremi Unuttum?",
+      "login_btn": "Giriş Yap",
+      "logging_in": "Giriş yapılıyor...",
+      "or_sign_in_with": "Veya Şununla Giriş Yapın",
+      "google_btn": "Google ile Giriş Yap",
+      "guest_btn": "Giriş Yapmadan Devam Et",
+      "no_account": "Hesabınız yok mu?",
+      "signup_link": "Kayıt ol",
+      "alerts": {
+        "error": "Hata",
+        "fill_all": "Lütfen hem e-posta hem de şifreyi girin.",
+        "login_failed": "Giriş Başarısız",
+        "check_creds": "Lütfen bilgilerinizi kontrol edin.",
+        "google_fail_title": "Giriş İptal Edildi",
+        "google_fail_msg": "Google ile giriş yapılamadı."
+      }
+    },
+    "signup": {
+      "title": "Hesap Oluştur",
+      "name_label": "İsim",
+      "name_placeholder": "Kullanıcı Adı",
+      "create_pass_label": "Şifre Oluştur",
+      "confirm_pass_label": "Şifreyi Onayla",
+      "create_pass_placeholder": "Şifre Oluştur",
+      "confirm_pass_placeholder": "Şifreyi Onayla",
+      "signup_btn": "Kayıt Ol",
+      "creating_account": "Hesap Oluşturuluyor...",
+      "have_account": "Zaten hesabınız var mı?",
+      "login_link": "Giriş Yap",
+      "alerts": {
+        "fill_all": "Lütfen tüm alanları doldurun",
+        "pass_length": "Şifre en az 6 karakter olmalıdır",
+        "pass_mismatch": "Şifreler eşleşmiyor",
+        "success_title": "Başarılı",
+        "success_msg": "Hesap oluşturuldu! Lütfen doğrulama bağlantısı için e-postanızı kontrol edin.",
+        "fail_msg": "Kayıt başarısız. Lütfen tekrar deneyin."
+      }
+    },
+    "forgot": {
+      "title": "Şifremi Unuttum?",
+      "desc": "Endişelenmeyin! Olur böyle şeyler. Lütfen hesabınızla ilişkili e-postayı girin.",
+      "send_btn": "Sıfırlama Bağlantısı Gönder",
+      "sending": "Gönderiliyor...",
+      "alerts": {
+        "enter_email": "Lütfen e-posta adresinizi girin.",
+        "check_email_title": "E-postanızı kontrol edin",
+        "check_email_msg": "E-posta adresinize bir şifre sıfırlama bağlantısı gönderdik.",
+        "fail_msg": "Sıfırlama e-postası gönderilemedi. Lütfen girilen e-postayı kontrol edin."
+      }
+    }
+  },
+  "landing": {
+    "page1": {
+      "title": "Cilt Değişikliklerini \nErken Yakalayın!",
+      "desc": "Cildinizin hızlı bir fotoğrafını çekin ve yapay zekanın potansiyel riskleri vurgulamasına izin verin. Erken kontroller büyük fark yaratabilir."
+    },
+    "page2": {
+      "title": "Sağlığınız, \n Gizliliğiniz",
+      "desc": "Tüm taramalar cihazınızda kalır. İnternete gerek yok, veri paylaşımı yok — fotoğraflarınız size ait kalır."
+    },
+    "page3": {
+      "title": "Cilt Sağlığınızı \n Takip Edin",
+      "desc": "Lezyonları zamanla takip edin, hatırlatıcılar ayarlayın ve kolay tıbbi ipuçlarıyla cildinize nasıl bakacağınızı öğrenin."
+    },
+    "next": "İleri",
+    "skip": "atla",
+    "get_started": "Başlayın"
+  },
+  "survey": {
+    "header": "Bu anketi yanıtlamak, yapay zeka asistanımızla deneyiminizi kişiselleştirmemize olanak tanıyacaktır.",
+    "age_label": "Yaş grubunuz nedir?",
+    "gender_label": "Cinsiyetiniz nedir?",
+    "hair_label": "Doğal Saç Rengi",
+    "eye_label": "Doğal Göz Rengi",
+    "skin_label": "Cilt tipiniz nedir?",
+    "sun_reaction_label": "1 saat güneşte kalma tepkisi (korumasız)?",
+    "freckles_label": "Çiliniz var mı?",
+    "work_label": "Gününüzün çoğunu nerede geçiriyorsunuz?",
+    "climate_label": "Yaşadığınız yer ne kadar güneşli?",
+    "ancestry_label": "Kuzey Avrupa kökeniniz var mı?",
+    "history_personal_label": "Hiç cilt kanseri teşhisi kondu mu?",
+    "history_family_label": "Ailenizde hiç cilt kanseri geçiren oldu mu?",
+    "sunburns_label": "Çocukken kabarcıklı güneş yanıkları geçirdiniz mi?",
+    "tanning_beds_label": "Solaryum kullandınız mı?",
+    "mole_count_label": "Vücudunuzdaki ben sayısını tahmin edin:",
+    "ugly_duckling_label": "Diğerlerinden farklı görünen bir beniniz var mı?",
+    "changes_label": "Son zamanlarda değişen benler fark ettiniz mi?",
+    "sunscreen_label": "Ne sıklıkla güneş kremi kullanıyorsunuz?",
+    "protection_label": "Güneşte koruyucu giysiler giyiyor musunuz?",
+    "checkups_label": "Ne sıklıkla profesyonel cilt kontrolü yaptırıyorsunuz?",
+    "next": "İleri",
+    "skip": "Atla",
+    "submit": "Gönder",
+    "alerts": {
+      "missing_info_title": "Eksik Bilgi",
+      "missing_info_msg": "Lütfen devam etmek için temel soruları yanıtlayın.",
+      "complete_profile_title": "Profili Tamamla",
+      "complete_profile_msg": "Size doğru yapay zeka tavsiyesi verebilmek için tam bir risk profiline ihtiyacımız var.\n\nLütfen tüm soruları yanıtlayın veya 'Atla'ya dokunun.",
+      "save_error": "Profil kaydedilemedi."
+    },
+    "options": {
+      "age": {
+        "under_18": "18 yaş altı",
+        "18_24": "18-24",
+        "25_34": "25-34",
+        "35_44": "35-44",
+        "45_54": "45-54",
+        "55_64": "55-64",
+        "65_plus": "65+"
+      },
+      "gender": {
+        "male": "Erkek",
+        "female": "Kadın"
+      },
+      "hair_color": {
+        "red_auburn": "Kızıl / Kumral",
+        "blonde": "Sarışın",
+        "brown": "Kahverengi",
+        "black": "Siyah"
+      },
+      "eye_color": {
+        "blue_grey": "Mavi / Gri",
+        "green_hazel": "Yeşil / Ela",
+        "light_brown": "Açık Kahve",
+        "dark_brown": "Koyu Kahve"
+      },
+      "skin_tone": {
+        "type_1": "Tip I (Çok açık, her zaman yanar)",
+        "type_2": "Tip II (Açık, kolay yanar)",
+        "type_3": "Tip III (Buğday, bazen yanar)",
+        "type_4": "Tip IV (Esmer, nadiren yanar)",
+        "type_5": "Tip V (Kahverengi, asla yanmaz)",
+        "type_6": "Tip VI (Siyah)"
+      },
+      "sun_reaction": {
+        "blister_burn": "Ağrılı kabarcık / Yanık",
+        "mild_burn": "Hafif yanık, sonra soyulma",
+        "burn_tan": "Yanık sonra bronzlaşma",
+        "tan_immediately": "Hemen bronzlaşma",
+        "nothing": "Hiçbir şey / Hafif kararma"
+      },
+      "freckles": {
+        "none": "Yok",
+        "few": "Yüzde/omuzlarda birkaç tane",
+        "many": "Çok / Her yerde"
+      },
+      "work_env": {
+        "indoors": "Çoğunlukla İçeride",
+        "mixed": "Karışık / Yolda",
+        "outdoors": "Çoğunlukla Dışarıda"
+      },
+      "climate": {
+        "cloudy": "Bulutlu / Yağmurlu",
+        "moderate": "Ilıman",
+        "sunny": "Çok Güneşli / Tropikal"
+      },
+      "ancestry": {
+        "yes": "Evet",
+        "no": "Hayır",
+        "unsure": "Emin değilim"
+      },
+      "history_personal": {
+        "no": "Hayır",
+        "melanoma": "Evet, Melanom",
+        "non_melanoma": "Evet, Melanom Dışı (BCC/SCC)",
+        "unsure": "Emin değilim"
+      },
+      "history_family": {
+        "no": "Hayır",
+        "parent_sibling": "Evet (Ebeveyn/Kardeş)",
+        "distant": "Evet (Uzak Akraba)",
+        "unsure": "Emin değilim"
+      },
+      "sunburns": {
+        "no": "Hayır",
+        "once_twice": "Evet, bir veya iki kez",
+        "frequently": "Evet, sık sık"
+      },
+      "tanning_beds": {
+        "never": "Asla",
+        "few_past": "Geçmişte birkaç kez",
+        "regularly_past": "Evet, düzenli olarak (Geçmişte)",
+        "currently": "Evet, şu anda"
+      },
+      "mole_count": {
+        "few": "Az (< 20)",
+        "average": "Ortalama (20-50)",
+        "many": "Çok (> 50)"
+      },
+      "ugly_duckling": {
+        "no": "Hayır",
+        "yes": "Evet",
+        "not_sure": "Emin değilim"
+      },
+      "recent_changes": {
+        "no": "Hayır",
+        "slight": "Evet, hafif değişiklik",
+        "significant": "Evet, belirgin değişiklik"
+      },
+      "sunscreen": {
+        "daily": "Günlük / Her Zaman",
+        "sunny_days": "Sadece güneşli günlerde",
+        "rarely": "Nadiren / Asla"
+      },
+      "protection": {
+        "always": "Her Zaman",
+        "sometimes": "Bazen",
+        "rarely": "Nadiren"
+      },
+      "checkups": {
+        "yearly": "Yıllık",
+        "few_years": "Birkaç yılda bir",
+        "issue_only": "Sadece bir sorun gördüğümde",
+        "never": "Asla"
+      }
+    }
+  },
+  "components": {
+    "dropdown": {
+      "select_option": "Bir seçenek belirleyin",
+      "placeholder": "Bir seçenek belirleyin"
+    },
+    "save_popup": {
+      "title": "Benin vücudunuzun hangi\nbölgesinde olduğunu seçin",
+      "choose_part": "Vücut bölgesi seçin",
+      "desc_placeholder": "Açıklama (örn. küçük ben)",
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "body_parts": {
+        "face": "Yüz",
+        "body": "Vücut",
+        "right_arm": "Sağ Kol",
+        "left_arm": "Sol Kol",
+        "right_leg": "Sağ Bacak",
+        "left_leg": "Sol Bacak"
+      }
+    },
+    "scan_popup": {
+      "title": "Taramak ve sonuç almak için\bir yöntem seçin",
+      "take_photo": "Fotoğraf Çek",
+      "upload_image": "Görsel Yükle"
+    },
+    "sidebar": {
+      "guest_user": "Misafir Kullanıcı",
+      "offline_account": "Çevrimdışı Hesap",
+      "member": "Üye",
+      "menu": {
+        "home": "Ana Sayfa",
+        "history": "Geçmiş",
+        "profile": "Profil",
+        "disclaimer": "Yasal Uyarı",
+        "login": "Giriş Yap",
+        "logout": "Çıkış Yap"
+      },
+      "logout_confirm_msg": "Çıkış yapmak istediğinizden emin misiniz? Gizliliğiniz için bu cihazdaki tüm yerel veriler silinecektir."
+    }
+  }
+}

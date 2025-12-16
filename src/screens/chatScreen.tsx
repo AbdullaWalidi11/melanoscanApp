@@ -15,6 +15,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { ChevronLeft, Send } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Markdown from "react-native-markdown-display";
+import { useTranslation } from "react-i18next";
 
 // ✅ STABLE SDK
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -37,6 +38,7 @@ const ChatScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<any>();
   const { lesionId } = route.params || {};
+  const { t, i18n } = useTranslation();
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -80,7 +82,7 @@ const ChatScreen = () => {
 
         if (!context) {
           setMessages([
-            { id: "err", role: "model", text: "Error loading scan data." },
+            { id: "err", role: "model", text: t("chat.error_loading") },
           ]);
           setIsLoading(false);
           return;
@@ -108,10 +110,13 @@ const ChatScreen = () => {
 
         // --- CONSTRUCT HISTORY FOR STABLE SDK ---
         // Format: { role: 'user' | 'model', parts: [{ text: string }, { inlineData: ... }] }
+        // ✅ INJECT LANGUAGE CONTEXT
+        const languageInstruction = `\n\nIMPORTANT: Respond to the user in ${i18n.language === "tr" ? "Turkish" : "English"}.`;
+
         const historyForSDK = [
           {
             role: "user",
-            parts: [{ text: context.systemInstruction }],
+            parts: [{ text: context.systemInstruction + languageInstruction }],
           },
           {
             role: "model",
@@ -149,7 +154,7 @@ const ChatScreen = () => {
             {
               id: "welcome",
               role: "model",
-              text: "Hello. I've reviewed your scan and risk profile. How can I help?",
+              text: t("chat.initial_greeting"),
             },
           ]);
         }
@@ -161,7 +166,7 @@ const ChatScreen = () => {
     };
 
     if (lesionId) initChat();
-  }, [lesionId]);
+  }, [lesionId, i18n.language]);
 
   // 2. SEND MESSAGE LOGIC
   const sendMessage = async () => {
@@ -203,7 +208,7 @@ const ChatScreen = () => {
         {
           id: "err",
           role: "model",
-          text: "Connection error. Please try again.",
+          text: t("chat.connection_error"),
         },
       ]);
     } finally {
@@ -213,7 +218,7 @@ const ChatScreen = () => {
 
   return (
     // 1. Base Background with Pink/Coral Color
-    <View className="flex-1 bg-[#FFC5C8] relative overflow-hidden">
+    <View className="flex-1 bg-[#ffc0b5] relative overflow-hidden">
       <StatusBar barStyle="light-content" />
 
       {/* === TOP HEADER === */}
@@ -222,7 +227,7 @@ const ChatScreen = () => {
           <ChevronLeft color="white" size={32} />
         </TouchableOpacity>
         <Text className="text-white text-3xl font-bold tracking-widest relative bottom-1">
-          Model Conversation
+          {t("chat.title")}
         </Text>
         <View style={{ width: 32 }} />
       </View>
@@ -232,7 +237,7 @@ const ChatScreen = () => {
       <View className="absolute inset-0 transform -translate-x-80 -translate-y-16 rotate-45 -z-20 opacity-80">
         <View className="w-[600px] h-[600px]">
           <LinearGradient
-            colors={["#fca7ac", "#ff9da1", "#fe8d93"]}
+            colors={["#fe948d", "#ff9da1", "#fe8d93"]}
             locations={[0, 0.38, 1]}
             className="w-full h-full"
           />
@@ -241,7 +246,7 @@ const ChatScreen = () => {
       <View className="absolute inset-0 transform -translate-x-[400px] -translate-y-10 rotate-45 -z-10">
         <View className="w-[600px] h-[600px]">
           <LinearGradient
-            colors={["#ff9da1", "#ff9da1", "#fe8d93"]}
+            colors={["#fe948d", "#ff9da1", "#fe8d93"]}
             locations={[0, 0.38, 1]}
             className="w-full h-full"
           />
@@ -249,24 +254,15 @@ const ChatScreen = () => {
       </View>
 
       {/* === MAIN CONTENT (White Sheet) === */}
-      {/* 
-          MANUAL KEYBOARD HANDLING:
-          Instead of KeyboardAvoidingView, we use a simple View with paddingBottom.
-          We also check Platform.OS because iOS handles 'keyboardWillShow' (smooth),
-          while Android 'keyboardDidShow' might be slightly delayed but reliable.
-      */}
       <View
         className="flex-1 mt-28 mb-0"
         style={{ paddingBottom: Platform.OS === "android" ? 0 : 0 }}
-        // Note: On pure manual handling, we might need to apply padding to the container
-        // OR simply rely on the View resizing if 'softwareKeyboardLayoutMode' works.
-        // BUT since the user said it failed, we forcefully apply padding here.
       >
         <View className="flex-1 bg-white rounded-t-[40px] overflow-hidden shadow-black shadow-3xl">
           {isLoading ? (
             <View className="flex-1 justify-center items-center">
-              <ActivityIndicator size="large" color="#FF9B9B" />
-              <Text className="text-gray-400 mt-4">Analyzing...</Text>
+              <ActivityIndicator size="large" color="#fe948d" />
+              <Text className="text-gray-400 mt-4">{t("chat.analyzing")}</Text>
             </View>
           ) : (
             <ScrollView
@@ -285,7 +281,7 @@ const ChatScreen = () => {
                   <View
                     className={`px-5 py-3 rounded-3xl max-w-[85%] shadow-sm ${
                       msg.role === "user"
-                        ? "bg-[#FF9B9B] rounded-tr-none"
+                        ? "bg-[#fe948d] rounded-tr-none"
                         : "bg-white border border-gray-100 rounded-tl-none"
                     }`}
                   >
@@ -308,41 +304,19 @@ const ChatScreen = () => {
               ))}
               {isTyping && (
                 <Text className="text-gray-400 ml-4 mb-2 italic">
-                  Thinking...
+                  {t("chat.thinking")}
                 </Text>
               )}
             </ScrollView>
           )}
 
           {/* Input Area */}
-          {/* We apply marginBottom based on keyboardOffset manually/conditionally if needed, 
-              or simply rely on this View being pushed up if 'resize' worked. 
-              IF 'resize' FAILED, this 'keyboardOffset' will save us. 
-              Logic: If 'resize' is off/broken, the window size doesn't change, so we must ADD Padding/Margin.
-          */}
           <View
-            className="p-4 bg-[#ff9da1] border-t border-gray-50"
+            className="p-4 bg-[#fe948d] border-t border-gray-50"
             style={{
               marginBottom: Platform.OS === "ios" ? keyboardOffset : 0,
-              // For Android, if 'resize' mode works, we don't need this.
-              // If it DOESN'T work (pan mode), we DO need this.
-              // Let's try adding it for Android too if the user says it didn't work.
-              // SAFEST BET: Apply it. But if 'resize' triggers, we double pad?
-              // Let's rely on 'resize' from manifest usually, but if user says NO...
-              // Let's actually TRY KeyboardAvoidingView with 'padding' and NO offset again?
-              // No, user wants manual fix.
-              // Let's use the padding logic.
             }}
           >
-            {/* 
-                Wait, if I use 'resize' in manifest, Android resizes the WHOLE window. 
-                So the bottom view AUTOMATICALLY moves up.
-                The fact it didn't suggests 'resize' didn't take effect (needs build).
-                
-                Workaround without build: 
-                Use 'pan' (default) + Manual Padding.
-                Or just Manual Padding.
-             */}
             <View
               style={{
                 marginBottom: Platform.OS === "android" ? keyboardOffset : 0,
@@ -351,7 +325,7 @@ const ChatScreen = () => {
               <View className="flex-row items-center border border-gray-200 rounded-full px-2 py-1 mb-4 shadow-sm bg-gray-50">
                 <TextInput
                   className="flex-1 px-4 py-3 text-gray-700 text-base"
-                  placeholder="Type a message..."
+                  placeholder={t("chat.placeholder")}
                   placeholderTextColor="#9CA3AF"
                   value={input}
                   onChangeText={setInput}
@@ -361,7 +335,7 @@ const ChatScreen = () => {
                   onPress={sendMessage}
                   disabled={!input.trim() || isTyping}
                   className={`p-3 rounded-full m-1 ${
-                    input.trim() ? "bg-[#ff9da1]" : "bg-[#ff9da1] opacity-50"
+                    input.trim() ? "bg-[#fe948d]" : "bg-[#fe948d] opacity-50"
                   }`}
                 >
                   <Send size={20} color="white" />

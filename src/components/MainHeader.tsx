@@ -6,7 +6,6 @@ import {
   Switch,
   Modal,
   Pressable,
-  Alert,
 } from "react-native";
 import { Bell, Menu } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -14,14 +13,42 @@ import { useNavigation } from "@react-navigation/native";
 import { registerForPushNotificationsAsync } from "../services/notificationService";
 // ✅ IMPORT SIDEBAR
 import Sidebar from "./Sidebar";
+import { useTranslation } from "react-i18next";
+import CustomAlert, { AlertAction } from "./CustomAlert";
 
 export default function MainHeader() {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [modalVisible, setModalVisible] = useState(false);
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const [monthlyTips, setMonthlyTips] = useState(true);
   const [weeklyReminders, setWeeklyReminders] = useState(true);
+
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message?: string;
+    actions: AlertAction[];
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    actions: [],
+  });
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const showCustomAlert = (
+    title: string,
+    message: string,
+    actions: AlertAction[] = [{ text: "OK", onPress: hideAlert }]
+  ) => {
+    setAlertConfig({ visible: true, title, message, actions });
+  };
 
   // ✅ SMART LOGIC: Checks permission before toggling
   const handleToggle = async (
@@ -39,9 +66,9 @@ export default function MainHeader() {
         setter(true);
         console.log("✅ Switch turned ON");
       } else {
-        Alert.alert(
-          "Permission Required",
-          "Please enable notifications in your phone settings."
+        showCustomAlert(
+          t("home.permission_required"),
+          t("home.enable_notifications")
         );
         setter(false);
       }
@@ -52,7 +79,7 @@ export default function MainHeader() {
   };
 
   return (
-    <View className="flex-row items-center justify-between px-4 pt-8  bg-[#fe8d93] shadow-lg shadow-black">
+    <View className="flex-row items-center justify-between px-4 pt-8  bg-[#fe948d] shadow-lg shadow-black">
       {/* 3. Menu Button */}
       <TouchableOpacity
         onPress={() => setSidebarVisible(true)}
@@ -78,25 +105,25 @@ export default function MainHeader() {
         <View className="flex-1 justify-end bg-black/50">
           <View className="bg-white rounded-t-3xl p-6">
             <Text className="text-xl font-bold text-gray-800 mb-2">
-              Notification Settings
+              {t("header.notifications_title")}
             </Text>
             <Text className="text-gray-500 mb-6 text-sm">
-              Manage how MelanoScan keeps you informed.
+              {t("header.notifications_desc")}
             </Text>
 
             {/* Option 1: Monthly Tips */}
             <View className="flex-row items-center justify-between mb-6">
               <View className="flex-1 mr-4">
                 <Text className="text-base font-semibold text-gray-800">
-                  Monthly Skin Tips
+                  {t("header.monthly_tips")}
                 </Text>
                 <Text className="text-gray-500 text-xs">
-                  Educational info about skin health.
+                  {t("header.monthly_tips_desc")}
                 </Text>
               </View>
               <Switch
-                trackColor={{ false: "#767577", true: "#F19B9B" }}
-                thumbColor={monthlyTips ? "#fe8d93" : "#f4f3f4"}
+                trackColor={{ false: "#767577", true: "#ffcaca" }}
+                thumbColor={monthlyTips ? "#fe948d" : "#f4f3f4"}
                 // ✅ Connects to smart logic
                 onValueChange={() => handleToggle(monthlyTips, setMonthlyTips)}
                 value={monthlyTips}
@@ -107,15 +134,15 @@ export default function MainHeader() {
             <View className="flex-row items-center justify-between mb-8">
               <View className="flex-1 mr-4">
                 <Text className="text-base font-semibold text-gray-800">
-                  High-Risk Reminders
+                  {t("header.weekly_reminders")}
                 </Text>
                 <Text className="text-gray-500 text-xs">
-                  Weekly nudges to check flagged lesions.
+                  {t("header.weekly_reminders_desc")}
                 </Text>
               </View>
               <Switch
-                trackColor={{ false: "#767577", true: "#F19B9B" }}
-                thumbColor={weeklyReminders ? "#fe8d93" : "#f4f3f4"}
+                trackColor={{ false: "#767577", true: "#ffcaca" }}
+                thumbColor={weeklyReminders ? "#fe948d" : "#f4f3f4"}
                 // ✅ Connects to smart logic
                 onValueChange={() =>
                   handleToggle(weeklyReminders, setWeeklyReminders)
@@ -127,9 +154,11 @@ export default function MainHeader() {
             {/* Close Button */}
             <Pressable
               onPress={() => setModalVisible(false)}
-              className="bg-[#fe8d93] py-4 rounded-xl items-center"
+              className="bg-[#fe948d] py-4 rounded-xl items-center"
             >
-              <Text className="text-white font-bold text-lg">Done</Text>
+              <Text className="text-white font-bold text-lg">
+                {t("home.done")}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -139,6 +168,14 @@ export default function MainHeader() {
       <Sidebar
         visible={sidebarVisible}
         onClose={() => setSidebarVisible(false)}
+      />
+
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        onClose={hideAlert}
       />
     </View>
   );

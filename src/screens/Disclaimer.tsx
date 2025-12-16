@@ -2,9 +2,11 @@ import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ChevronLeft, TriangleAlert, Info } from "lucide-react-native";
+import { useTranslation, Trans } from "react-i18next";
 
 export default function DisclaimerScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   return (
     <View className="flex-1 bg-white">
@@ -21,12 +23,13 @@ export default function DisclaimerScreen() {
           </View>
           <View className="flex-1">
             <Text className="text-lg font-bold text-gray-900 mb-1">
-              IMPORTANT DISCLAIMER
+              {t("disclaimer.title")}
             </Text>
             <Text className="text-gray-700 leading-5">
-              This app is a screening aid,{" "}
-              <Text className="font-bold">NOT</Text> a diagnostic tool. Always
-              consult a professional dermatologist for any skin concerns.
+              <Trans
+                i18nKey="disclaimer.body"
+                components={{ bold: <Text className="font-bold" /> }}
+              />
             </Text>
           </View>
         </View>
@@ -34,7 +37,7 @@ export default function DisclaimerScreen() {
         {/* ----- UNDERSTANDING SKIN CANCER ----- */}
         <View className="bg-white mx-4 mt-4 p-5 rounded-2xl shadow-sm">
           <Text className="text-lg font-bold text-gray-900 mb-3">
-            Understanding Skin Cancer
+            {t("disclaimer.understanding_title")}
           </Text>
           <View className="flex-row">
             {/* Understanding Skin Cancer Image */}
@@ -44,10 +47,7 @@ export default function DisclaimerScreen() {
               resizeMode="cover"
             />
             <Text className="flex-1 text-gray-600 leading-5">
-              Early detection is a pivotal form of defense. Skin cancer is the
-              abnormal growth of skin cells, most often developing on skin
-              exposed to the sun. However, this common form of cancer can also
-              occur on areas of your skin not ordinarily exposed to sunlight.
+              {t("disclaimer.understanding_body")}
             </Text>
           </View>
         </View>
@@ -55,7 +55,7 @@ export default function DisclaimerScreen() {
         {/* ----- THE ABCDE RULE ----- */}
         <View className="mx-4 mt-6">
           <Text className="text-xl font-bold text-gray-900 mb-4 ml-1">
-            The ABCDE Rule
+            {t("disclaimer.abcde_title")}
           </Text>
 
           {/* A - Asymmetry */}
@@ -67,11 +67,9 @@ export default function DisclaimerScreen() {
             />
             <View className="flex-1">
               <Text className="font-bold text-lg text-gray-800">
-                A - Asymmetry
+                {t("disclaimer.a_title")}
               </Text>
-              <Text className="text-gray-600">
-                One half of the mole does not match the other half.
-              </Text>
+              <Text className="text-gray-600">{t("disclaimer.a_desc")}</Text>
             </View>
           </View>
 
@@ -84,11 +82,9 @@ export default function DisclaimerScreen() {
             />
             <View className="flex-1">
               <Text className="font-bold text-lg text-gray-800">
-                B - Border
+                {t("disclaimer.b_title")}
               </Text>
-              <Text className="text-gray-600">
-                The edges are irregular, ragged, notched, or blurred.
-              </Text>
+              <Text className="text-gray-600">{t("disclaimer.b_desc")}</Text>
             </View>
           </View>
 
@@ -100,11 +96,10 @@ export default function DisclaimerScreen() {
               resizeMode="contain"
             />
             <View className="flex-1">
-              <Text className="font-bold text-lg text-gray-800">C - Color</Text>
-              <Text className="text-gray-600">
-                The color is not the same all over and may include shades of
-                brown or black.
+              <Text className="font-bold text-lg text-gray-800">
+                {t("disclaimer.c_title")}
               </Text>
+              <Text className="text-gray-600">{t("disclaimer.c_desc")}</Text>
             </View>
           </View>
 
@@ -117,11 +112,9 @@ export default function DisclaimerScreen() {
             />
             <View className="flex-1">
               <Text className="font-bold text-lg text-gray-800">
-                D - Diameter
+                {t("disclaimer.d_title")}
               </Text>
-              <Text className="text-gray-600">
-                The spot is larger than 6 millimeters across (about ¼ inch).
-              </Text>
+              <Text className="text-gray-600">{t("disclaimer.d_desc")}</Text>
             </View>
           </View>
 
@@ -134,11 +127,9 @@ export default function DisclaimerScreen() {
             />
             <View className="flex-1">
               <Text className="font-bold text-lg text-gray-800">
-                E - Evolving
+                {t("disclaimer.e_title")}
               </Text>
-              <Text className="text-gray-600">
-                The mole is changing in size, shape, or color over time.
-              </Text>
+              <Text className="text-gray-600">{t("disclaimer.e_desc")}</Text>
             </View>
           </View>
         </View>
@@ -146,12 +137,10 @@ export default function DisclaimerScreen() {
         {/* ----- STAY VIGILANT ----- */}
         <View className="bg-white mx-4 mt-2 p-5 rounded-2xl shadow-sm border-t-4 border-[#e2728f]">
           <Text className="text-lg font-bold text-gray-900 mb-2">
-            Stay Vigilant
+            {t("disclaimer.vigilant_title")}
           </Text>
           <Text className="text-gray-600 leading-6">
-            Perform regular self-checks on your skin. Look for new growths or
-            existing moles that change. If you notice anything suspicious, book
-            an appointment with a doctor immediately.
+            {t("disclaimer.vigilant_body")}
           </Text>
         </View>
 
@@ -160,25 +149,25 @@ export default function DisclaimerScreen() {
         {/* Prevention Tips */}
         <View className="mx-4 mt-6">
           <Text className="text-xl font-bold text-gray-900 mb-3 ml-1">
-            Prevention Tips
+            {t("disclaimer.prevention_title")}
           </Text>
 
           <View className="bg-blue-50 p-4 rounded-xl mb-2 flex-row">
             <Text className="text-blue-500 font-bold mr-2">•</Text>
             <Text className="text-gray-700 flex-1">
-              Apply sunscreen (SPF 30+) every 2 hours when outdoors.
+              {t("disclaimer.tip_1")}
             </Text>
           </View>
           <View className="bg-blue-50 p-4 rounded-xl mb-2 flex-row">
             <Text className="text-blue-500 font-bold mr-2">•</Text>
             <Text className="text-gray-700 flex-1">
-              Seek shade, especially between 10 AM and 4 PM.
+              {t("disclaimer.tip_2")}
             </Text>
           </View>
           <View className="bg-blue-50 p-4 rounded-xl mb-2 flex-row">
             <Text className="text-blue-500 font-bold mr-2">•</Text>
             <Text className="text-gray-700 flex-1">
-              Avoid tanning beds and sunlamps entirely.
+              {t("disclaimer.tip_3")}
             </Text>
           </View>
         </View>
@@ -188,20 +177,11 @@ export default function DisclaimerScreen() {
           <View className="flex-row items-center mb-3">
             <Info color="#e2728f" size={24} />
             <Text className="text-lg font-bold text-gray-900 ml-2">
-              When to see a doctor?
+              {t("disclaimer.doctor_title")}
             </Text>
           </View>
           <Text className="text-gray-600 leading-6">
-            You should consult a dermatologist if you notice:
-            {"\n\n"}
-            1. A sore that doesn't heal.
-            {"\n"}
-            2. Spread of pigment from the border of a spot into surrounding
-            skin.
-            {"\n"}
-            3. Redness or a new swelling beyond the border of the mole.
-            {"\n"}
-            4. Change in sensation, such as itchiness, tenderness, or pain.
+            {t("disclaimer.doctor_body")}
           </Text>
         </View>
       </ScrollView>

@@ -1,27 +1,39 @@
-import * as ImageManipulator from 'expo-image-manipulator';
+import * as ImageManipulator from "expo-image-manipulator";
+import jpeg from "jpeg-js";
+import { Buffer } from "buffer";
 
 /**
- * Analyzing a 12MP image in JS is too slow.
- * TRICK: Resize to 256px width. It preserves brightness/contrast stats
- * but reduces pixels from 12,000,000 -> 65,000.
+ * 224x224 matches the Input Size of our EfficientNet Model.
+ * Checking a larger image is slower and doesn't add much value for these heuristics.
  */
-const RESIZE_WIDTH = 256;
+const RESIZE_WIDTH = 224;
+const RESIZE_HEIGHT = 224; // Square aspect ratio is standard for models
 
 interface ValidationResult {
   isValid: boolean;
-  error?: string;
+  error?: string; // Human readable error
+  validationStep?: string; // For UI feedback (e.g., "Checking Focus...")
   details?: {
-    brightness: number;
-    contrast: number;
+    blurScore?: number;
+    brightness?: number;
+    skinPercentage?: number;
   };
 }
 
-export async function validateImageQuality(imageUri: string): Promise<ValidationResult> {
+// --- THRESHOLDS ---
+const BLUR_THRESHOLD = 30; // Laplacian Variance. < 50 is usually blurry.
+const DARK_THRESHOLD = 40; // < 40 is too dark.
+const GLARE_THRESHOLD = 230; // > 230 is blown out.
+const SKIN_MIN_PERCENTAGE = 0.1; // Reduced to 10% to be more tolerant of close-ups/backgrounds
+
+export async function validateImageQuality(
+  imageUri: string
+): Promise<ValidationResult> {
   try {
-    // 1. Resize & Get Raw Data (Fast)
+    // 1. Resize & Get Base64
     const result = await ImageManipulator.manipulateAsync(
       imageUri,
-      [{ resize: { width: RESIZE_WIDTH } }],
+      [{ resize: { width: RESIZE_WIDTH, height: RESIZE_HEIGHT } }],
       { base64: true, format: ImageManipulator.SaveFormat.JPEG }
     );
 
@@ -29,69 +41,190 @@ export async function validateImageQuality(imageUri: string): Promise<Validation
       return { isValid: false, error: "Could not process image data." };
     }
 
-    // 2. Decode Base64 to read pixels
-    // 'atob' is a standard global in React Native (Hermes)
-    const binaryString = atob(result.base64);
-    const len = binaryString.length;
+    // 2. Decode JPEG to Buffer
+    const imageBuffer = Buffer.from(result.base64, "base64");
+    const decoded = jpeg.decode(imageBuffer, { useTArray: true }); // Returns { width, height, data: Uint8Array [r,g,b,a, r,g,b,a ...] }
+    const { data, width, height } = decoded;
 
-    let totalLuminance = 0;
-    let minLuminance = 255;
-    let maxLuminance = 0;
+    // --- STEP 1: LIGHTING CHECK ---
+    const { brightness, glarePercentage } = calculateLightingStats(
+      data,
+      width,
+      height
+    );
 
-    // 3. The Math Loop (Runs in ~15ms for 256px image)
-    // JPEG data is complex, but checking raw bytes gives a rough approximation
-    // that is "good enough" for brightness checking without full bitmap decoding libraries.
-    // NOTE: For perfect accuracy, we'd need a Bitmap library, but this heuristic works 
-    // surprisingly well for detecting pitch black vs lit images.
-    for (let i = 0; i < len; i += 4) {
-      // Approximate pixel reading
-      const val = binaryString.charCodeAt(i);
-      
-      totalLuminance += val;
-      if (val < minLuminance) minLuminance = val;
-      if (val > maxLuminance) maxLuminance = val;
-    }
-
-    const avgLuminance = totalLuminance / (len / 4); // Approx average
-    const contrast = maxLuminance - minLuminance;
-
-    // --- DECISION LOGIC (Calibrated for Inclusivity) ---
-
-    // Rule 1: pitch black (Lens cap on, or dark room)
-    // Even dark skin reflects light (> 40). < 20 is mathematically almost black.
-    if (avgLuminance < 20) {
-      return { 
-        isValid: false, 
-        error: "Too Dark. Please turn on a light.",
-        details: { brightness: avgLuminance, contrast }
+    if (brightness < DARK_THRESHOLD) {
+      return {
+        isValid: false,
+        error: "Too dark. Please turn on a light.",
+        details: { brightness },
       };
     }
 
-    // Rule 2: Flatness (No Contrast)
-    // A photo of a wall or dark skin in bad light has no range (grey-on-grey).
-    // A good photo has highlights and shadows (High contrast).
-    if (contrast < 30) {
-      return { 
-        isValid: false, 
-        error: "Image is too flat (bad lighting). Ensure the lesion is lit.",
-        details: { brightness: avgLuminance, contrast }
+    // If more than 10% of the image is pure white/blown out, it's glare.
+    if (brightness > GLARE_THRESHOLD || glarePercentage > 0.1) {
+      return {
+        isValid: false,
+        error: "Too flashy. Avoid direct glare.",
+        details: { brightness },
       };
     }
 
-    // Rule 3: Glare (Optional)
-    if (avgLuminance > 230) {
-      return { 
-        isValid: false, 
-        error: "Too Bright. Avoid direct flash glare.",
-        details: { brightness: avgLuminance, contrast }
+    // --- STEP 2: CLARITY CHECK (Blur) ---
+    // We calculate the Variance of the Laplacian.
+    // This is mathematically "how many edges are in the image".
+    const blurScore = calculateLaplacianVariance(data, width, height);
+    if (blurScore < BLUR_THRESHOLD) {
+      return {
+        isValid: false,
+        error: "Image is not clear. Please hold steady.",
+        details: { blurScore },
       };
     }
 
-    return { isValid: true, details: { brightness: avgLuminance, contrast } };
+    // --- STEP 3: SKIN CONTENT CHECK ---
+    const skinPercentage = calculateSkinPercentage(data, width, height);
+    if (skinPercentage < SKIN_MIN_PERCENTAGE) {
+      return {
+        isValid: false,
+        error: "No skin detected. Please align the lesion.",
+        details: { skinPercentage },
+      };
+    }
 
+    // SUCCESS
+    return {
+      isValid: true,
+      details: {
+        blurScore,
+        brightness,
+        skinPercentage,
+      },
+    };
   } catch (error) {
     console.error("Quality Check Failed:", error);
-    // Fail safe: If check crashes, let the user pass (don't block them)
-    return { isValid: true }; 
+    // If our check crashes, we fallback to ALLOWING the image so we don't block users due to bugs.
+    return { isValid: true };
   }
+}
+
+/**
+ * Calculates average brightness and % of pixels that are potential glare.
+ */
+function calculateLightingStats(
+  data: Uint8Array,
+  width: number,
+  height: number
+) {
+  let totalLuminance = 0;
+  let glarePixels = 0;
+  const numPixels = width * height;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    // Standard Luma formula: 0.299R + 0.587G + 0.114B
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    totalLuminance += luminance;
+
+    if (luminance > 240) {
+      glarePixels++;
+    }
+  }
+
+  return {
+    brightness: totalLuminance / numPixels,
+    glarePercentage: glarePixels / numPixels,
+  };
+}
+
+/**
+ * Calculates variance of the Laplacian (Green channel only for speed).
+ * A standard measure of image sharpness.
+ */
+function calculateLaplacianVariance(
+  data: Uint8Array,
+  width: number,
+  height: number
+) {
+  // 1. Convert to Grayscale (Green channel is a good approximation for sharpness)
+  const grayscale = new Uint8Array(width * height);
+  for (let i = 0; i < data.length; i += 4) {
+    grayscale[i / 4] = data[i + 1]; // Use Green Channel
+  }
+
+  // 2. Convolve with Laplacian Kernel
+  // [0,  1, 0]
+  // [1, -4, 1]
+  // [0,  1, 0]
+  const laplacianValues: number[] = [];
+  let mean = 0;
+
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const idx = y * width + x;
+
+      const top = grayscale[idx - width];
+      const bottom = grayscale[idx + width];
+      const left = grayscale[idx - 1];
+      const right = grayscale[idx + 1];
+      const center = grayscale[idx];
+
+      const val = top + bottom + left + right - 4 * center;
+      laplacianValues.push(val);
+      mean += val;
+    }
+  }
+
+  mean /= laplacianValues.length;
+
+  // 3. Calculate Variance
+  let variance = 0;
+  for (const val of laplacianValues) {
+    variance += (val - mean) * (val - mean);
+  }
+  return variance / laplacianValues.length;
+}
+
+/**
+ * Detects skin color using RGB rules.
+ * Simple rule: R > 95, G > 40, B > 20 AND Max - Min > 15 AND |R - G| > 15 AND R > G AND R > B
+ */
+
+// ...
+
+export function calculateSkinPercentage(
+  data: Uint8Array,
+  width: number,
+  height: number
+) {
+  let skinPixels = 0;
+  const numPixels = width * height;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+
+    // Relaxed RGB rule for wider lighting conditions & skin tones
+    const isSkin =
+      r > 45 && // Lowered from 95 to support darker lighting
+      g > 30 && // Lowered from 40
+      b > 15 && // Lowered from 20
+      max - min > 10 && // Reduced contrast requirement
+      Math.abs(r - g) > 10 &&
+      r > g &&
+      r > b;
+
+    if (isSkin) {
+      skinPixels++;
+    }
+  }
+
+  return skinPixels / numPixels;
 }

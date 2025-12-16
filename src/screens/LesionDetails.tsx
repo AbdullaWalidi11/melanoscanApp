@@ -5,7 +5,6 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -16,6 +15,8 @@ import {
   Montserrat_700Bold,
   Montserrat_400Regular,
 } from "@expo-google-fonts/montserrat";
+import { useTranslation } from "react-i18next";
+import CustomAlert, { AlertAction } from "../components/CustomAlert";
 
 // Database
 import {
@@ -33,10 +34,36 @@ export default function LesionDetails() {
   const route = useRoute<any>();
   const { lesionId } = route.params || {};
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const [lesion, setLesion] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showSavePopup, setShowSavePopup] = useState(false);
+
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message?: string;
+    actions: AlertAction[];
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    actions: [],
+  });
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const showCustomAlert = (
+    title: string,
+    message: string,
+    actions: AlertAction[] = [{ text: "OK", onPress: hideAlert }]
+  ) => {
+    setAlertConfig({ visible: true, title, message, actions });
+  };
 
   // Load Fonts
   let [fontsLoaded] = useFonts({
@@ -66,17 +93,26 @@ export default function LesionDetails() {
 
   // 2. Handle Delete
   const handleDelete = () => {
-    Alert.alert("Delete Scan", "Are you sure? This cannot be undone.", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: async () => {
-          await deleteLesionById(lesionId);
-          navigation.goBack();
+    showCustomAlert(
+      t("lesion_details.delete_title"),
+      t("lesion_details.delete_confirm"),
+      [
+        {
+          text: t("analysis_result.cancel"),
+          style: "cancel",
+          onPress: hideAlert,
         },
-      },
-    ]);
+        {
+          text: t("lesion_details.delete"),
+          style: "destructive",
+          onPress: async () => {
+            hideAlert();
+            await deleteLesionById(lesionId);
+            navigation.goBack();
+          },
+        },
+      ]
+    );
   };
 
   // 3. Handle Chat
@@ -120,7 +156,7 @@ export default function LesionDetails() {
               style={{ fontFamily: "Montserrat_700Bold" }}
               className="text-xl ml-1"
             >
-              Back
+              {t("analysis_result.back")}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDelete}>
@@ -133,10 +169,12 @@ export default function LesionDetails() {
           style={{ fontFamily: "Montserrat_700Bold" }}
           className="text-2xl text-[#5a3e3e] text-center mb-1"
         >
-          {lesion.description || "Lesion Details"}
+          {lesion.description || t("lesion_details.default_title")}
         </Text>
         <Text className="text-gray-400 text-xs text-center mb-6">
-          Scanned on {new Date(lesion.createdAt).toLocaleDateString()}
+          {t("lesion_details.scanned_on", {
+            date: new Date(lesion.createdAt).toLocaleDateString(),
+          })}
         </Text>
 
         {/* 3. Image with Dynamic Border */}
@@ -166,14 +204,16 @@ export default function LesionDetails() {
             style={{ fontFamily: "Montserrat_700Bold" }}
             className="text-black text-sm mb-1"
           >
-            {isMalignant ? "High Risk:" : "Low Risk:"}
+            {isMalignant
+              ? t("analysis_result.high_risk")
+              : t("analysis_result.low_risk")}
             <Text
               style={{ fontFamily: "Montserrat_400Regular" }}
               className="font-normal"
             >
               {isMalignant
-                ? " This lesion shows characteristics that may require professional attention. Please consult a dermatologist."
-                : " Our analysis suggests that your skin spot appears benign and carries a very low risk. While this is reassuring, we recommend you continue monitoring the area regularly."}
+                ? t("analysis_result.high_risk_desc")
+                : t("analysis_result.low_risk_desc")}
             </Text>
           </Text>
         </View>
@@ -183,10 +223,14 @@ export default function LesionDetails() {
           style={{ fontFamily: "Montserrat_700Bold" }}
           className="text-md mb-2"
         >
-          Result:{" "}
-          <Text className="text-[#fe8d93] font-light">
+          {t("analysis_result.result")}{" "}
+          <Text className="text-[#fe948d] font-light">
             {(lesion.confidence * 100).toFixed(0)}%{" "}
-            {lesion.resultLabel || "Unknown"} Lesions
+            {t(
+              `analysis_result.${(lesion.resultLabel || "unknown").toLowerCase()}`,
+              { defaultValue: lesion.resultLabel }
+            )}{" "}
+            {t("analysis_result.lesions")}
           </Text>
         </Text>
 
@@ -194,7 +238,7 @@ export default function LesionDetails() {
           style={{ fontFamily: "Montserrat_700Bold" }}
           className="text-md mb-2"
         >
-          Diagnosis:{" "}
+          {t("analysis_result.diagnosis")}{" "}
           <Text className="font-light">
             {lesion.diagnosis || "Not specified"}
           </Text>
@@ -205,7 +249,7 @@ export default function LesionDetails() {
             style={{ fontFamily: "Montserrat_700Bold" }}
             className="text-md mb-2"
           >
-            Location:{" "}
+            {t("lesion_details.location")}{" "}
             <Text className="font-light capitalize">{lesion.region}</Text>
           </Text>
         )}
@@ -214,11 +258,8 @@ export default function LesionDetails() {
           style={{ fontFamily: "Montserrat_700Bold" }}
           className="text-base mb-6"
         >
-          Advice:{" "}
-          <Text className="font-light">
-            If you ever feel unsure, don't hesitate to consult a healthcare
-            professional.
-          </Text>
+          {t("analysis_result.advice")}{" "}
+          <Text className="font-light">{t("analysis_result.advice_desc")}</Text>
         </Text>
 
         {/* ✅ NEW: Conditional Save Button for Unspecified Regions */}
@@ -232,7 +273,7 @@ export default function LesionDetails() {
                 style={{ fontFamily: "Montserrat_600SemiBold" }}
                 className="text-white text-md"
               >
-                Save to History
+                {t("analysis_result.save_history")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -243,7 +284,7 @@ export default function LesionDetails() {
           style={{ fontFamily: "Montserrat_700Bold" }}
           className="text-lg mb-3 mt-4"
         >
-          You can also:
+          {t("analysis_result.you_can_also")}
         </Text>
 
         <View className="flex-row items-center justify-between mb-8">
@@ -255,8 +296,7 @@ export default function LesionDetails() {
                 style={{ fontFamily: "Montserrat_400Regular" }}
                 className="text-sm text-[#5A4E38] flex-1"
               >
-                Get tailored insights from our AI assistant. Click the robot to
-                start a chat for more accurate guidance.
+                {t("analysis_result.ai_insight")}
               </Text>
             </View>
           </View>
@@ -264,18 +304,21 @@ export default function LesionDetails() {
 
         {/* Footer Disclaimer */}
         <Text className="text-gray-400 text-[10px] text-center mb-10 px-4">
-          This scan result is not a diagnosis. Please, consult a doctor for an
-          accurate diagnosis and treatment recommendations
+          {t("analysis_result.footer_disclaimer")}
         </Text>
       </ScrollView>
 
       {/* ✅ FLOATING ROBOT BUTTON (Absolute Bottom Right) */}
       <TouchableOpacity
         onPress={handleChat}
-        className="absolute bottom-8 right-8 w-24 h-24 bg-[#fbd3d5] rounded-full items-center justify-center overflow-hidden border-2 border-[#fdccce] shadow-md shadow-[#000] z-50 elevation-10"
+        className="absolute bottom-8 right-8 w-24 h-24 bg-[#fe948d] rounded-full items-center justify-center overflow-hidden border-2 border-[#fe948d] shadow-md shadow-[#000] z-50 elevation-10"
         activeOpacity={0.8}
       >
-        <Text className="text-3xl">🤖</Text>
+        <Image
+          source={require("../../assets/images/chatbot.png")}
+          className="w-full h-full"
+          resizeMode="cover"
+        />
       </TouchableOpacity>
 
       {/* ✅ SAVE POPUP for UPGRADING 'Unspecified' -> 'Region' */}
@@ -306,11 +349,25 @@ export default function LesionDetails() {
             }
 
             setShowSavePopup(false);
-            Alert.alert("Saved", "Lesion details updated successfully.");
+            showCustomAlert(
+              t("lesion_details.save_saved_title"),
+              t("lesion_details.save_saved_body")
+            );
           } catch (err: any) {
-            Alert.alert("Error", "Failed to update lesion details.");
+            showCustomAlert(
+              t("analysis_result.error_title"),
+              "Failed to update lesion details."
+            );
           }
         }}
+      />
+
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        onClose={hideAlert}
       />
     </View>
   );

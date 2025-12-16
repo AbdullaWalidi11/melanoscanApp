@@ -4,9 +4,11 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { AbhayaLibre_400Regular } from "@expo-google-fonts/abhaya-libre";
 import { Montserrat_400Regular, useFonts } from "@expo-google-fonts/montserrat";
+import { useTranslation } from "react-i18next";
 
 export default function Page2() {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,
     AbhayaLibre_400Regular,
@@ -15,11 +17,11 @@ export default function Page2() {
   if (!fontsLoaded) return null;
 
   return (
-    <View className="flex-1 bg-[#FFC5C8] items-center justify-center relative">
+    <View className="flex-1 bg-[#ffc5c5] items-center justify-center relative">
       <View className="absolute inset-0 transform -translate-x-80 -translate-y-20 rotate-45">
         <View className="w-[600px] h-[600px]">
           <LinearGradient
-            colors={["#fca7ac", "#ff9da1", "#fe8d93"]}
+            colors={["#fca7ac", "#fe948d", "#fe8d93"]}
             locations={[0, 0.38, 1]}
             className="w-full h-full"
           />
@@ -37,18 +39,28 @@ export default function Page2() {
 
         <Text
           className="text-[35px] text-center text-white mb-4"
-          style={{ fontFamily: "AbhayaLibre_400Regular", textShadowColor: "rgba(0, 0, 0, 0.25)", textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 8 }}
+          style={{
+            fontFamily: "AbhayaLibre_400Regular",
+            textShadowColor: "rgba(0, 0, 0, 0.25)",
+            textShadowOffset: { width: 2, height: 2 },
+            textShadowRadius: 8,
+          }}
         >
-          Your Health, Your {"\n"} Privacy
+          {t("landing.page2.title")}
         </Text>
       </View>
 
       <View className="absolute bg-white rounded-t-[60px] px-8 pt-8 pb-52 w-full translate-y-[340px] items-center shadow-lg">
         <Text
           className="text-center text-gray-700 mb-8"
-          style={{ fontFamily: "Montserrat_400Regular", lineHeight: 26, fontSize: 17, fontWeight: "bold" }}
+          style={{
+            fontFamily: "Montserrat_400Regular",
+            lineHeight: 26,
+            fontSize: 17,
+            fontWeight: "bold",
+          }}
         >
-          All scans stay on your device. No internet needed, no data shared — your photos remain yours.
+          {t("landing.page2.desc")}
         </Text>
 
         {/* Next -> Goes to LandingPage3 */}
@@ -56,8 +68,11 @@ export default function Page2() {
           className="border border-[#FF8080] rounded-full px-20 py-4 mb-8"
           onPress={() => navigation.navigate("LandingPage3")}
         >
-          <Text className="text-[#FF8080]" style={{ fontFamily: "Montserrat_400Regular", fontSize: 16 }}>
-            Next
+          <Text
+            className="text-[#FF8080]"
+            style={{ fontFamily: "Montserrat_400Regular", fontSize: 16 }}
+          >
+            {t("landing.next")}
           </Text>
         </TouchableOpacity>
 
@@ -69,8 +84,11 @@ export default function Page2() {
 
         <View className="flex-row items-end justify-end w-full mt-6">
           <TouchableOpacity onPress={() => navigation.navigate("SurveyPage1")}>
-            <Text className="text-gray-500" style={{ fontFamily: "Montserrat_400Regular", fontSize: 16 }}>
-              skip
+            <Text
+              className="text-gray-500"
+              style={{ fontFamily: "Montserrat_400Regular", fontSize: 16 }}
+            >
+              {t("landing.skip")}
             </Text>
           </TouchableOpacity>
         </View>

@@ -1,10 +1,11 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 // ✅ Import the database wipe function for Scenario 5
 import { clearDatabase } from "../database/queries";
 import { AUTH } from "../services/Firebase";
+import { useTranslation } from "react-i18next";
 // Icons to match the design
 import {
   ChevronLeft,
@@ -18,36 +19,63 @@ import {
   LogOut,
   LogIn,
 } from "lucide-react-native";
+import CustomAlert, { AlertAction } from "../components/CustomAlert";
 
 export default function ProfileScreen() {
   const navigation = useNavigation<any>();
   // Get user info and the setter to log out
   const { user, setUser } = useAuth();
+  const { t } = useTranslation();
 
-  const isCloudUser = user && user.uid !== 'offline_guest';
-  
+  const isCloudUser = user && user.uid !== "offline_guest";
+
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message?: string;
+    actions: AlertAction[];
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    actions: [],
+  });
+
+  const hideAlert = () =>
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+
+  const showCustomAlert = (
+    title: string,
+    message: string,
+    actions: AlertAction[]
+  ) => {
+    setAlertConfig({ visible: true, title, message, actions });
+  };
+
   // --- LOGOUT FUNCTION (Modified to sign out from Firebase Native SDK) ---
   const handleLogout = () => {
-    Alert.alert(
-      "Log Out",
-      "Are you sure you want to log out? All local data will be cleared from this device for your privacy.",
+    showCustomAlert(
+      t("profile.logout_alert_title"),
+      t("profile.logout_alert_body"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("profile.cancel"), style: "cancel", onPress: hideAlert },
         {
-          text: "Log Out",
+          text: t("profile.confirm_logout"),
           style: "destructive",
           onPress: async () => {
+            hideAlert();
             try {
               // 1. Wipe the local SQLite database (Scenario 5)
               await clearDatabase();
-              
+
               // 2. Sign out from Firebase Native SDK (if they were a registered user)
               if (AUTH.currentUser) {
                 await AUTH.signOut();
               }
 
               // 3. Clear local context (triggers navigation back to Splash/Login)
-              setUser(null); 
+              setUser(null);
             } catch (error) {
               console.error("Logout error:", error);
             }
@@ -58,9 +86,9 @@ export default function ProfileScreen() {
   };
 
   const handleLogin = () => {
-      // Navigate to the Login screen where they can sign up or sign in, 
-      // triggering the Grand Merge (Scenario 2) upon success.
-      navigation.navigate("Login"); 
+    // Navigate to the Login screen where they can sign up or sign in,
+    // triggering the Grand Merge (Scenario 2) upon success.
+    navigation.navigate("Login");
   };
 
   // Helper component for menu items to keep code clean
@@ -87,19 +115,26 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-white">
-
-
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        onClose={hideAlert}
+      />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* ----- PROFILE IMAGE & NAME ----- */}
         <View className="items-center mt-8 mb-8">
-          <View className="w-32 h-32 bg-[#ffb6c6] rounded-full items-center justify-center mb-4 shadow-sm">
+          <View className="w-32 h-32 bg-[#fdaaa4] rounded-full items-center justify-center mb-4 shadow-sm">
             <User color="white" size={48} />
           </View>
           <Text className="text-2xl font-bold text-gray-800">
-            {user?.displayName || "Guest User"}
+            {user?.displayName || t("profile.guest_user")}
           </Text>
-          <Text className="text-[#e2728f] font-medium">
-            {user?.isAnonymous ? "Offline Account" : "Skin Health Enthusiast"}
+          <Text className="text-[#fe948d] font-medium">
+            {user?.isAnonymous
+              ? t("profile.offline_account")
+              : t("profile.enthusiast")}
           </Text>
         </View>
 
@@ -107,19 +142,19 @@ export default function ProfileScreen() {
         <View className="px-6 border-t border-gray-100 pt-4">
           <MenuItem
             icon={<Settings color="#555" size={24} />}
-            text="Account Settings"
+            text={t("profile.account_settings")}
           />
           <MenuItem
             icon={<Bell color="#555" size={24} />}
-            text="Notifications"
+            text={t("profile.notifications")}
           />
           <MenuItem
             icon={<Globe color="#555" size={24} />}
-            text="Language"
+            text={t("profile.language")}
           />
           <MenuItem
             icon={<Shield color="#555" size={24} />}
-            text="Privacy Policy"
+            text={t("profile.privacy_policy")}
           />
         </View>
 
@@ -127,19 +162,23 @@ export default function ProfileScreen() {
         <View className="px-6 mt-10 mb-12">
           <TouchableOpacity
             onPress={isCloudUser ? handleLogout : handleLogin} // <-- LOGIC SWITCH
-            className="bg-[#fe8d93] flex-row justify-center items-center py-4 rounded-full shadow-md active:opacity-80"
+            className="bg-[#fe948d] flex-row justify-center items-center py-4 rounded-full shadow-md active:opacity-80"
           >
             {isCloudUser ? (
               // SHOW LOGOUT BUTTON
               <>
                 <LogOut color="white" size={20} style={{ marginRight: 8 }} />
-                <Text className="text-white text-lg font-semibold">Log Out</Text>
+                <Text className="text-white text-lg font-semibold">
+                  {t("profile.log_out")}
+                </Text>
               </>
             ) : (
               // SHOW LOGIN/SYNC BUTTON for GUEST USER
               <>
                 <LogIn color="white" size={20} style={{ marginRight: 8 }} />
-                <Text className="text-white text-lg font-semibold">Log In </Text>
+                <Text className="text-white text-lg font-semibold">
+                  {t("profile.log_in")}{" "}
+                </Text>
               </>
             )}
           </TouchableOpacity>

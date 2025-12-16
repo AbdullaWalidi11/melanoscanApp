@@ -6,19 +6,21 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Alert
 } from "react-native";
-import { useNavigation } from "@react-navigation/native"; 
+import { useNavigation } from "@react-navigation/native";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react-native";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
+import CustomAlert, { AlertAction } from "../components/CustomAlert";
 
 // ✅ 1. Import Real Services
 import { signUpWithEmail } from "../services/authService";
 import { syncLocalToCloud } from "../services/SyncService";
 
 export default function SignUpScreen() {
-  const navigation = useNavigation<any>(); 
+  const navigation = useNavigation<any>();
   const { setUser } = useAuth(); // To auto-login after signup
+  const { t } = useTranslation();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,17 +30,51 @@ export default function SignUpScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message?: string;
+    actions: AlertAction[];
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    actions: [],
+  });
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const showCustomAlert = (
+    title: string,
+    message: string,
+    actions: AlertAction[] = [{ text: "OK", onPress: hideAlert }]
+  ) => {
+    setAlertConfig({ visible: true, title, message, actions });
+  };
+
   const signUp = async () => {
     if (!name || !email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+      showCustomAlert(
+        t("auth.login.alerts.error"),
+        t("auth.signup.alerts.fill_all")
+      );
       return;
     }
     if (password.length < 6) {
-      Alert.alert("Error", "Password must be at least 6 characters");
+      showCustomAlert(
+        t("auth.login.alerts.error"),
+        t("auth.signup.alerts.pass_length")
+      );
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      showCustomAlert(
+        t("auth.login.alerts.error"),
+        t("auth.signup.alerts.pass_mismatch")
+      );
       return;
     }
 
@@ -46,29 +82,41 @@ export default function SignUpScreen() {
     try {
       // ✅ Real Firebase Sign Up
       const { user } = await signUpWithEmail(name, email, password);
-      
-      Alert.alert(
-        "Success", 
-        "Account created! Please check your email for a verification link."
+
+      showCustomAlert(
+        t("auth.signup.alerts.success_title"),
+        t("auth.signup.alerts.success_msg"),
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              hideAlert();
+              navigation.replace("Login");
+            },
+          },
+        ]
       );
 
       // Auto-login logic
       if (user) {
         setUser(user);
-        // Navigate to the main app immediately
-        navigation.replace("Login");
-      } else {
-        // Fallback to login screen if something weird happens
-        navigation.navigate("Login");
+        // Navigation handled in alert callback or context listener usually,
+        // but here we wait for alert confirm or just let it replace.
+        // Actually, if we show alert, we should wait.
+        // But the previous code navigated immediately after alert?
+        // Previous code: Alert.alert(...); navigation.replace("Login");
+        // Alert.alert is non-blocking in logic but blocks interaction.
+        // Let's rely on the OK button to navigate.
       }
-
     } catch (error: any) {
       console.error(error);
-      let msg = "Sign up failed. Please try again.";
-      if (error.code === 'auth/email-already-in-use') msg = "That email is already in use.";
-      if (error.code === 'auth/invalid-email') msg = "Invalid email address.";
-      if (error.code === 'auth/weak-password') msg = "Password is too weak.";
-      Alert.alert("Error", msg);
+      let msg = t("auth.signup.alerts.fail_msg");
+      // Could map specific Firebase error codes to translations if desired, but general is fine for now
+      if (error.code === "auth/email-already-in-use")
+        msg = "That email is already in use.";
+      if (error.code === "auth/invalid-email") msg = "Invalid email address.";
+      if (error.code === "auth/weak-password") msg = "Password is too weak.";
+      showCustomAlert(t("auth.login.alerts.error"), msg);
     } finally {
       setLoading(false);
     }
@@ -80,17 +128,19 @@ export default function SignUpScreen() {
         <View className="flex-1 justify-center mt-20">
           {/* Title */}
           <Text className="text-3xl font-bold text-center mb-8 py-8">
-            Create an Account
+            {t("auth.signup.title")}
           </Text>
 
           {/* Name */}
           <View className="mb-4">
-            <Text className="text-lg font-medium mb-2 text-gray-700">Name</Text>
+            <Text className="text-lg font-medium mb-2 text-gray-700">
+              {t("auth.signup.name_label")}
+            </Text>
             <View className="absolute left-5 top-14 z-10">
               <User size={20} color="gray" />
             </View>
             <TextInput
-              placeholder="User Name"
+              placeholder={t("auth.signup.name_placeholder")}
               value={name}
               onChangeText={setName}
               className="w-full border pl-14 bg-stone-50 border-gray-300 rounded-full px-4 py-4 text-base mb-1"
@@ -101,12 +151,14 @@ export default function SignUpScreen() {
 
           {/* Email */}
           <View className="mb-4">
-            <Text className="text-lg font-medium mb-2 text-gray-700">Email Address</Text>
+            <Text className="text-lg font-medium mb-2 text-gray-700">
+              {t("auth.login.email_label")}
+            </Text>
             <View className="absolute left-5 top-14 z-10">
               <Mail size={20} color="gray" />
             </View>
             <TextInput
-              placeholder="Email Address"
+              placeholder={t("auth.login.email_placeholder")}
               value={email}
               onChangeText={setEmail}
               className="w-full border pl-14 bg-stone-50 border-gray-300 rounded-full px-4 py-4 text-base mb-1"
@@ -118,12 +170,14 @@ export default function SignUpScreen() {
 
           {/* Password */}
           <View className="mb-2">
-            <Text className="text-lg font-medium mb-2 text-gray-700">Create Password</Text>
+            <Text className="text-lg font-medium mb-2 text-gray-700">
+              {t("auth.signup.create_pass_label")}
+            </Text>
             <View className="absolute left-5 top-14 z-10">
               <Lock size={20} color="gray" />
             </View>
             <TextInput
-              placeholder="Create Password"
+              placeholder={t("auth.signup.create_pass_placeholder")}
               value={password}
               onChangeText={setPassword}
               className="w-full border pl-14 bg-stone-50 border-gray-300 rounded-full px-4 py-4 text-base mb-1"
@@ -144,12 +198,14 @@ export default function SignUpScreen() {
 
           {/* Confirm Password */}
           <View className="mb-8">
-            <Text className="text-lg font-medium mb-2 text-gray-700">Confirm Password</Text>
+            <Text className="text-lg font-medium mb-2 text-gray-700">
+              {t("auth.signup.confirm_pass_label")}
+            </Text>
             <View className="absolute left-5 top-14 z-10">
               <Lock size={20} color="gray" />
             </View>
             <TextInput
-              placeholder="Confirm Password"
+              placeholder={t("auth.signup.confirm_pass_placeholder")}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               className="w-full border pl-14 bg-stone-50 border-gray-300 rounded-full px-4 py-4 text-base"
@@ -170,27 +226,37 @@ export default function SignUpScreen() {
 
           {/* Sign Up Button */}
           <TouchableOpacity
-            className="bg-[#fe8d93] py-5 rounded-full shadow-md mb-6"
+            className="bg-[#fe948d] py-5 rounded-full shadow-md mb-6"
             onPress={signUp}
             disabled={loading}
           >
             <Text className="text-white text-center font-semibold text-base">
-              {loading ? "Creating Account..." : "Sign Up"}
+              {loading
+                ? t("auth.signup.creating_account")
+                : t("auth.signup.signup_btn")}
             </Text>
           </TouchableOpacity>
 
           {/* Redirect to login */}
           <Text className="text-center text-sm text-gray-600 mb-10">
-            Already have an account?{" "}
+            {t("auth.signup.have_account")}{" "}
             <Text
-              className="text-[#fe8d93] font-semibold"
+              className="text-[#fe948d] font-semibold"
               onPress={() => navigation.navigate("Login")}
             >
-              Login
+              {t("auth.signup.login_link")}
             </Text>
           </Text>
         </View>
       </ScrollView>
+
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        onClose={hideAlert}
+      />
     </KeyboardAvoidingView>
   );
 }

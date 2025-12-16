@@ -10,18 +10,68 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { saveComparisonLog } from "../../database/queries";
+import { useTranslation } from "react-i18next";
+import CustomAlert, { AlertAction } from "../../components/CustomAlert";
 
 export default function CompareResult() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { result, oldLesionId, oldImageUri, newImageUri } = route.params;
+  const { t } = useTranslation();
 
   const [saving, setSaving] = useState(false);
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message?: string;
+    actions: AlertAction[];
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    actions: [],
+  });
+
+  const hideAlert = () =>
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
 
   // Logic: Is it good news or bad news?
-  const isStable = result.status === "STABLE";
-  const statusColor = isStable ? "#4CAF50" : "#FF5252"; // Green vs Red
-  const statusIcon = isStable ? "checkmark-circle" : "alert-circle";
+  // New Statuses: "UNCHANGED", "IMPROVED", "WORSENED"
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case "IMPROVED":
+        return {
+          color: "#4CAF50", // Green
+          bgColor: "#F0FFF4",
+          icon: "checkmark-circle" as const,
+          label: t("compare_result.improved") || "Improved",
+        };
+      case "UNCHANGED":
+        return {
+          color: "#FF9800", // Orange
+          bgColor: "#FFF8E1",
+          icon: "remove-circle" as const,
+          label: t("compare_result.no_change") || "No Change",
+        };
+      case "NON_COMPARABLE":
+        return {
+          color: "#9E9E9E", // Grey
+          bgColor: "#F5F5F5",
+          icon: "help-circle" as const,
+          label: t("compare_result.non_comparable") || "Not Comparable",
+        };
+      case "WORSENED":
+      default:
+        return {
+          color: "#FF5252", // Red
+          bgColor: "#FFF0F0",
+          icon: "alert-circle" as const,
+          label: t("compare_result.changes_detected") || "Worsened",
+        };
+    }
+  };
+
+  const { color, bgColor, icon, label } = getStatusConfig(result.status);
 
   const handleAddToHistory = async () => {
     try {
@@ -36,15 +86,31 @@ export default function CompareResult() {
         advice: result.advice,
       });
 
-      Alert.alert("Saved", "Comparison added to history.");
-
-      // Navigate to the HISTORY LIST (Frame 26) so user sees it immediately
-      navigation.replace("ComparisonHistory", {
-        parentLesionId: oldLesionId,
-        imageUri: oldImageUri,
+      setAlertConfig({
+        visible: true,
+        title: t("compare_result.saved_title"),
+        message: t("compare_result.saved_body"),
+        actions: [
+          {
+            text: "OK",
+            onPress: () => {
+              hideAlert();
+              // Navigate only after user acknowledges
+              navigation.replace("ComparisonHistory", {
+                parentLesionId: oldLesionId,
+                imageUri: oldImageUri,
+              });
+            },
+          },
+        ],
       });
     } catch (error) {
-      Alert.alert("Error", "Could not save result.");
+      setAlertConfig({
+        visible: true,
+        title: t("compare_result.error_title"),
+        message: t("compare_result.error_body"),
+        actions: [{ text: "OK", onPress: hideAlert }],
+      });
     } finally {
       setSaving(false);
     }
@@ -68,8 +134,8 @@ export default function CompareResult() {
         <View
           className="w-full rounded-3xl items-center p-6 border-2"
           style={{
-            borderColor: statusColor,
-            backgroundColor: isStable ? "#F0FFF4" : "#FFF0F0",
+            borderColor: color,
+            backgroundColor: bgColor,
           }}
         >
           {/* Color Block (The Square in your Figma) */}
@@ -80,13 +146,10 @@ export default function CompareResult() {
             resizeMode="cover"
           />
 
-          <Text
-            className="text-xl font-bold mb-1"
-            style={{ color: statusColor }}
-          >
-            {isStable ? "No Change Detected" : "Changes Detected"}
+          <Text className="text-xl font-bold mb-1" style={{ color: color }}>
+            {label}
           </Text>
-          <Ionicons name={statusIcon} size={32} color={statusColor} />
+          <Ionicons name={icon} size={32} color={color} />
         </View>
 
         {/* 3. AI EXPLANATION */}
@@ -95,7 +158,9 @@ export default function CompareResult() {
             <View className="w-10 h-10 bg-orange-100 rounded-full justify-center items-center mr-3">
               <Text className="font-bold text-orange-800 text-lg">A</Text>
             </View>
-            <Text className="font-bold text-gray-800 text-lg">AI Analysis</Text>
+            <Text className="font-bold text-gray-800 text-lg">
+              {t("compare_result.ai_analysis")}
+            </Text>
           </View>
 
           <Text className="text-gray-600 leading-6 text-base">
@@ -103,7 +168,7 @@ export default function CompareResult() {
           </Text>
 
           <Text className="text-gray-500 text-sm mt-4 italic">
-            Advice: {result.advice}
+            {t("compare_result.advice_label")} {result.advice}
           </Text>
         </View>
       </View>
@@ -113,18 +178,27 @@ export default function CompareResult() {
         <TouchableOpacity
           onPress={handleAddToHistory}
           disabled={saving}
-          className="w-full bg-[#ff9aa8] py-4 rounded-full items-center shadow-md active:bg-[#ff7b8a]"
+          className="w-full bg-[#fe948d] py-4 rounded-full items-center shadow-md active:bg-[#ff7b8a]"
         >
           <Text className="text-white font-bold text-lg">
-            {saving ? "Saving..." : "Add to History"}
+            {saving
+              ? t("compare_result.saving")
+              : t("compare_result.add_to_history")}
           </Text>
         </TouchableOpacity>
 
         <Text className="text-gray-400 text-xs text-center mt-6 px-4">
-          This result is not a diagnosis. Please consult a doctor for accurate
-          diagnosis.
+          {t("comparison_processing.footer_disclaimer")}
         </Text>
       </View>
+
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        onClose={hideAlert}
+      />
     </ScrollView>
   );
 }
