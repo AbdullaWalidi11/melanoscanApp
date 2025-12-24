@@ -29,7 +29,8 @@
     "language": "Dil",
     "settings": "Ayarlar",
     "logout": "Çıkış Yap",
-    "find_clinic": "En Yakın Klinik"
+    "find_clinic": "En Yakın Klinik",
+    "clinical_report": "Klinik Rapor"
   },
   "disclaimer": {
     "title": "ÖNEMLİ YASAL UYARI",
@@ -75,6 +76,14 @@
     "title": "Fotoğrafınız analiz ediliyor",
     "asymmetry_title": "Asimetri",
     "asymmetry_desc": "Benin içinden bir çizgi çizerseniz ve iki yarısı çok farklı görünüyorsa, bu düzensiz şekil melanomun erken uyarı işareti olabilir.",
+    "border_title": "Sınır",
+    "border_desc": "Melanomların sınırları genellikle düzensizdir. Pürüzlü, çentikli veya bulanık kenarlar arayın.",
+    "color_title": "Renk",
+    "color_desc": "İyi huylu benler genellikle tek renktir. Melanomlar kahverengi, siyah hatta kırmızı, beyaz veya mavi tonları içerebilir.",
+    "diameter_title": "Çap",
+    "diameter_desc": "Melanomlar genellikle 6mm'den (kurşun kalem silgisi boyutu) büyüktür, ancak daha küçük de olabilirler.",
+    "evolving_title": "Evrim",
+    "evolving_desc": "Boyut, şekil, renk, yükseklik veya başka bir özellikteki herhangi bir değişiklik, ya da kanama, kaşıntı, kabuklanma gibi yeni belirtiler.",
     "back": "Geri",
     "high_risk": "Yüksek Risk:",
     "low_risk": "Düşük Risk:",
@@ -96,7 +105,9 @@
     "malignant": "Kötü Huylu",
     "benign": "İyi Huylu",
     "suspicious": "Şüpheli",
-    "lesions": "Lezyon"
+    "lesions": "Lezyon",
+    "unspecified": "Belirtilmemiş",
+    "cancel": "iptal et"
   },
   "lesion_details": {
     "default_title": "Lezyon Detayları",
@@ -134,6 +145,7 @@
   },
   "compare_result": {
     "improved": "İyileşti",
+    "progression": "Gelişim",
     "unchanged": "Değişmedi",
     "worsened": "Kötüleşti",
     "non_comparable": "Karşılaştırılamaz",
@@ -164,11 +176,14 @@
     "asymmetry_desc": "Ben üzerinden bir çizgi çizerseniz ve iki yarım çok farklı görünüyorsa, bu düzensiz şekil melanomun erken bir uyarı işareti olabilir.",
     "footer_disclaimer": "Bu tarama sonucu bir teşhis değildir. Doğru teşhis ve tedavi önerileri için lütfen bir doktora danışın.",
     "failed_title": "Karşılaştırma Başarısız",
+    "non_comparable_title": "Görseller Karşılaştırılamaz",
+    "non_comparable_msg": "Yapay zeka bu görselleri güvenilir bir şekilde karşılaştıramadı. Bu durum, açılar çok farklıysa veya farklı vücut bölgelerini gösteriyorlarsa oluşabilir. Lütfen daha benzer fotoğraflarla tekrar deneyin.",
     "go_back": "Geri Dön",
     "generic_error": "Analiz sırasında bir hata oluştu."
   },
   "comparison_history": {
     "title": "Lezyon Geçmişi",
+    "select_prompt": "Gelişimi görmek için bir lezyon seçin",
     "baseline_alert": "Bu orijinal temel taramadır."
   },
   "log_detail": {
@@ -183,6 +198,7 @@
     "upload_photo": "Fotoğraf yükle",
     "uploading": "yükleniyor . . .",
     "upload_succeeded": "yükleme başarılı",
+    "upload_succeeded_text": "fotoğraf iyi görünüyor, analize edilmeye hazır.",
     "wait_message": "Fotoğrafınız yükleniyor. Bu işlem bir dakika sürebilir, lütfen bekleyin",
     "analyze_photo": "Fotoğrafı Analiz Et",
     "permission_denied": "İzin Reddedildi",

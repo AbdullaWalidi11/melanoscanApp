@@ -438,3 +438,15 @@ export async function deleteComparisonLog(id: number) {
     throw error;
   }
 }
+
+// New function to get ALL lesions (for Report Generation List)
+export async function getAllLesions() {
+  const db = getDB();
+  const sql = `SELECT * FROM lesions WHERE isDeleted = 0 ORDER BY createdAt DESC;`;
+  try {
+    return await db.getAllAsync(sql);
+  } catch (error) {
+    console.error("Error getting all lesions:", error);
+    throw error;
+  }
+}

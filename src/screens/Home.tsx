@@ -160,7 +160,9 @@ export default function Home({ navigation }: Props) {
                   className="text-xs font-semibold text-gray-700"
                   numberOfLines={1}
                 >
-                  {scan.region}
+                  {scan.region === "Unspecified"
+                    ? t("analysis_result.unspecified")
+                    : scan.region}
                 </Text>
                 <Text className="text-[10px] text-gray-400">
                   {new Date(scan.createdAt).toLocaleDateString("en-US", {

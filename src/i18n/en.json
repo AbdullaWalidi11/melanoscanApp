@@ -29,7 +29,8 @@
     "language": "Language",
     "settings": "Settings",
     "logout": "Log Out",
-    "find_clinic": "Find Clinic"
+    "find_clinic": "Find Clinic",
+    "clinical_report": "Clinical Report"
   },
   "disclaimer": {
     "title": "IMPORTANT DISCLAIMER",
@@ -106,7 +107,9 @@
     "malignant": "Malignant",
     "benign": "Benign",
     "suspicious": "Suspicious",
-    "lesions": "Lesions"
+    "lesions": "Lesions",
+    "unspecified": "Unspecified",
+    "cancel": "Cancel"
   },
   "lesion_details": {
     "default_title": "Lesion Details",
@@ -144,6 +147,7 @@
   },
   "compare_result": {
     "improved": "Improved",
+    "progression": "Progression",
     "unchanged": "Unchanged",
     "worsened": "Worsened",
     "non_comparable": "Non-Comparable",
@@ -174,11 +178,14 @@
     "asymmetry_desc": "If you draw a line through the mole and the two halves look very different, this uneven shape can be an early warning sign of melanoma.",
     "footer_disclaimer": "This scan result is not a diagnosis. Please, consult a doctor for an accurate diagnosis and treatment recommendations.",
     "failed_title": "Comparison Failed",
+    "non_comparable_title": "Images Not Comparable",
+    "non_comparable_msg": "AI could not reliably compare these images. This can happen if the angles are very different or if they show different body parts. Please try again with more similar photos.",
     "go_back": "Go Back",
     "generic_error": "Something went wrong during analysis."
   },
   "comparison_history": {
     "title": "Lesion History",
+    "select_prompt": "Select a lesion to view progression",
     "baseline_alert": "This is the original baseline scan."
   },
   "log_detail": {

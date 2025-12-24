@@ -315,7 +315,7 @@ export default function ScanUpload() {
               className="text-center text-gray-500 text-xs px-4 mb-8 leading-5"
             >
               {scanState === "VALIDATED_SUCCESS"
-                ? "Image looks great! Ready to analyze."
+                ? t("scan_upload.upload_succeeded_text")
                 : t("scan_upload.wait_message")}
             </Text>
           )}

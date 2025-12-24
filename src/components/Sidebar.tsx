@@ -246,7 +246,7 @@ export default function Sidebar({ visible, onClose }: SidebarProps) {
             <MenuItem
               icon={<FileText color="#555" size={24} />}
               text={t("components.sidebar.menu.history")}
-              onPress={() => handleNavigation("ComparisonHistory")}
+              onPress={() => handleNavigation("History")}
             />
             <MenuItem
               icon={<User color="#555" size={24} />}
@@ -270,6 +270,11 @@ export default function Sidebar({ visible, onClose }: SidebarProps) {
                 onClose();
                 openNearestDermatologist();
               }}
+            />
+            <MenuItem
+              icon={<FileText color="#555" size={24} />}
+              text={t("sidebar.clinical_report")}
+              onPress={() => handleNavigation("ReportSelection")}
             />
           </View>
 

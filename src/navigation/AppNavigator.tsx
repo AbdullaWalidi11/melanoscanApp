@@ -25,6 +25,7 @@ import CompareProcessing from "../screens/comparison/CompareProcessing";
 import CompareResult from "../screens/comparison/CompareResult";
 import LogDetailScreen from "../screens/comparison/LogDetailScreen";
 import ForgotPassword from "../auth/ForgotPassword";
+import ReportSelectionScreen from "../screens/reports/ReportSelectionScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -74,6 +75,7 @@ export default function AppNavigator() {
       <Stack.Screen name="SignUp" component={SignUpScreen} />
 
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="ReportSelection" component={ReportSelectionScreen} />
     </Stack.Navigator>
   );
 }

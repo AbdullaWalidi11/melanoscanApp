@@ -62,13 +62,12 @@ export default function TabNavigator() {
             `text-[10px] mt-1 text-[#fe948d] ${focused ? "font-bold opacity-100" : "font-normal opacity-50"}`;
 
           return (
-            <View className="flex-row bg-white border-t border-white justify-between items-center px-10 pb-5 mb-10 h-24 shadow-2xl shadow-black">
+            <View className="flex-row bg-white border-t border-white justify-between items-center px-6 pb-5 mb-8 h-24 shadow-2xl shadow-black">
               {/* === HOME === */}
               <TouchableOpacity
                 onPress={() => navigation.navigate("Home")}
-                className="items-center"
+                className="items-center flex-1 "
               >
-                {/* Replace Image with Icon */}
                 <Home size={28} color={getColor(isHomeFocused)} />
                 <Text className={getTextStyle(isHomeFocused)}>
                   {t("components.sidebar.menu.home")}
@@ -78,7 +77,7 @@ export default function TabNavigator() {
               {/* === DISCLAIMER === */}
               <TouchableOpacity
                 onPress={() => navigation.navigate("Disclaimer")}
-                className="items-center mr-6"
+                className="items-center flex-1"
               >
                 <Info size={28} color={getColor(isDisclaimerFocused)} />
                 <Text className={getTextStyle(isDisclaimerFocused)}>
@@ -86,22 +85,27 @@ export default function TabNavigator() {
                 </Text>
               </TouchableOpacity>
 
-              {/* === CAMERA (Keep Image or use Camera Icon) === */}
-              <TouchableOpacity
-                onPress={handleCameraPress}
-                className="absolute left-1/2 -top-12 ml-2 bg-[#fe948d] w-[65px] h-[65px] rounded-2xl items-center justify-center shadow-2xl shadow-white"
-              >
-                {/* You can keep your custom image here if you prefer, or switch to an Icon */}
-                <Image
-                  source={require("../../assets/images/camera.png")}
-                  className="w-[50px] h-[50px] rounded-2xl"
-                />
-              </TouchableOpacity>
+              {/* === CAMERA SPACER === */}
+              <View className="w-16 h-16" />
+
+              {/* === CAMERA BUTTON (ABSOLUTE CENTERED) === */}
+              <View className="absolute left-0 right-0 -top-12 items-center pointer-events-none">
+                <TouchableOpacity
+                  onPress={handleCameraPress}
+                  className="bg-[#fe948d] w-[65px] h-[65px] rounded-2xl items-center justify-center shadow-2xl shadow-white pointer-events-auto"
+                  activeOpacity={0.8}
+                >
+                  <Image
+                    source={require("../../assets/images/camera.png")}
+                    className="w-[50px] h-[50px] rounded-2xl"
+                  />
+                </TouchableOpacity>
+              </View>
 
               {/* === HISTORY === */}
               <TouchableOpacity
                 onPress={() => navigation.navigate("History")}
-                className="items-center ml-2"
+                className="items-center flex-1"
               >
                 <FileText size={28} color={getColor(isHistoryFocused)} />
                 <Text className={getTextStyle(isHistoryFocused)}>
@@ -112,7 +116,7 @@ export default function TabNavigator() {
               {/* === PROFILE === */}
               <TouchableOpacity
                 onPress={() => navigation.navigate("Profile")}
-                className="items-center"
+                className="items-center flex-1"
               >
                 <User size={28} color={getColor(isProfileFocused)} />
                 <Text className={getTextStyle(isProfileFocused)}>

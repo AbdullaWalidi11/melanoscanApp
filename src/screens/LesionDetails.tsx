@@ -250,7 +250,11 @@ export default function LesionDetails() {
             className="text-md mb-2"
           >
             {t("lesion_details.location")}{" "}
-            <Text className="font-light capitalize">{lesion.region}</Text>
+            <Text className="font-light capitalize">
+              {lesion.region === "Unspecified"
+                ? t("analysis_result.unspecified")
+                : lesion.region}
+            </Text>
           </Text>
         )}
 
@@ -267,7 +271,7 @@ export default function LesionDetails() {
           <View className="items-center mb-6 mt-6">
             <TouchableOpacity
               onPress={() => setShowSavePopup(true)}
-              className="bg-[#fe8d93] px-14 py-4 rounded-full shadow-sm"
+              className="bg-[#fe948d] px-14 py-4 rounded-full shadow-sm"
             >
               <Text
                 style={{ fontFamily: "Montserrat_600SemiBold" }}

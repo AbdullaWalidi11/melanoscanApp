@@ -290,7 +290,7 @@ export default function AnalysisResult() {
           {/* 1. Header Title */}
           <Text
             style={{ fontFamily: "Montserrat_700Bold" }}
-            className="text-[#8B5E5E] text-3xl mt-8 mb-12"
+            className="text-[#8B5E5E] text-3xl text-center mt-8 mb-12"
           >
             {t("analysis_result.title")}
           </Text>
@@ -420,11 +420,21 @@ export default function AnalysisResult() {
             className="text-md mb-2"
           >
             {t("analysis_result.result")}{" "}
-            <Text className="text-[#fe948d] font-light">
+            <Text
+              className={`${
+                result.label === "Malignant"
+                  ? "text-red-500"
+                  : result.label === "Suspicious"
+                    ? "text-orange-400"
+                    : "text-green-600"
+              } font-light`}
+            >
               {(result.confidence * 100).toFixed(0)}%{" "}
-              {t(`analysis_result.${result.label.toLowerCase()}`, {
-                defaultValue: result.label,
-              })}{" "}
+              {result.label === "Suspicious"
+                ? "Medium Risk"
+                : t(`analysis_result.${result.label.toLowerCase()}`, {
+                    defaultValue: result.label,
+                  })}{" "}
               {t("analysis_result.lesions")}
             </Text>
           </Text>

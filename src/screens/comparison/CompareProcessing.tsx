@@ -106,6 +106,25 @@ export default function CompareProcessing() {
           return;
         }
 
+        // Handle Non-comparable images (Show alert and go back to region list)
+        if (result.analysis?.status === "NON_COMPARABLE") {
+          showCustomAlert(
+            t("comparison_processing.non_comparable_title"),
+            t("comparison_processing.non_comparable_msg"),
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  hideAlert();
+                  // Directed to the lesions by region screen as requested
+                  navigation.navigate("LesionsByRegion", { region: region });
+                },
+              },
+            ]
+          );
+          return;
+        }
+
         // Success -> Navigate
         navigation.replace("CompareResult", {
           result: result.analysis,

@@ -174,23 +174,25 @@ export default function CompareResult() {
       </View>
 
       {/* 4. ACTION BUTTON */}
-      <View className="px-6 mt-10">
-        <TouchableOpacity
-          onPress={handleAddToHistory}
-          disabled={saving}
-          className="w-full bg-[#fe948d] py-4 rounded-full items-center shadow-md active:bg-[#ff7b8a]"
-        >
-          <Text className="text-white font-bold text-lg">
-            {saving
-              ? t("compare_result.saving")
-              : t("compare_result.add_to_history")}
-          </Text>
-        </TouchableOpacity>
+      {result.status !== "NON_COMPARABLE" && (
+        <View className="px-6 mt-10">
+          <TouchableOpacity
+            onPress={handleAddToHistory}
+            disabled={saving}
+            className="w-full bg-[#fe948d] py-4 rounded-full items-center shadow-md active:bg-[#ff7b8a]"
+          >
+            <Text className="text-white font-bold text-lg">
+              {saving
+                ? t("compare_result.saving")
+                : t("compare_result.add_to_history")}
+            </Text>
+          </TouchableOpacity>
 
-        <Text className="text-gray-400 text-xs text-center mt-6 px-4">
-          {t("comparison_processing.footer_disclaimer")}
-        </Text>
-      </View>
+          <Text className="text-gray-400 text-xs text-center mt-6 px-4">
+            {t("comparison_processing.footer_disclaimer")}
+          </Text>
+        </View>
+      )}
 
       <CustomAlert
         visible={alertConfig.visible}
