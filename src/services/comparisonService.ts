@@ -69,6 +69,13 @@ export async function compareLesionsWithGemini(
          - Examples: Different body parts/lesions, extreme zoom differences, completely different angles, or one is a close-up dermoscopy and the other is a far-away macro shot.
          - Return a score of 0 for this case.
 
+      ### SCORING (Magnitude of Change)
+      For IMPROVED or WORSENED statuses, calculate a "score" (1-100) representing the **percentage of change magnitude**.
+      - 0: No change (use this for UNCHANGED).
+      - 1-30: Slight/Minor change (e.g., subtle color shift, very small growth/shrinkage).
+      - 31-70: Moderate change (e.g., noticeable fading, distinct size change).
+      - 71-100: Significant/Drastic change (e.g., lesion doubled in size, completely disappeared, or major color transformation).
+
       IMPORTANT: Provide the "message", "reasoning", and "advice" values in ${language === "tr" ? "Turkish" : "English"}.
 
       ### OUTPUT FORMAT (JSON ONLY)
@@ -76,15 +83,15 @@ export async function compareLesionsWithGemini(
       If validation fails, set "valid": false.
       If validation passes, set "valid": true and fill "analysis".
 
-      Example Success (Improved):
+      Example Success (Improved - Moderate):
       {
         "valid": true,
         "code": "SUCCESS",
         "message": "Comparison complete.",
         "analysis": {
           "status": "IMPROVED", 
-          "score": 10,
-          "reasoning": "The lesion has significantly faded in color and reduced in diameter compared to the baseline.",
+          "score": 45,
+          "reasoning": "The lesion has noticeably faded in color and reduced in diameter by about 20% compared to the baseline.",
           "advice": "The healing process looks good. Continue normal skin care."
         }
       }
