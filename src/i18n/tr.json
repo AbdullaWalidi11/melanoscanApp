@@ -204,6 +204,21 @@
     "permission_denied": "İzin Reddedildi",
     "permission_msg": "{{type}} iznine ihtiyacımız var."
   },
+  "report_selection": {
+    "title": "Lezyon Seçin",
+    "no_scans": "Tarama bulunamadı.",
+    "modal": {
+      "title": "Klinik Rapor Yasal Uyarısı",
+      "body_intro": "Bu rapor, doktorunuza yardımcı olmak için cilt lezyonu geçmişinizin görsel bir özetini oluşturur.",
+      "important": "ÖNEMLİ:",
+      "point_1": "• Bu belge tıbbi bir teşhis <bold>DEĞİLDİR</bold>.",
+      "point_2": "• Yapay zeka sonuçları olasılıklıdır ve yanlış olabilir.",
+      "point_3": "• Fiziksel muayene için her zaman sertifikalı bir dermatoloğa danışın.",
+      "checkbox": "Bu raporun yalnızca bilgilendirme amaçlı olduğunu anlıyorum.",
+      "cancel": "İptal",
+      "generate": "PDF Oluştur"
+    }
+  },
   "auth": {
     "login": {
       "title": "Giriş Yap",
@@ -468,5 +483,27 @@
       },
       "logout_confirm_msg": "Çıkış yapmak istediğinizden emin misiniz? Gizliliğiniz için bu cihazdaki tüm yerel veriler silinecektir."
     }
+  },
+  "pdf_report": {
+    "title": "KARŞILAŞTIRMA RAPORU",
+    "subtitle": "Dermatolojik Görüntü Analizi",
+    "date": "Tarih:",
+    "patient_id": "Hasta No:",
+    "region": "Bölge:",
+    "section_1_title": "1. MEVCUT DEĞERLENDİRME",
+    "figure_1": "Şekil 1: Mevcut Görünüm",
+    "ai_indication": "Yapay Zeka Göstergesi:",
+    "confidence": "Güven Endeksi:",
+    "user_notes": "Kullanıcı Notları:",
+    "note_label": "Not:",
+    "disclaimer_text": "Bu rapor yapay zeka destekli otomatik bir sistem tarafından oluşturulmuştur. Burada sunulan sonuçlar yalnızca bilgilendirme amaçlıdır ve kesin bir tıbbi teşhis teşkil etmez.",
+    "section_2_title": "2. EVRİM GEÇMİŞİ",
+    "section_2_intro": "Lezyonun zaman içindeki tarihsel karşılaştırması.",
+    "table_date": "Tarih",
+    "table_ref": "Görüntü Referansı",
+    "table_status": "Durum Değişimi",
+    "table_score": "Benzerlik Skoru",
+    "footer": "MelanoScan Sistem Tarafından Oluşturulan Rapor | Sayfa",
+    "no_image": "Görüntü Yok"
   }
 }

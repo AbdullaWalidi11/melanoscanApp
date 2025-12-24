@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   visible: boolean;
@@ -14,25 +15,31 @@ export default function ReportDisclaimerModal({
   onConfirm,
 }: Props) {
   const [checked, setChecked] = React.useState(false);
+  const { t } = useTranslation();
 
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.card}>
-          <Text style={styles.title}>Clinical Report Disclaimer</Text>
+          <Text style={styles.title}>{t("report_selection.modal.title")}</Text>
 
           <Text style={styles.body}>
-            This report generates a visual summary of your skin lesion history
-            to aid your doctor.
+            {t("report_selection.modal.body_intro")}
             {"\n\n"}
             <Text style={{ fontWeight: "bold", color: "#d32f2f" }}>
-              IMPORTANT:
+              {t("report_selection.modal.important")}
             </Text>
-            {"\n"}• This document is{" "}
-            <Text style={{ fontWeight: "bold" }}>NOT</Text> a medical diagnosis.
-            {"\n"}• AI results are probabilistic and can be wrong.
-            {"\n"}• Always consult a certified dermatologist for a physical
-            examination.
+            {"\n"}
+            {t("report_selection.modal.point_1", {
+              defaultValue:
+                "• This document is <bold>NOT</bold> a medical diagnosis.",
+            })
+              .replace("<bold>", "")
+              .replace("</bold>", "")}
+            {"\n"}
+            {t("report_selection.modal.point_2")}
+            {"\n"}
+            {t("report_selection.modal.point_3")}
           </Text>
 
           <TouchableOpacity
@@ -45,13 +52,15 @@ export default function ReportDisclaimerModal({
               color="#fe948d"
             />
             <Text style={styles.checkboxText}>
-              I understand this report is for informational purposes only.
+              {t("report_selection.modal.checkbox")}
             </Text>
           </TouchableOpacity>
 
           <View style={styles.actions}>
             <TouchableOpacity onPress={onClose} style={styles.cancelBtn}>
-              <Text style={styles.cancelText}>Cancel</Text>
+              <Text style={styles.cancelText}>
+                {t("report_selection.modal.cancel")}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -59,7 +68,9 @@ export default function ReportDisclaimerModal({
               disabled={!checked}
               style={[styles.confirmBtn, { opacity: checked ? 1 : 0.5 }]}
             >
-              <Text style={styles.confirmText}>Generate PDF</Text>
+              <Text style={styles.confirmText}>
+                {t("report_selection.modal.generate")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

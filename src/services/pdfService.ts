@@ -3,12 +3,14 @@ import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 import { Alert, Platform } from "react-native";
 import { getComparisonLogs } from "../database/queries";
+import i18n from "../i18n"; // Import i18n instance
 
 export interface ReportLesion {
   id: number;
   region: string;
   imageUri: string;
   date: string;
+  createdAt?: string; // Added createdAt
   confidence: number;
   resultLabel: string;
   diagnosis?: string;
@@ -85,6 +87,7 @@ const generateReportHTML = async (
   history: any[]
 ) => {
   const isTimeline = history.length > 0;
+  const lang = i18n.language === "tr" ? "tr-TR" : "en-US"; // Get current language for dates
 
   // Medical Color Palette
   const colors = {
@@ -103,12 +106,48 @@ const generateReportHTML = async (
     lesion.resultLabel?.toLowerCase().includes("malignant") ||
     lesion.resultLabel?.toLowerCase().includes("suspicious");
 
-  // Date Formatting
-  const reportDate = new Date().toLocaleDateString("en-US", {
+  // Helper to safely parse date
+  const safeDate = (dateStr: string | undefined, fallbackStr: string) => {
+    try {
+      // Prefer createdAt (ISO) if available, otherwise try parsing the fallback 'date' string
+      const d = dateStr
+        ? new Date(dateStr)
+        : fallbackStr
+          ? new Date(fallbackStr)
+          : new Date();
+      // Check for invalid date
+      if (isNaN(d.getTime())) return fallbackStr || ""; // Return original string if parse failed
+      return d.toLocaleDateString(lang);
+    } catch (e) {
+      return fallbackStr || "";
+    }
+  };
+
+  // Date Formatting for Header (Report Date)
+  const reportDate = new Date().toLocaleDateString(lang, {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
+
+  // Translate Status helper
+  const translateStatus = (status: string) => {
+    // Assuming keys in i18n match status (IMPROVED, WORSENED, etc.)
+    // But statuses are uppercase in DB usually?
+    // Let's rely on compare_result translations which are lowercase keys mostly or implement mappings
+    const key = status.toLowerCase();
+    return i18n.exists(`compare_result.${key}`)
+      ? i18n.t(`compare_result.${key}`)
+      : status;
+  };
+
+  // Translate Risk Label
+  const translateResultLabel = (label: string) => {
+    const key = label.toLowerCase();
+    return i18n.exists(`analysis_result.${key}`)
+      ? i18n.t(`analysis_result.${key}`)
+      : label;
+  };
 
   // --- HTML HEADER ---
   const htmlHeader = `
@@ -116,14 +155,14 @@ const generateReportHTML = async (
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
           <td style="width: 60%; vertical-align: top;">
-             <h1 class="doc-title">COMPARISON REPORT</h1>
-             <p class="doc-subtitle">Dermatological Image Analysis</p>
+             <h1 class="doc-title">${i18n.t("pdf_report.title")}</h1>
+             <p class="doc-subtitle">${i18n.t("pdf_report.subtitle")}</p>
           </td>
           <td style="width: 40%; vertical-align: top; text-align: right;">
             <div class="meta-box">
-               <p><strong>Date:</strong> ${reportDate}</p>
-               <p><strong>Patient ID:</strong> GUEST-001</p>
-               <p><strong>Region:</strong> ${lesion.region}</p>
+               <p><strong>${i18n.t("pdf_report.date")}</strong> ${reportDate}</p>
+               <p><strong>${i18n.t("pdf_report.patient_id")}</strong> GUEST-001</p>
+               <p><strong>${i18n.t("pdf_report.region")}</strong> ${lesion.region}</p>
             </div>
           </td>
         </tr>
@@ -138,15 +177,15 @@ const generateReportHTML = async (
   // 1. BASELINE ASSESSMENT (Formal Layout)
   contentHtml += `
     <div class="section">
-      <h3 class="section-header">1. CURRENT ASSESSMENT</h3>
+      <h3 class="section-header">${i18n.t("pdf_report.section_1_title")}</h3>
       
       <table class="assessment-table">
         <tr>
           <!-- Image Column -->
           <td style="width: 40%; padding-right: 20px; vertical-align: top;">
              <div class="img-frame">
-               ${lesion.base64 ? `<img src="${lesion.base64}" class="clinical-image" />` : '<div class="no-image">No Image</div>'}
-               <p class="img-caption">Figure 1: Current Presentation (${new Date(lesion.date).toLocaleDateString()})</p>
+               ${lesion.base64 ? `<img src="${lesion.base64}" class="clinical-image" />` : `<div class="no-image">${i18n.t("pdf_report.no_image")}</div>`}
+               <p class="img-caption">${i18n.t("pdf_report.figure_1")} (${safeDate(lesion.createdAt, lesion.date)})</p>
              </div>
           </td>
           
@@ -154,20 +193,20 @@ const generateReportHTML = async (
           <td style="width: 60%; vertical-align: top;">
              <table class="data-table">
                 <tr>
-                   <td class="data-label">AI Indication:</td>
+                   <td class="data-label">${i18n.t("pdf_report.ai_indication")}</td>
                    <td class="data-value ${isHighRisk ? "text-danger" : ""}">
-                      ${lesion.resultLabel.toUpperCase()}
+                      ${translateResultLabel(lesion.resultLabel).toUpperCase()}
                    </td>
                 </tr>
                 <tr>
-                   <td class="data-label">Confidence Index:</td>
+                   <td class="data-label">${i18n.t("pdf_report.confidence")}</td>
                    <td class="data-value">${(lesion.confidence * 100).toFixed(1)}%</td>
                 </tr>
                  ${
                    lesion.diagnosis
                      ? `
                 <tr>
-                   <td class="data-label">User Notes:</td>
+                   <td class="data-label">${i18n.t("pdf_report.user_notes")}</td>
                    <td class="data-value">${lesion.diagnosis}</td>
                 </tr>`
                      : ""
@@ -175,8 +214,7 @@ const generateReportHTML = async (
              </table>
              
              <div class="clinical-note">
-               <strong>Note:</strong> This report is generated by an AI automated system. 
-               The results presented here are for informational purposes only and do not constitute a definitive medical diagnosis.
+               <strong>${i18n.t("pdf_report.note_label")}</strong> ${i18n.t("pdf_report.disclaimer_text")}
              </div>
           </td>
         </tr>
@@ -188,16 +226,16 @@ const generateReportHTML = async (
   if (isTimeline) {
     contentHtml += `
       <div class="section">
-        <h3 class="section-header">2. EVOLUTION HISTORY</h3>
-        <p class="section-intro">Historical comparison of the lesion over time.</p>
+        <h3 class="section-header">${i18n.t("pdf_report.section_2_title")}</h3>
+        <p class="section-intro">${i18n.t("pdf_report.section_2_intro")}</p>
         
         <table class="history-table">
           <thead>
             <tr>
-              <th style="width: 20%">Date</th>
-              <th style="width: 20%">Image Reference</th>
-              <th style="width: 30%">Status Change</th>
-              <th style="width: 30%">Similarity Score</th>
+              <th style="width: 20%">${i18n.t("pdf_report.table_date")}</th>
+              <th style="width: 20%">${i18n.t("pdf_report.table_ref")}</th>
+              <th style="width: 30%">${i18n.t("pdf_report.table_status")}</th>
+              <th style="width: 30%">${i18n.t("pdf_report.table_score")}</th>
             </tr>
           </thead>
           <tbody>
@@ -205,7 +243,7 @@ const generateReportHTML = async (
               .map(
                 (log, index) => `
               <tr class="${index % 2 === 0 ? "row-even" : "row-odd"}">
-                <td>${new Date(log.date).toLocaleDateString()}</td>
+                <td>${safeDate(log.createdAt, log.date)}</td>
                 <td style="text-align: center;">
                   ${log.base64 ? `<img src="${log.base64}" class="history-thumb" />` : "N/A"}
                 </td>
@@ -215,7 +253,7 @@ const generateReportHTML = async (
                        ? "status-danger"
                        : "status-neutral"
                    }">
-                     ${log.status}
+                     ${translateStatus(log.status)}
                    </span>
                 </td>
                 <td>${log.score.toFixed(0)}%</td>
@@ -326,7 +364,7 @@ const generateReportHTML = async (
         ${contentHtml}
 
         <div class="footer">
-          MelanoScan System Generated Report | Page <span class="page-number"></span>
+          ${i18n.t("pdf_report.footer")} <span class="page-number"></span>
         </div>
       </body>
     </html>
