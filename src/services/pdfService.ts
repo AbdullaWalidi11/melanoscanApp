@@ -131,10 +131,8 @@ const generateReportHTML = async (
   });
 
   // Translate Status helper
-  const translateStatus = (status: string) => {
-    // Assuming keys in i18n match status (IMPROVED, WORSENED, etc.)
-    // But statuses are uppercase in DB usually?
-    // Let's rely on compare_result translations which are lowercase keys mostly or implement mappings
+  const translateStatus = (status: string | undefined | null) => {
+    if (!status) return "";
     const key = status.toLowerCase();
     return i18n.exists(`compare_result.${key}`)
       ? i18n.t(`compare_result.${key}`)
@@ -148,6 +146,10 @@ const generateReportHTML = async (
       ? i18n.t(`analysis_result.${key}`)
       : label;
   };
+
+  console.log(
+    `Generating PDF. Lang: ${lang}, History count: ${history.length}`
+  );
 
   // --- HTML HEADER ---
   const htmlHeader = `
@@ -274,7 +276,7 @@ const generateReportHTML = async (
         <meta charset="utf-8">
         <style>
           body { 
-            font-family: 'Times New Roman', Times, serif; 
+            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif; 
             padding: 40px; 
             color: ${colors.text}; 
             -webkit-print-color-adjust: exact; 
